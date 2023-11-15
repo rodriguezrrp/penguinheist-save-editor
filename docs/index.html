@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>test</title>
+    <!-- bundle to include Popper JS -->
+    <script src="./js/bootstrap.bundle.min.js"></script>
+    
+    <link rel="stylesheet" href="./css/bootstrap.min.css">
+
+    <!-- bootstrap icons -->
+    <link rel="stylesheet" href="./icons/bootstrap-icons-1.10.4/font/bootstrap-icons.css">
+    
+    <script src="./js/jquery-3.6.4.min.js"></script>
+    
+    <!-- Custom scripts and css -->
+    
+    <link rel="stylesheet" href="./css/editorstyle.css">
+    <script src="./js/editor.js"></script>
+
+    <!-- reload form when ready -->
+    <script> $(document).ready(repopulateParamsForm(null,null)); </script>
+</head>
+<body>
+    
+    <div class="container-lg background-container pt-2 mb-5 mt-4">
+        <form id="fileForm" class="--row --g-3">
+
+            <h2 class="h5"><i class="bi-file-earmark-arrow-up" aria-hidden="true"></i> Select Save File</h2>
+            <!-- <div class="row --g-3" style="border: solid red 1px"> -->
+            <div class="row --g-3">
+                <div class="col-12 mb-3">
+                    <label for="fileSelect" class="form-label">Upload Save</label>
+                    <input type="file" name="fileSelect" id="fileSelect" value="Upload Save" class="btn" aria-describedby="fileSelectDesc">
+                    <div id="fileSelectDesc" class="form-text">
+                        Default save location on <i class="bi-windows" aria-hidden="true"></i> Windows: folder <span class="mono-text">"%appdata%\LocalLow\FishSoft\Penguin&nbsp;Heist\"</span>, file <span class="mono-text">"PHSaveMain.sav"</span>
+                        <br>
+                        Default save location on <i class="bi-apple"></i> Mac: folder <span class="mono-text" style="color:red;font-weight:700">(Need to add path tip here...)</span>
+                        <br>
+                        Default save location on <svg xmlns="http://www.w3.org/2000/svg" class="icon" aria-hidden="true" viewBox="0 0 448 512">
+                                <!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+                                <path fill="#6C757D" d="M220.8 123.3c1 .5 1.8 1.7 3 1.7 1.1 0 2.8-.4 2.9-1.5.2-1.4-1.9-2.3-3.2-2.9-1.7-.7-3.9-1-5.5-.1-.4.2-.8.7-.6 1.1.3 1.3 2.3 1.1 3.4 1.7zm-21.9 1.7c1.2 0 2-1.2 3-1.7 1.1-.6 3.1-.4 3.5-1.6.2-.4-.2-.9-.6-1.1-1.6-.9-3.8-.6-5.5.1-1.3.6-3.4 1.5-3.2 2.9.1 1 1.8 1.5 2.8 1.4zM420 403.8c-3.6-4-5.3-11.6-7.2-19.7-1.8-8.1-3.9-16.8-10.5-22.4-1.3-1.1-2.6-2.1-4-2.9-1.3-.8-2.7-1.5-4.1-2 9.2-27.3 5.6-54.5-3.7-79.1-11.4-30.1-31.3-56.4-46.5-74.4-17.1-21.5-33.7-41.9-33.4-72C311.1 85.4 315.7.1 234.8 0 132.4-.2 158 103.4 156.9 135.2c-1.7 23.4-6.4 41.8-22.5 64.7-18.9 22.5-45.5 58.8-58.1 96.7-6 17.9-8.8 36.1-6.2 53.3-6.5 5.8-11.4 14.7-16.6 20.2-4.2 4.3-10.3 5.9-17 8.3s-14 6-18.5 14.5c-2.1 3.9-2.8 8.1-2.8 12.4 0 3.9.6 7.9 1.2 11.8 1.2 8.1 2.5 15.7.8 20.8-5.2 14.4-5.9 24.4-2.2 31.7 3.8 7.3 11.4 10.5 20.1 12.3 17.3 3.6 40.8 2.7 59.3 12.5 19.8 10.4 39.9 14.1 55.9 10.4 11.6-2.6 21.1-9.6 25.9-20.2 12.5-.1 26.3-5.4 48.3-6.6 14.9-1.2 33.6 5.3 55.1 4.1.6 2.3 1.4 4.6 2.5 6.7v.1c8.3 16.7 23.8 24.3 40.3 23 16.6-1.3 34.1-11 48.3-27.9 13.6-16.4 36-23.2 50.9-32.2 7.4-4.5 13.4-10.1 13.9-18.3.4-8.2-4.4-17.3-15.5-29.7zM223.7 87.3c9.8-22.2 34.2-21.8 44-.4 6.5 14.2 3.6 30.9-4.3 40.4-1.6-.8-5.9-2.6-12.6-4.9 1.1-1.2 3.1-2.7 3.9-4.6 4.8-11.8-.2-27-9.1-27.3-7.3-.5-13.9 10.8-11.8 23-4.1-2-9.4-3.5-13-4.4-1-6.9-.3-14.6 2.9-21.8zM183 75.8c10.1 0 20.8 14.2 19.1 33.5-3.5 1-7.1 2.5-10.2 4.6 1.2-8.9-3.3-20.1-9.6-19.6-8.4.7-9.8 21.2-1.8 28.1 1 .8 1.9-.2-5.9 5.5-15.6-14.6-10.5-52.1 8.4-52.1zm-13.6 60.7c6.2-4.6 13.6-10 14.1-10.5 4.7-4.4 13.5-14.2 27.9-14.2 7.1 0 15.6 2.3 25.9 8.9 6.3 4.1 11.3 4.4 22.6 9.3 8.4 3.5 13.7 9.7 10.5 18.2-2.6 7.1-11 14.4-22.7 18.1-11.1 3.6-19.8 16-38.2 14.9-3.9-.2-7-1-9.6-2.1-8-3.5-12.2-10.4-20-15-8.6-4.8-13.2-10.4-14.7-15.3-1.4-4.9 0-9 4.2-12.3zm3.3 334c-2.7 35.1-43.9 34.4-75.3 18-29.9-15.8-68.6-6.5-76.5-21.9-2.4-4.7-2.4-12.7 2.6-26.4v-.2c2.4-7.6.6-16-.6-23.9-1.2-7.8-1.8-15 .9-20 3.5-6.7 8.5-9.1 14.8-11.3 10.3-3.7 11.8-3.4 19.6-9.9 5.5-5.7 9.5-12.9 14.3-18 5.1-5.5 10-8.1 17.7-6.9 8.1 1.2 15.1 6.8 21.9 16l19.6 35.6c9.5 19.9 43.1 48.4 41 68.9zm-1.4-25.9c-4.1-6.6-9.6-13.6-14.4-19.6 7.1 0 14.2-2.2 16.7-8.9 2.3-6.2 0-14.9-7.4-24.9-13.5-18.2-38.3-32.5-38.3-32.5-13.5-8.4-21.1-18.7-24.6-29.9s-3-23.3-.3-35.2c5.2-22.9 18.6-45.2 27.2-59.2 2.3-1.7.8 3.2-8.7 20.8-8.5 16.1-24.4 53.3-2.6 82.4.6-20.7 5.5-41.8 13.8-61.5 12-27.4 37.3-74.9 39.3-112.7 1.1.8 4.6 3.2 6.2 4.1 4.6 2.7 8.1 6.7 12.6 10.3 12.4 10 28.5 9.2 42.4 1.2 6.2-3.5 11.2-7.5 15.9-9 9.9-3.1 17.8-8.6 22.3-15 7.7 30.4 25.7 74.3 37.2 95.7 6.1 11.4 18.3 35.5 23.6 64.6 3.3-.1 7 .4 10.9 1.4 13.8-35.7-11.7-74.2-23.3-84.9-4.7-4.6-4.9-6.6-2.6-6.5 12.6 11.2 29.2 33.7 35.2 59 2.8 11.6 3.3 23.7.4 35.7 16.4 6.8 35.9 17.9 30.7 34.8-2.2-.1-3.2 0-4.2 0 3.2-10.1-3.9-17.6-22.8-26.1-19.6-8.6-36-8.6-38.3 12.5-12.1 4.2-18.3 14.7-21.4 27.3-2.8 11.2-3.6 24.7-4.4 39.9-.5 7.7-3.6 18-6.8 29-32.1 22.9-76.7 32.9-114.3 7.2zm257.4-11.5c-.9 16.8-41.2 19.9-63.2 46.5-13.2 15.7-29.4 24.4-43.6 25.5s-26.5-4.8-33.7-19.3c-4.7-11.1-2.4-23.1 1.1-36.3 3.7-14.2 9.2-28.8 9.9-40.6.8-15.2 1.7-28.5 4.2-38.7 2.6-10.3 6.6-17.2 13.7-21.1.3-.2.7-.3 1-.5.8 13.2 7.3 26.6 18.8 29.5 12.6 3.3 30.7-7.5 38.4-16.3 9-.3 15.7-.9 22.6 5.1 9.9 8.5 7.1 30.3 17.1 41.6 10.6 11.6 14 19.5 13.7 24.6zM173.3 148.7c2 1.9 4.7 4.5 8 7.1 6.6 5.2 15.8 10.6 27.3 10.6 11.6 0 22.5-5.9 31.8-10.8 4.9-2.6 10.9-7 14.8-10.4s5.9-6.3 3.1-6.6-2.6 2.6-6 5.1c-4.4 3.2-9.7 7.4-13.9 9.8-7.4 4.2-19.5 10.2-29.9 10.2s-18.7-4.8-24.9-9.7c-3.1-2.5-5.7-5-7.7-6.9-1.5-1.4-1.9-4.6-4.3-4.9-1.4-.1-1.8 3.7 1.7 6.5z"/>
+                            </svg> Linux: folder <span class="mono-text" style="color:red;font-weight:700">(Need to add path tip here...)</span>
+                      </div>
+                </div>
+                <script>
+                    const _unknown_manifest = '<span style="color:red">missing-manifest-info</span>';
+                    const _unknown_depot = '<span style="color:red">missing-depot-info</span>';
+
+                    function populateVersionDropdowns() {
+                        const selectSaveType1 = $('#saveType1');
+                        const selectSaveType2 = $('#saveType2');
+                        var options1 = '<option value="">Unknown (assume all values)</option>';
+                        var options2 = '<option value="" selected>None selected</option>';
+                        var foundSupported = false;
+                        var i = 0;
+                        for(const pair of Object.entries(VERSION_INFO)) {
+                            let key = pair[0]; let val = pair[1];
+                            let name = val.name;
+                            let long_name = val.long_name ?? name;
+                            let supported = val.supported;
+                            options1 += `<option ${!supported?'disabled ':''}value="${key}"${(!foundSupported&&supported)?' selected':''}>
+                                ${long_name}${i===0?' (latest)':''}${!supported?(' (format unsupported)'):''}
+                                </options>`;
+                            options2 += `<option ${!supported?'disabled ':''}value="${key}">
+                                ${long_name}${i===0?' (latest)':''}${!supported?(' (format unsupported)'):''}
+                                </options>`;
+                            foundSupported ||= supported;
+                            i++;
+                        }
+                        console.log(options1);
+                        selectSaveType1.empty().append(options1);
+                        selectSaveType2.empty().append(options2);
+                    }
+                    function populateManifestTable() {
+                        const tableBody = $('#tableManifests').find('tbody');
+                        var rows = '';
+                        for(const pair of Object.entries(VERSION_INFO)) {
+                            let key = pair[0]; let val = pair[1];
+                            let name = val.name;
+                            let long_name = val.long_name ?? name;
+                            rows += `<tr>
+                                <td>${long_name ?? _unknown_manifest}</td>
+                                <td>${val.manifest_windows ?? _unknown_manifest}</td>
+                                <td>${val.manifest_macos ?? _unknown_manifest}</td>
+                                <td>${val.manifest_linux ?? _unknown_manifest}</td>
+                                </tr>`;
+                        }
+                        tableBody.empty().append(rows);
+                    }
+                </script>
+                <!-- <fieldset> -->
+                <div class="col-md-6 mb-3">
+                    <label for="saveType1" class="form-label">Version of Save</label>
+                    <select name="saveType1" id="saveType1" class="form-select" aria-describedby="saveType1Desc">
+                        <option value=""              >Unknown (assume all values)</option>
+                        <option disabled value="vOM4" >Optimization Madness Update, Patch #4 (latest) (format unsupported)</option>
+                        <option disabled value="vOM"  >Optimization Madness Update (format unsupported)</option>
+                        <option value="vGS3" selected >Graphics + Noot Variations + Maps Update, Spring Patch #3</option>
+                        <option value="vGS2"          >Graphics + Noot Variations + Maps Update, Spring Patch #2</option>
+                        <option value="vGS"           >Graphics + Noot Variations + Maps Update</option>
+                        <option value="vJ"            >January Update</option>
+                        <option value="vP"            >Post Office Update</option>
+                        <option disabled value="vW"   >Winter Update (format unsupported)</option>
+                        <option value="vBP"           >Blueprint Update</option>
+                        <option value="vPBP"          >(Before Blueprint Update)</option>
+                    </select>
+                    <div id="#saveType1Desc" class="form-text">After selecting, "Save File Parameters" should update with save's values</div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="saveType2" class="form-label">Compare/Convert version (optional)</label>
+                    <select name="saveType2" id="saveType2" class="form-select" aria-describedby="saveType2Desc">
+                        <option value="" selected>None selected</option>
+                        <option disabled value="vOM4" >Optimization Madness Update, Patch #4 (latest) (format unsupported)</option>
+                        <option disabled value="vOM"  >Optimization Madness Update (format unsupported)</option>
+                        <option value="vGS3"          >Graphics + Noot Variations + Maps Update, Spring Patch #3 (latest)</option>
+                        <option value="vGS2"          >Graphics + Noot Variations + Maps Update, Spring Patch #2</option>
+                        <option value="vGS"           >Graphics + Noot Variations + Maps Update</option>
+                        <option value="vJ"            >January Update</option>
+                        <option value="vP"            >Post Office Update</option>
+                        <option disabled value="vW"   >Winter Update (format unsupported)</option>
+                        <option value="vBP"           >Blueprint Update</option>
+                        <option value="vPBP"          >(Before Blueprint Update)</option>
+                    </select>
+                    <div id="#saveType2Desc" class="form-text">If selected, shows parameter columns for comparing/converting values</div>
+                </div>
+                <script>
+                    function updateGameVersionInfoOnPage(event, version) {
+                        // var version = $('#saveType1').val();
+                        console.log('updateGameVersionInfoOnPage', version);
+                        // if(!VERSION_INFO[version] || !VERSION_INFO[version].supported) {
+                        //     return;
+                        // }
+                        versionInfo = VERSION_INFO[version] ?? {name:'Unknown'};
+                        let long_name = versionInfo.long_name ?? versionInfo.name;
+                        // $('.game-version-name').html('alphabet'+version);
+                        // $('.game-version-manifest').html('alphabet');
+                        $('.game-version-name').html(long_name);
+                        $('.game-version-manifest-windows').html(versionInfo.manifest_windows ?? _unknown_manifest);
+                        $('.game-version-manifest-macos').html(versionInfo.manifest_macos ?? _unknown_manifest);
+                        $('.game-version-manifest-linux').html(versionInfo.manifest_linux ?? _unknown_manifest);
+                        $('.game-version-depot-windows').html(versionInfo.depot_windows ?? DEPOTS_INFO.depot_windows ?? _unknown_depot);
+                        $('.game-version-depot-macos').html(versionInfo.depot_macos ?? DEPOTS_INFO.depot_macos ?? _unknown_depot);
+                        $('.game-version-depot-linux').html(versionInfo.depot_linux ?? DEPOTS_INFO.depot_linux ?? _unknown_depot);
+                    }
+                    
+                    $(document).ready(function(){
+                        // if anchor link going to an accordion's header, try to open the accordion
+                        var hash = window.location.hash;
+                        if(hash) {
+                            let element = $(hash);
+                            if (element.length && element.hasClass('accordion')) {
+                                // element.trigger('click');
+                                let accordionbutton = element.find('div>div>button');
+                                if(accordionbutton.length && accordionbutton.hasClass('collapsed')) {
+                                    accordionbutton.trigger('click');
+                                }
+                            }
+                        }
+
+                        populateVersionDropdowns();
+                        populateManifestTable();
+                        updateGameVersionInfoOnPage(null, $('#saveType1').val());
+                    });
+
+                    $('#saveType1').change((e) => updateGameVersionInfoOnPage(e, $('#saveType1').val()));
+                </script>
+                <div class="col-12 mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="showRelevantOptions" id="showRelevantOptions" checked>
+                        <label class="form-check-label" for="showRelevantOptions">
+                        Show relevant save file parameters only (always true for Misc. category)
+                        </label>
+                    </div>
+                </div>
+                <div class="col-12 mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="showRawEditors" id="showRawEditors">
+                        <label class="form-check-label" for="showRawEditors">
+                        Show raw value editors
+                        </label>
+                    </div>
+                </div>
+                <!-- </fieldset> -->
+    
+                <!-- <div class="mb-2">
+                </div> -->
+                <!-- <div class="mb-2">
+                    <button id="btnDownload" class="btn btn-sm btn-primary">Download Save</button>
+                </div> -->
+                <!-- <div class="col-12">
+                    <button id="btnDownload" class="btn btn-sm btn-primary">Download Save</button>
+                </div> -->
+                
+            </div>
+            
+            <button id="btnManualDoFileFormData" type="button" class="btn btn-outline-secondary" onclick="doFileFormData">doFileFormData</button>
+            <script>
+                function doFileFormData(event) {
+                    // Event.stop(event);
+                    event.preventDefault();
+                    getFileFormData();
+                    // console.log(event);
+                    return true;
+                }
+                function getFileFormData() {
+                    var formData = new FormData(document.forms.fileForm);
+                    console.log(document.forms.fileForm);
+                    console.log(formData);
+                    console.log('showRelevantOptions', formData.get('showRelevantOptions'));
+                    console.log('fileSelect', formData.get('fileSelect'));
+                    console.log('saveType1', formData.get('saveType1'));
+                    console.log('saveType2', formData.get('saveType2'));
+                    console.log('!showRelevantOptions', !formData.get('showRelevantOptions'));
+                    console.log('!saveType2', !formData.get('saveType2'));
+                    for (const pair of formData.entries()) {
+                        console.log(`formData entry: ${pair[0]}, ${pair[1]}`);
+                    }
+                    // console.log('entries:', Array.from(formData.entries()));
+                    // Object.fromEntries(formData);
+                }
+                $('#btnManualDoFileFormData').on('click', doFileFormData);
+
+                function parseFileTest(event) {
+                    console.log('file input event:', event);
+                    console.log('event.target.files:', event.target.files);
+                }
+
+                $('#fileSelect').change(parseFileTest);
+                $('#fileForm').change(function() {
+                    console.log('form change detected!');
+                    getFileFormData();
+                })
+            </script>
+
+        </form>
+
+        <!-- <div class="row">
+            <div class="mb-2">
+                <input type="file" id="file-select" value="Upload Save" class="btn">
+            </div>
+            <div class="mb-2">
+                <button id="btnDownload" class="btn btn-sm btn-primary">Download Save</button>
+            </div>
+            
+        </div>
+        
+        <div class="row">
+            <div class="row">
+                <input type="file" id="file-select" value="Upload Save" class="btn">
+            </div>
+            <div class="row">
+                <button id="btnDownload" class="btn btn-sm btn-primary">Download Save</button>
+            </div>
+            
+            <fieldset id="config">
+                <div class="row">
+                    a
+                </div>
+            </fieldset>
+        </div> -->
+
+        <!-- collapse header -->
+        <!-- <div class="row save-data-collapse-bar" data-bs-toggle="collapse" href="#collapseInstall" role="button" aria-expanded="false" aria-controls="collapseInstall">
+            <span><i class="bi-caret-down-fill"></i> <!--<i class="bi-arrow-down-circle"></i>-->
+            <!-- How to download and run older game version (also known as downpatching or downgrading)</span>
+        </div> -->
+        <!-- collapse -->
+        <!-- <div id="collapseInstall" class="col-12 collapse show">
+            <div class="row">
+                <div class="col-12 save-data-val"> -->
+
+    </div>
+
+
+    <div class="container-lg background-container pt-2 mb-5">
+        <h2 id="download-section" class="h5"><i class="bi-info-circle" aria-hidden="true"></i> <i class="bi-controller" aria-hidden="true"></i> How to Download Older Versions</h2>
+
+        <div class="--col-12 accordion accordion-flush" id="downgrading">
+
+            <!-- accordion item (header button + collapsible content) -->
+            <div class="row accordion-item">
+
+                <div class="px-0 accordion-header">
+                    <button class="accordion-button save-data-collapse-bar collapsed" aria-expanded="false" type="button" data-bs-toggle="collapse" data-bs-target="#collDownpatch" aria-controls="collDownpatch">
+                        <span> How to download and run older game version (also known as Downpatching or Downgrading)</span>
+                        <a id="downgrading-hashlink" title="Link directly to this section" style="margin-left:auto;" href="https://rodriguezrrp.github.io/penguinheist-save-editor#downgrading"><i class="bi-link" aria-hidden="true"></i></a>
+                    </button>
+                </div>
+                <!-- <script> $(document).ready(function() {
+                    let originalPath = window.location.href.split('#')[0];
+                    $('#downgrading-hashlink').attr('href', originalPath+'#downgrading')
+                }); </script> -->
+                <div id="collDownpatch" class="accordion-collapse collapse">
+                    <br>
+                    <h3 class="h5">Instructions to download selected version "<span class="game-version-name">version name here</span>"</h3>
+                    <p class="form-text">For <em>other game versions</em>: select desired game version in Version of Save selector above, or refer to the Reference Table section below.</p>
+                    <p class="form-text">Note: with file names and commands, <em>DO NOT</em> include any quotation marks ("") surrounding them.</p>
+                    <ul>
+                        <li>
+                            <h3 class="h5">Step 1: Steam Console command</h3>
+                            <p>First, open the Steam Console.
+                                <ul class="listicons">
+                                    <li class="listicons inst-windows">
+                                        <span class="listicons"><i class="bi-windows" aria-hidden="true"></i></span>
+                                        On Windows: Open the Run dialog box with <span class="fw-700"><i class="bi-windows" title="Windows"></i>&nbsp;+&nbsp;R</span>,
+                                        <br>then enter the command "<span class="mono-text inline-code">steam://open/console</span>". Click Ok.
+                                    </li>
+                                    <li class="listicons inst-macos">
+                                        <span class="listicons"><i class="bi-apple" aria-hidden="true"></i></span>
+                                        On MacOS: Open a browser and enter "<span class="mono-text inline-code">steam://open/console</span>" in the address bar at the top.
+                                        <br>(Then hit Enter.)
+                                    </li>
+                                    <li class="listicons inst-linux">
+                                        <span class="listicons">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" aria-hidden="true" viewBox="0 0 448 512">
+                                                <!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+                                                <path d="M220.8 123.3c1 .5 1.8 1.7 3 1.7 1.1 0 2.8-.4 2.9-1.5.2-1.4-1.9-2.3-3.2-2.9-1.7-.7-3.9-1-5.5-.1-.4.2-.8.7-.6 1.1.3 1.3 2.3 1.1 3.4 1.7zm-21.9 1.7c1.2 0 2-1.2 3-1.7 1.1-.6 3.1-.4 3.5-1.6.2-.4-.2-.9-.6-1.1-1.6-.9-3.8-.6-5.5.1-1.3.6-3.4 1.5-3.2 2.9.1 1 1.8 1.5 2.8 1.4zM420 403.8c-3.6-4-5.3-11.6-7.2-19.7-1.8-8.1-3.9-16.8-10.5-22.4-1.3-1.1-2.6-2.1-4-2.9-1.3-.8-2.7-1.5-4.1-2 9.2-27.3 5.6-54.5-3.7-79.1-11.4-30.1-31.3-56.4-46.5-74.4-17.1-21.5-33.7-41.9-33.4-72C311.1 85.4 315.7.1 234.8 0 132.4-.2 158 103.4 156.9 135.2c-1.7 23.4-6.4 41.8-22.5 64.7-18.9 22.5-45.5 58.8-58.1 96.7-6 17.9-8.8 36.1-6.2 53.3-6.5 5.8-11.4 14.7-16.6 20.2-4.2 4.3-10.3 5.9-17 8.3s-14 6-18.5 14.5c-2.1 3.9-2.8 8.1-2.8 12.4 0 3.9.6 7.9 1.2 11.8 1.2 8.1 2.5 15.7.8 20.8-5.2 14.4-5.9 24.4-2.2 31.7 3.8 7.3 11.4 10.5 20.1 12.3 17.3 3.6 40.8 2.7 59.3 12.5 19.8 10.4 39.9 14.1 55.9 10.4 11.6-2.6 21.1-9.6 25.9-20.2 12.5-.1 26.3-5.4 48.3-6.6 14.9-1.2 33.6 5.3 55.1 4.1.6 2.3 1.4 4.6 2.5 6.7v.1c8.3 16.7 23.8 24.3 40.3 23 16.6-1.3 34.1-11 48.3-27.9 13.6-16.4 36-23.2 50.9-32.2 7.4-4.5 13.4-10.1 13.9-18.3.4-8.2-4.4-17.3-15.5-29.7zM223.7 87.3c9.8-22.2 34.2-21.8 44-.4 6.5 14.2 3.6 30.9-4.3 40.4-1.6-.8-5.9-2.6-12.6-4.9 1.1-1.2 3.1-2.7 3.9-4.6 4.8-11.8-.2-27-9.1-27.3-7.3-.5-13.9 10.8-11.8 23-4.1-2-9.4-3.5-13-4.4-1-6.9-.3-14.6 2.9-21.8zM183 75.8c10.1 0 20.8 14.2 19.1 33.5-3.5 1-7.1 2.5-10.2 4.6 1.2-8.9-3.3-20.1-9.6-19.6-8.4.7-9.8 21.2-1.8 28.1 1 .8 1.9-.2-5.9 5.5-15.6-14.6-10.5-52.1 8.4-52.1zm-13.6 60.7c6.2-4.6 13.6-10 14.1-10.5 4.7-4.4 13.5-14.2 27.9-14.2 7.1 0 15.6 2.3 25.9 8.9 6.3 4.1 11.3 4.4 22.6 9.3 8.4 3.5 13.7 9.7 10.5 18.2-2.6 7.1-11 14.4-22.7 18.1-11.1 3.6-19.8 16-38.2 14.9-3.9-.2-7-1-9.6-2.1-8-3.5-12.2-10.4-20-15-8.6-4.8-13.2-10.4-14.7-15.3-1.4-4.9 0-9 4.2-12.3zm3.3 334c-2.7 35.1-43.9 34.4-75.3 18-29.9-15.8-68.6-6.5-76.5-21.9-2.4-4.7-2.4-12.7 2.6-26.4v-.2c2.4-7.6.6-16-.6-23.9-1.2-7.8-1.8-15 .9-20 3.5-6.7 8.5-9.1 14.8-11.3 10.3-3.7 11.8-3.4 19.6-9.9 5.5-5.7 9.5-12.9 14.3-18 5.1-5.5 10-8.1 17.7-6.9 8.1 1.2 15.1 6.8 21.9 16l19.6 35.6c9.5 19.9 43.1 48.4 41 68.9zm-1.4-25.9c-4.1-6.6-9.6-13.6-14.4-19.6 7.1 0 14.2-2.2 16.7-8.9 2.3-6.2 0-14.9-7.4-24.9-13.5-18.2-38.3-32.5-38.3-32.5-13.5-8.4-21.1-18.7-24.6-29.9s-3-23.3-.3-35.2c5.2-22.9 18.6-45.2 27.2-59.2 2.3-1.7.8 3.2-8.7 20.8-8.5 16.1-24.4 53.3-2.6 82.4.6-20.7 5.5-41.8 13.8-61.5 12-27.4 37.3-74.9 39.3-112.7 1.1.8 4.6 3.2 6.2 4.1 4.6 2.7 8.1 6.7 12.6 10.3 12.4 10 28.5 9.2 42.4 1.2 6.2-3.5 11.2-7.5 15.9-9 9.9-3.1 17.8-8.6 22.3-15 7.7 30.4 25.7 74.3 37.2 95.7 6.1 11.4 18.3 35.5 23.6 64.6 3.3-.1 7 .4 10.9 1.4 13.8-35.7-11.7-74.2-23.3-84.9-4.7-4.6-4.9-6.6-2.6-6.5 12.6 11.2 29.2 33.7 35.2 59 2.8 11.6 3.3 23.7.4 35.7 16.4 6.8 35.9 17.9 30.7 34.8-2.2-.1-3.2 0-4.2 0 3.2-10.1-3.9-17.6-22.8-26.1-19.6-8.6-36-8.6-38.3 12.5-12.1 4.2-18.3 14.7-21.4 27.3-2.8 11.2-3.6 24.7-4.4 39.9-.5 7.7-3.6 18-6.8 29-32.1 22.9-76.7 32.9-114.3 7.2zm257.4-11.5c-.9 16.8-41.2 19.9-63.2 46.5-13.2 15.7-29.4 24.4-43.6 25.5s-26.5-4.8-33.7-19.3c-4.7-11.1-2.4-23.1 1.1-36.3 3.7-14.2 9.2-28.8 9.9-40.6.8-15.2 1.7-28.5 4.2-38.7 2.6-10.3 6.6-17.2 13.7-21.1.3-.2.7-.3 1-.5.8 13.2 7.3 26.6 18.8 29.5 12.6 3.3 30.7-7.5 38.4-16.3 9-.3 15.7-.9 22.6 5.1 9.9 8.5 7.1 30.3 17.1 41.6 10.6 11.6 14 19.5 13.7 24.6zM173.3 148.7c2 1.9 4.7 4.5 8 7.1 6.6 5.2 15.8 10.6 27.3 10.6 11.6 0 22.5-5.9 31.8-10.8 4.9-2.6 10.9-7 14.8-10.4s5.9-6.3 3.1-6.6-2.6 2.6-6 5.1c-4.4 3.2-9.7 7.4-13.9 9.8-7.4 4.2-19.5 10.2-29.9 10.2s-18.7-4.8-24.9-9.7c-3.1-2.5-5.7-5-7.7-6.9-1.5-1.4-1.9-4.6-4.3-4.9-1.4-.1-1.8 3.7 1.7 6.5z"/>
+                                            </svg>
+                                        </span>
+                                        On Linux: Open a browser and enter "<span class="mono-text inline-code">steam://open/console</span>" in the address bar at the top.
+                                        <br>(Then hit Enter.)
+                                    </li>
+                                </ul>
+                            </p>
+                            <p>This should open Steam with a "Console" tab showing.</p>
+                        </li>
+                        <li>
+                            <h3 class="h5">Step 2: Download the depot manifest using Steam Console</h3>
+                            <p>Inside the steam console, enter the following command depending on your operating system:
+                                <ul class="listicons">
+                                    <li class="listicons inst-windows">
+                                        <span class="listicons"><i class="bi-windows" aria-hidden="true"></i></span>
+                                        On Windows: "<span class="mono-text inline-code">download_depot 1451480 <span class="game-version-depot-windows">DEPOT_ID</span> <span class="game-version-manifest-windows">MANIFEST_ID</span></span>"
+                                    </li>
+                                    <li class="listicons inst-macos">
+                                        <span class="listicons"><i class="bi-apple" aria-hidden="true"></i></span>
+                                        On MacOS: "<span class="mono-text inline-code">download_depot 1451480 <span class="game-version-depot-macos">DEPOT_ID</span> <span class="game-version-manifest-macos">MANIFEST_ID</span></span>"
+                                    </li>
+                                    <li class="listicons inst-linux">
+                                        <span class="listicons">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" aria-hidden="true" viewBox="0 0 448 512">
+                                                <!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+                                                <path d="M220.8 123.3c1 .5 1.8 1.7 3 1.7 1.1 0 2.8-.4 2.9-1.5.2-1.4-1.9-2.3-3.2-2.9-1.7-.7-3.9-1-5.5-.1-.4.2-.8.7-.6 1.1.3 1.3 2.3 1.1 3.4 1.7zm-21.9 1.7c1.2 0 2-1.2 3-1.7 1.1-.6 3.1-.4 3.5-1.6.2-.4-.2-.9-.6-1.1-1.6-.9-3.8-.6-5.5.1-1.3.6-3.4 1.5-3.2 2.9.1 1 1.8 1.5 2.8 1.4zM420 403.8c-3.6-4-5.3-11.6-7.2-19.7-1.8-8.1-3.9-16.8-10.5-22.4-1.3-1.1-2.6-2.1-4-2.9-1.3-.8-2.7-1.5-4.1-2 9.2-27.3 5.6-54.5-3.7-79.1-11.4-30.1-31.3-56.4-46.5-74.4-17.1-21.5-33.7-41.9-33.4-72C311.1 85.4 315.7.1 234.8 0 132.4-.2 158 103.4 156.9 135.2c-1.7 23.4-6.4 41.8-22.5 64.7-18.9 22.5-45.5 58.8-58.1 96.7-6 17.9-8.8 36.1-6.2 53.3-6.5 5.8-11.4 14.7-16.6 20.2-4.2 4.3-10.3 5.9-17 8.3s-14 6-18.5 14.5c-2.1 3.9-2.8 8.1-2.8 12.4 0 3.9.6 7.9 1.2 11.8 1.2 8.1 2.5 15.7.8 20.8-5.2 14.4-5.9 24.4-2.2 31.7 3.8 7.3 11.4 10.5 20.1 12.3 17.3 3.6 40.8 2.7 59.3 12.5 19.8 10.4 39.9 14.1 55.9 10.4 11.6-2.6 21.1-9.6 25.9-20.2 12.5-.1 26.3-5.4 48.3-6.6 14.9-1.2 33.6 5.3 55.1 4.1.6 2.3 1.4 4.6 2.5 6.7v.1c8.3 16.7 23.8 24.3 40.3 23 16.6-1.3 34.1-11 48.3-27.9 13.6-16.4 36-23.2 50.9-32.2 7.4-4.5 13.4-10.1 13.9-18.3.4-8.2-4.4-17.3-15.5-29.7zM223.7 87.3c9.8-22.2 34.2-21.8 44-.4 6.5 14.2 3.6 30.9-4.3 40.4-1.6-.8-5.9-2.6-12.6-4.9 1.1-1.2 3.1-2.7 3.9-4.6 4.8-11.8-.2-27-9.1-27.3-7.3-.5-13.9 10.8-11.8 23-4.1-2-9.4-3.5-13-4.4-1-6.9-.3-14.6 2.9-21.8zM183 75.8c10.1 0 20.8 14.2 19.1 33.5-3.5 1-7.1 2.5-10.2 4.6 1.2-8.9-3.3-20.1-9.6-19.6-8.4.7-9.8 21.2-1.8 28.1 1 .8 1.9-.2-5.9 5.5-15.6-14.6-10.5-52.1 8.4-52.1zm-13.6 60.7c6.2-4.6 13.6-10 14.1-10.5 4.7-4.4 13.5-14.2 27.9-14.2 7.1 0 15.6 2.3 25.9 8.9 6.3 4.1 11.3 4.4 22.6 9.3 8.4 3.5 13.7 9.7 10.5 18.2-2.6 7.1-11 14.4-22.7 18.1-11.1 3.6-19.8 16-38.2 14.9-3.9-.2-7-1-9.6-2.1-8-3.5-12.2-10.4-20-15-8.6-4.8-13.2-10.4-14.7-15.3-1.4-4.9 0-9 4.2-12.3zm3.3 334c-2.7 35.1-43.9 34.4-75.3 18-29.9-15.8-68.6-6.5-76.5-21.9-2.4-4.7-2.4-12.7 2.6-26.4v-.2c2.4-7.6.6-16-.6-23.9-1.2-7.8-1.8-15 .9-20 3.5-6.7 8.5-9.1 14.8-11.3 10.3-3.7 11.8-3.4 19.6-9.9 5.5-5.7 9.5-12.9 14.3-18 5.1-5.5 10-8.1 17.7-6.9 8.1 1.2 15.1 6.8 21.9 16l19.6 35.6c9.5 19.9 43.1 48.4 41 68.9zm-1.4-25.9c-4.1-6.6-9.6-13.6-14.4-19.6 7.1 0 14.2-2.2 16.7-8.9 2.3-6.2 0-14.9-7.4-24.9-13.5-18.2-38.3-32.5-38.3-32.5-13.5-8.4-21.1-18.7-24.6-29.9s-3-23.3-.3-35.2c5.2-22.9 18.6-45.2 27.2-59.2 2.3-1.7.8 3.2-8.7 20.8-8.5 16.1-24.4 53.3-2.6 82.4.6-20.7 5.5-41.8 13.8-61.5 12-27.4 37.3-74.9 39.3-112.7 1.1.8 4.6 3.2 6.2 4.1 4.6 2.7 8.1 6.7 12.6 10.3 12.4 10 28.5 9.2 42.4 1.2 6.2-3.5 11.2-7.5 15.9-9 9.9-3.1 17.8-8.6 22.3-15 7.7 30.4 25.7 74.3 37.2 95.7 6.1 11.4 18.3 35.5 23.6 64.6 3.3-.1 7 .4 10.9 1.4 13.8-35.7-11.7-74.2-23.3-84.9-4.7-4.6-4.9-6.6-2.6-6.5 12.6 11.2 29.2 33.7 35.2 59 2.8 11.6 3.3 23.7.4 35.7 16.4 6.8 35.9 17.9 30.7 34.8-2.2-.1-3.2 0-4.2 0 3.2-10.1-3.9-17.6-22.8-26.1-19.6-8.6-36-8.6-38.3 12.5-12.1 4.2-18.3 14.7-21.4 27.3-2.8 11.2-3.6 24.7-4.4 39.9-.5 7.7-3.6 18-6.8 29-32.1 22.9-76.7 32.9-114.3 7.2zm257.4-11.5c-.9 16.8-41.2 19.9-63.2 46.5-13.2 15.7-29.4 24.4-43.6 25.5s-26.5-4.8-33.7-19.3c-4.7-11.1-2.4-23.1 1.1-36.3 3.7-14.2 9.2-28.8 9.9-40.6.8-15.2 1.7-28.5 4.2-38.7 2.6-10.3 6.6-17.2 13.7-21.1.3-.2.7-.3 1-.5.8 13.2 7.3 26.6 18.8 29.5 12.6 3.3 30.7-7.5 38.4-16.3 9-.3 15.7-.9 22.6 5.1 9.9 8.5 7.1 30.3 17.1 41.6 10.6 11.6 14 19.5 13.7 24.6zM173.3 148.7c2 1.9 4.7 4.5 8 7.1 6.6 5.2 15.8 10.6 27.3 10.6 11.6 0 22.5-5.9 31.8-10.8 4.9-2.6 10.9-7 14.8-10.4s5.9-6.3 3.1-6.6-2.6 2.6-6 5.1c-4.4 3.2-9.7 7.4-13.9 9.8-7.4 4.2-19.5 10.2-29.9 10.2s-18.7-4.8-24.9-9.7c-3.1-2.5-5.7-5-7.7-6.9-1.5-1.4-1.9-4.6-4.3-4.9-1.4-.1-1.8 3.7 1.7 6.5z"/>
+                                            </svg>
+                                        </span>
+                                        On Linux: "<span class="mono-text inline-code">download_depot 1451480 <span class="game-version-depot-linux">DEPOT_ID</span> <span class="game-version-manifest-linux">MANIFEST_ID</span></span>"
+                                    </li>
+                                </ul>
+                            </p>
+                            
+                            <p>You <em><strong>should see</strong></em> a message like "<span class="mono-text fw-600">Downloading Depot 1451481 ...</span>" appear. This means it is downloading. <em>(Depot ID may vary!)</em>
+                                <br>You may have to wait a while; most versions of this game are around 1-2 GB compressed.
+                            </p>
+                            <ul class="listicons">
+                                <li class="listicons">
+                                    <h3 class="h5"><span class="listicons"><i class="bi-question-octagon-fill" aria-hidden="true"></i></span>
+                                        What if I saw an error instead? Such as "Depot download failed : ..."?
+                                    </h3>
+                                    <p>First, check that your Depot ID and Manifest ID are correct! That can be done by checking the Reference Table section below, or looking it up in the <a href="https://steamdb.info/app/1451480/depots/">SteamDB depots</a> for this game.
+                                        <br>Note: For the same game version there exist three different Manifest IDs, one from each Depot (desired operating system).
+                                        Check that your Manifest ID and Depot ID are for the same operating system.
+                                    </p>
+                                    <p>If they are correct and you still receive an error, you can try using the well-known third-party tool <a href="https://github.com/SteamRE/DepotDownloader">DepotDownloader</a>.
+                                        I recommend <a href="https://youtu.be/44HBxzC_RTg">this video</a> as a tutorial. It was for the Hollow Knight game community, so be sure to use <em>your</em> App ID, Depot ID, and Manifest ID <em>in place of theirs</em> in the video.</p>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <h3 class="h5">Step 3: Locate and Move Download</h3>
+                            <p>After a successful download you should see a message that looks something like:
+                                <br><span class="mono-text">Depot download complete : "&lt;Path to download folder location&gt;" (&lt;...&gt; files, manifest &lt;Manifest ID&gt;)</span>
+                                <!-- <ul><li>
+                                    For example, on Windows, for Patch + Cosmetics + Heist Planner Update:
+                                    <br><span class="mono-text fw-500">Depot download complete : "C:\Program Files (x86)\Steam\steamapps\content\app_1451480\depot_1451481" (273 files, manifest 6080836104571247089)</span>
+                                </li></ul> -->
+                                <br>
+                                Depot ID and manifest will vary depending on your operating system and version selected. The path will often end in something like ".../app_1451480/depot_1451481".
+                                <br>If you see errors afterwards, such as "LogonFailure No Connection", don't worry. After "Depot download complete" you already have the files you needed.
+                            </p>
+                            <p>
+                                Go to the download folder location, and you should see contents in that folder structured something like this:
+                                <ul class="listicons">
+                                    <li class="listicons inst-windows">
+                                        <span class="listicons"><i class="bi-windows" aria-label="On Windows"></i></span>
+                                        <p class="mono-text fw-500" style="line-height: normal; font-size: 0.8rem;">
+                                            &lt;download folder&gt;
+                                            <br>├── MonoBleedingEdge
+                                            <br>├── Penguin Heist_Data
+                                            <br>├── Penguin Heist.exe
+                                            <br>├── UnityCrashHandler64.exe
+                                            <br>└── UnityPlayer.dll
+                                        </p>
+                                    </li>
+                                    <li class="listicons inst-macos">
+                                        <span class="listicons"><i class="bi-apple" aria-label="On Mac OS"></i></span>
+                                        <p class="mono-text fw-500" style="line-height: normal; font-size: 0.8rem;">
+                                            &lt;download folder&gt;
+                                            <br>&nbsp;&nbsp;&nbsp;└── Penguin Heist.app
+                                            <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── Contents
+                                            <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── _CodeSignature
+                                            <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── Frameworks
+                                            <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── MacOS
+                                            <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;└── Penguin Heist
+                                            <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── MonoBleedingEdge
+                                            <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── Plugins
+                                            <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── Resources
+                                            <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── Info.plist
+                                        </p>
+                                    </li>
+                                    <li class="listicons inst-linux">
+                                        <span class="listicons">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" role="img" aria-label="On Linux" viewBox="0 0 448 512">
+                                                <!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+                                                <path d="M220.8 123.3c1 .5 1.8 1.7 3 1.7 1.1 0 2.8-.4 2.9-1.5.2-1.4-1.9-2.3-3.2-2.9-1.7-.7-3.9-1-5.5-.1-.4.2-.8.7-.6 1.1.3 1.3 2.3 1.1 3.4 1.7zm-21.9 1.7c1.2 0 2-1.2 3-1.7 1.1-.6 3.1-.4 3.5-1.6.2-.4-.2-.9-.6-1.1-1.6-.9-3.8-.6-5.5.1-1.3.6-3.4 1.5-3.2 2.9.1 1 1.8 1.5 2.8 1.4zM420 403.8c-3.6-4-5.3-11.6-7.2-19.7-1.8-8.1-3.9-16.8-10.5-22.4-1.3-1.1-2.6-2.1-4-2.9-1.3-.8-2.7-1.5-4.1-2 9.2-27.3 5.6-54.5-3.7-79.1-11.4-30.1-31.3-56.4-46.5-74.4-17.1-21.5-33.7-41.9-33.4-72C311.1 85.4 315.7.1 234.8 0 132.4-.2 158 103.4 156.9 135.2c-1.7 23.4-6.4 41.8-22.5 64.7-18.9 22.5-45.5 58.8-58.1 96.7-6 17.9-8.8 36.1-6.2 53.3-6.5 5.8-11.4 14.7-16.6 20.2-4.2 4.3-10.3 5.9-17 8.3s-14 6-18.5 14.5c-2.1 3.9-2.8 8.1-2.8 12.4 0 3.9.6 7.9 1.2 11.8 1.2 8.1 2.5 15.7.8 20.8-5.2 14.4-5.9 24.4-2.2 31.7 3.8 7.3 11.4 10.5 20.1 12.3 17.3 3.6 40.8 2.7 59.3 12.5 19.8 10.4 39.9 14.1 55.9 10.4 11.6-2.6 21.1-9.6 25.9-20.2 12.5-.1 26.3-5.4 48.3-6.6 14.9-1.2 33.6 5.3 55.1 4.1.6 2.3 1.4 4.6 2.5 6.7v.1c8.3 16.7 23.8 24.3 40.3 23 16.6-1.3 34.1-11 48.3-27.9 13.6-16.4 36-23.2 50.9-32.2 7.4-4.5 13.4-10.1 13.9-18.3.4-8.2-4.4-17.3-15.5-29.7zM223.7 87.3c9.8-22.2 34.2-21.8 44-.4 6.5 14.2 3.6 30.9-4.3 40.4-1.6-.8-5.9-2.6-12.6-4.9 1.1-1.2 3.1-2.7 3.9-4.6 4.8-11.8-.2-27-9.1-27.3-7.3-.5-13.9 10.8-11.8 23-4.1-2-9.4-3.5-13-4.4-1-6.9-.3-14.6 2.9-21.8zM183 75.8c10.1 0 20.8 14.2 19.1 33.5-3.5 1-7.1 2.5-10.2 4.6 1.2-8.9-3.3-20.1-9.6-19.6-8.4.7-9.8 21.2-1.8 28.1 1 .8 1.9-.2-5.9 5.5-15.6-14.6-10.5-52.1 8.4-52.1zm-13.6 60.7c6.2-4.6 13.6-10 14.1-10.5 4.7-4.4 13.5-14.2 27.9-14.2 7.1 0 15.6 2.3 25.9 8.9 6.3 4.1 11.3 4.4 22.6 9.3 8.4 3.5 13.7 9.7 10.5 18.2-2.6 7.1-11 14.4-22.7 18.1-11.1 3.6-19.8 16-38.2 14.9-3.9-.2-7-1-9.6-2.1-8-3.5-12.2-10.4-20-15-8.6-4.8-13.2-10.4-14.7-15.3-1.4-4.9 0-9 4.2-12.3zm3.3 334c-2.7 35.1-43.9 34.4-75.3 18-29.9-15.8-68.6-6.5-76.5-21.9-2.4-4.7-2.4-12.7 2.6-26.4v-.2c2.4-7.6.6-16-.6-23.9-1.2-7.8-1.8-15 .9-20 3.5-6.7 8.5-9.1 14.8-11.3 10.3-3.7 11.8-3.4 19.6-9.9 5.5-5.7 9.5-12.9 14.3-18 5.1-5.5 10-8.1 17.7-6.9 8.1 1.2 15.1 6.8 21.9 16l19.6 35.6c9.5 19.9 43.1 48.4 41 68.9zm-1.4-25.9c-4.1-6.6-9.6-13.6-14.4-19.6 7.1 0 14.2-2.2 16.7-8.9 2.3-6.2 0-14.9-7.4-24.9-13.5-18.2-38.3-32.5-38.3-32.5-13.5-8.4-21.1-18.7-24.6-29.9s-3-23.3-.3-35.2c5.2-22.9 18.6-45.2 27.2-59.2 2.3-1.7.8 3.2-8.7 20.8-8.5 16.1-24.4 53.3-2.6 82.4.6-20.7 5.5-41.8 13.8-61.5 12-27.4 37.3-74.9 39.3-112.7 1.1.8 4.6 3.2 6.2 4.1 4.6 2.7 8.1 6.7 12.6 10.3 12.4 10 28.5 9.2 42.4 1.2 6.2-3.5 11.2-7.5 15.9-9 9.9-3.1 17.8-8.6 22.3-15 7.7 30.4 25.7 74.3 37.2 95.7 6.1 11.4 18.3 35.5 23.6 64.6 3.3-.1 7 .4 10.9 1.4 13.8-35.7-11.7-74.2-23.3-84.9-4.7-4.6-4.9-6.6-2.6-6.5 12.6 11.2 29.2 33.7 35.2 59 2.8 11.6 3.3 23.7.4 35.7 16.4 6.8 35.9 17.9 30.7 34.8-2.2-.1-3.2 0-4.2 0 3.2-10.1-3.9-17.6-22.8-26.1-19.6-8.6-36-8.6-38.3 12.5-12.1 4.2-18.3 14.7-21.4 27.3-2.8 11.2-3.6 24.7-4.4 39.9-.5 7.7-3.6 18-6.8 29-32.1 22.9-76.7 32.9-114.3 7.2zm257.4-11.5c-.9 16.8-41.2 19.9-63.2 46.5-13.2 15.7-29.4 24.4-43.6 25.5s-26.5-4.8-33.7-19.3c-4.7-11.1-2.4-23.1 1.1-36.3 3.7-14.2 9.2-28.8 9.9-40.6.8-15.2 1.7-28.5 4.2-38.7 2.6-10.3 6.6-17.2 13.7-21.1.3-.2.7-.3 1-.5.8 13.2 7.3 26.6 18.8 29.5 12.6 3.3 30.7-7.5 38.4-16.3 9-.3 15.7-.9 22.6 5.1 9.9 8.5 7.1 30.3 17.1 41.6 10.6 11.6 14 19.5 13.7 24.6zM173.3 148.7c2 1.9 4.7 4.5 8 7.1 6.6 5.2 15.8 10.6 27.3 10.6 11.6 0 22.5-5.9 31.8-10.8 4.9-2.6 10.9-7 14.8-10.4s5.9-6.3 3.1-6.6-2.6 2.6-6 5.1c-4.4 3.2-9.7 7.4-13.9 9.8-7.4 4.2-19.5 10.2-29.9 10.2s-18.7-4.8-24.9-9.7c-3.1-2.5-5.7-5-7.7-6.9-1.5-1.4-1.9-4.6-4.3-4.9-1.4-.1-1.8 3.7 1.7 6.5z"/>
+                                            </svg>
+                                        </span>
+                                        <p class="mono-text fw-500" style="line-height: normal; font-size: 0.8rem;">
+                                            &lt;download folder&gt;
+                                            <br>├── PenguinHeist_Data
+                                            <br>├── PenguinHeist
+                                            <br>├── PenguinHeist_s.debug
+                                            <br>├── UnityPlayer.so
+                                            <br>└── UnityPlayer_s.debug
+                                        </p>
+                                    </li>
+                                </ul>
+                                Depending on the game version you download, the contents may look slightly different.
+                            </p>
+                            <p>Those are the files needed to run this copy of the game! Let's move these for safety, so Steam doesn't overwrite them.
+                                <ol>
+                                    <li>
+                                        Create another folder somewhere (such as your Desktop or Documents).
+                                    </li>
+                                    <li>
+                                        Copy or move <em>all</em> the files from the download folder to the new folder.
+                                    </li>
+                                </ol>
+                            </p>
+                            <p>Anytime you want to run the game, just run the game executable file (Penguin Heist.exe, Penguin Heist, or PenguinHeist).</p>
+                        </li>
+                        <p>
+                            <i class="bi-check-lg" aria-hidden="true"></i>
+                            <span class="fw-700">Congratulations! Anytime you want to play this version, you can run this game executable!</span>
+                        </p>
+                        <p>
+                            <i class="bi-exclamation-triangle" aria-hidden="true"></i>
+                            <span class="fw-700">IMPORTANT: See the reminder below at the bottom of these instructions about where the game saves its data!</span>
+                            No matter which game version or where the game is, it will always try to read and write the save file to the <span class="fw-700">same location.</span>
+                        </p>
+                        <li>
+                            <h3 class="h5">Step 4 <em>(Optional)</em>: Steam integration for visibility achievements and game hours</h3>
+                            <p>Currently, Steam will not know when this copy of the game is running. If you want Steam to show when you're playing Penguin Heist,
+                                keep track of achievements, count game hours, etc., follow this step.</p>
+                            <p>In the folder containing the game executable file (Penguin Heist.exe, PenguinHeist, or PenguinHeist), create a new text file (using Notepad or textedit or any other),
+                                and put in the digits <span class="mono-text inline-code">1451480</span>, which is this game's Steam App ID. Nothing else!
+                                <br>Save the text file as "<span class="mono-text inline-code">steam_appid.txt</span>" and put that text file into your game's folder, ie., next to the executable file.
+                            </p>
+                        </li>
+                        <li>
+                            <h3 class="h5">Step 5 <em>(Optional)</em>: Add to Steam as non-Steam game</h3>
+                            <p>If you want to run this copy of the game from Steam just like you run the original one, You can add the game executable to Steam as a non-Steam game.
+                                <br>Open the Steam client window
+                                and select the "Add a Game" on the bottom left &gt; "Add a non-Steam Game" &gt; "Browse", and navigate to the game executable file
+                                (Penguin Heist.exe, Penguin Heist, or PenguinHeist). Select it in the file browser. Ensure the game executable is checked and click "Add Selected Programs".
+                                <br>Now you can find it in your Library with the same name as the executable file. Rename or organize it however you like in Steam.
+                            </p>
+                        </li>
+                    </ul>
+
+
+                    <ul class="listicons">
+                        <li class="listicons">
+                            <h3 class="h5"><span class="listicons"><i class="bi-exclamation-circle-fill" aria-hidden="true"></i></span>
+                                Remember: Game save file location is the same!
+                            </h3>
+                            <p>
+                                No matter which game version or where the game is, it will always try to read and write the save file to the <span class="fw-700">same location!</span>
+                                <br>Keep in mind: playing different versions using the same save file can cause (often small) side effects.
+                                The game tends to ignore properties that it does not recognize. For example, before the Blueprint Update, shop items were restricted
+                                with a constructions and research system. The Blueprint Update outmoded this constructions system. Save files that came from before to after this change
+                                simply switched over to the new system, but the shop restricted purchases based on blueprint collection instead.
+                            </p>
+                            <p>
+                                If you are okay with small side effects, no worries!
+                            </p>
+                            <p>
+                                However, if you ever want to keep <span class="fw-700">separate saves</span> (even for the same game version), I would
+                                recommend <span class="fw-700">renaming</span> the save folder "<span class="mono-text">FishSoft</span>" to something else,
+                                and then the game will leave that save alone.
+                                <br>When you want to switch back, simply
+                                rename the current save folder and rename the desired one back to "<span class="mono-text fw-500">FishSoft</span>".
+                                <ul class="listicons">
+                                    <li class="listicons">
+                                        <span class="listicons"><i class="bi-info-circle" aria-hidden="true"></i></span>
+                                        If there's no save folder with the expected name ("<span class="mono-text fw-500">FishSoft</span>")
+                                        then the game will create a completely fresh save file and folder, the default for that game version (ie., no extra unrecognized properties.)
+                                    </li>
+                                </ul>
+                            </p>
+                            <p>
+                                Examples of side effects:
+                                <ul>
+                                    <li>
+                                        Older example: If you take
+                                        a save file generated on a newer version (with items unlocked via collecting the blueprints)
+                                        and then play that save file with an old game version before the Blueprint Update,
+                                        the shop would restrict what you can purchase due to needing blueprints now instead of the old constructions system.
+                                        However, any items you had already purchased previously would still be available for your loadout, even if they got locked in the shop.
+                                    </li>
+                                    <li>
+                                        Newer example: Patch + Cosmetics + Heist Planner Update added dozens of new
+                                        cosmetic items. If you equip your player with any of those new cosmetic items, and then play the game in an older game version, it may forcibly
+                                        un-equip clothing from your "equipped" clothing list. Then you would need to re-equip those clothings again if you choose to play it in the newer version.
+                                        You would still have ownership of purchased new clothings; those are separate save file properties. The older version just doesn't know the clothing,
+                                        and therefore you couldn't access them.
+                                    </li>
+                                </ul>
+                            </p>
+                            <p>
+                                And no matter what happens, you can use this save editor tool to inspect (and edit)
+                                exactly what properties the save file has! :)
+                            </p>
+                        </li>
+                    </ul>
+
+
+                    <p><span><span class="form-text">If these instructions are incorrect, please let me know what's wrong or didn't work by submitting a GitHub issue <a href="https://github.com/rodriguezrrp/penguinheist-save-editor/issues">here</a> or @ me on Discord.</span></span></p>            
+                    
+                </div>
+            </div>
+        </div> <!-- end of accordion -->
+
+        <div>
+            
+            <!-- Manifest reference accordion -->
+            <div class="--col-12 accordion accordion-flush" id="manifest-reference">
+
+                <!-- accordion item (header button + collapsible content) -->
+                <div class="row accordion-item">
+                
+                    <div class="px-0 accordion-header">
+                        <button class="accordion-button save-data-collapse-bar collapsed" aria-expanded="false" type="button" data-bs-toggle="collapse" data-bs-target="#collManifests" aria-controls="collManifests">
+                            Reference Table for common versions' Manifest IDs
+                        </button>
+                    </div>
+                    <div id="collManifests" class="accordion-collapse collapse">
+                        <div class="row">
+                            <div class="col save-data-descr">
+                                <p class="form-text">Note: the majority of this information was obtained from SteamDB's <a href="https://steamdb.info/app/1451480/history/">history</a> and <a href="https://steamdb.info/app/1451480/patchnotes/">patch notes</a> of this game.</p>
+                                
+                                <p>The command looks like "<span class="mono-text inline-code">download_depot &lt;AppID&gt; &lt;DepotID&gt; &lt;ManifestID&gt;</span>".</p>
+
+                                <p>
+                                    The App ID is always "1451480" for Penguin Heist.
+                                    <br>The Depot ID is dependent on the target operating system only:
+                                    <ul class="listicons">
+                                        <li class="listicons inst-windows">
+                                            <span class="listicons"><i class="bi-windows" aria-hidden="true"></i></span>
+                                            On Windows: "<span class="game-version-depot-windows">DEPOT_ID</span>"
+                                        </li>
+                                        <li class="listicons inst-macos">
+                                            <span class="listicons"><i class="bi-apple" aria-hidden="true"></i></span>
+                                            On MacOS: "<span class="game-version-depot-macos">DEPOT_ID</span>"
+                                        </li>
+                                        <li class="listicons inst-linux">
+                                            <span class="listicons">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" aria-hidden="true" viewBox="0 0 448 512">
+                                                    <!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+                                                    <path d="M220.8 123.3c1 .5 1.8 1.7 3 1.7 1.1 0 2.8-.4 2.9-1.5.2-1.4-1.9-2.3-3.2-2.9-1.7-.7-3.9-1-5.5-.1-.4.2-.8.7-.6 1.1.3 1.3 2.3 1.1 3.4 1.7zm-21.9 1.7c1.2 0 2-1.2 3-1.7 1.1-.6 3.1-.4 3.5-1.6.2-.4-.2-.9-.6-1.1-1.6-.9-3.8-.6-5.5.1-1.3.6-3.4 1.5-3.2 2.9.1 1 1.8 1.5 2.8 1.4zM420 403.8c-3.6-4-5.3-11.6-7.2-19.7-1.8-8.1-3.9-16.8-10.5-22.4-1.3-1.1-2.6-2.1-4-2.9-1.3-.8-2.7-1.5-4.1-2 9.2-27.3 5.6-54.5-3.7-79.1-11.4-30.1-31.3-56.4-46.5-74.4-17.1-21.5-33.7-41.9-33.4-72C311.1 85.4 315.7.1 234.8 0 132.4-.2 158 103.4 156.9 135.2c-1.7 23.4-6.4 41.8-22.5 64.7-18.9 22.5-45.5 58.8-58.1 96.7-6 17.9-8.8 36.1-6.2 53.3-6.5 5.8-11.4 14.7-16.6 20.2-4.2 4.3-10.3 5.9-17 8.3s-14 6-18.5 14.5c-2.1 3.9-2.8 8.1-2.8 12.4 0 3.9.6 7.9 1.2 11.8 1.2 8.1 2.5 15.7.8 20.8-5.2 14.4-5.9 24.4-2.2 31.7 3.8 7.3 11.4 10.5 20.1 12.3 17.3 3.6 40.8 2.7 59.3 12.5 19.8 10.4 39.9 14.1 55.9 10.4 11.6-2.6 21.1-9.6 25.9-20.2 12.5-.1 26.3-5.4 48.3-6.6 14.9-1.2 33.6 5.3 55.1 4.1.6 2.3 1.4 4.6 2.5 6.7v.1c8.3 16.7 23.8 24.3 40.3 23 16.6-1.3 34.1-11 48.3-27.9 13.6-16.4 36-23.2 50.9-32.2 7.4-4.5 13.4-10.1 13.9-18.3.4-8.2-4.4-17.3-15.5-29.7zM223.7 87.3c9.8-22.2 34.2-21.8 44-.4 6.5 14.2 3.6 30.9-4.3 40.4-1.6-.8-5.9-2.6-12.6-4.9 1.1-1.2 3.1-2.7 3.9-4.6 4.8-11.8-.2-27-9.1-27.3-7.3-.5-13.9 10.8-11.8 23-4.1-2-9.4-3.5-13-4.4-1-6.9-.3-14.6 2.9-21.8zM183 75.8c10.1 0 20.8 14.2 19.1 33.5-3.5 1-7.1 2.5-10.2 4.6 1.2-8.9-3.3-20.1-9.6-19.6-8.4.7-9.8 21.2-1.8 28.1 1 .8 1.9-.2-5.9 5.5-15.6-14.6-10.5-52.1 8.4-52.1zm-13.6 60.7c6.2-4.6 13.6-10 14.1-10.5 4.7-4.4 13.5-14.2 27.9-14.2 7.1 0 15.6 2.3 25.9 8.9 6.3 4.1 11.3 4.4 22.6 9.3 8.4 3.5 13.7 9.7 10.5 18.2-2.6 7.1-11 14.4-22.7 18.1-11.1 3.6-19.8 16-38.2 14.9-3.9-.2-7-1-9.6-2.1-8-3.5-12.2-10.4-20-15-8.6-4.8-13.2-10.4-14.7-15.3-1.4-4.9 0-9 4.2-12.3zm3.3 334c-2.7 35.1-43.9 34.4-75.3 18-29.9-15.8-68.6-6.5-76.5-21.9-2.4-4.7-2.4-12.7 2.6-26.4v-.2c2.4-7.6.6-16-.6-23.9-1.2-7.8-1.8-15 .9-20 3.5-6.7 8.5-9.1 14.8-11.3 10.3-3.7 11.8-3.4 19.6-9.9 5.5-5.7 9.5-12.9 14.3-18 5.1-5.5 10-8.1 17.7-6.9 8.1 1.2 15.1 6.8 21.9 16l19.6 35.6c9.5 19.9 43.1 48.4 41 68.9zm-1.4-25.9c-4.1-6.6-9.6-13.6-14.4-19.6 7.1 0 14.2-2.2 16.7-8.9 2.3-6.2 0-14.9-7.4-24.9-13.5-18.2-38.3-32.5-38.3-32.5-13.5-8.4-21.1-18.7-24.6-29.9s-3-23.3-.3-35.2c5.2-22.9 18.6-45.2 27.2-59.2 2.3-1.7.8 3.2-8.7 20.8-8.5 16.1-24.4 53.3-2.6 82.4.6-20.7 5.5-41.8 13.8-61.5 12-27.4 37.3-74.9 39.3-112.7 1.1.8 4.6 3.2 6.2 4.1 4.6 2.7 8.1 6.7 12.6 10.3 12.4 10 28.5 9.2 42.4 1.2 6.2-3.5 11.2-7.5 15.9-9 9.9-3.1 17.8-8.6 22.3-15 7.7 30.4 25.7 74.3 37.2 95.7 6.1 11.4 18.3 35.5 23.6 64.6 3.3-.1 7 .4 10.9 1.4 13.8-35.7-11.7-74.2-23.3-84.9-4.7-4.6-4.9-6.6-2.6-6.5 12.6 11.2 29.2 33.7 35.2 59 2.8 11.6 3.3 23.7.4 35.7 16.4 6.8 35.9 17.9 30.7 34.8-2.2-.1-3.2 0-4.2 0 3.2-10.1-3.9-17.6-22.8-26.1-19.6-8.6-36-8.6-38.3 12.5-12.1 4.2-18.3 14.7-21.4 27.3-2.8 11.2-3.6 24.7-4.4 39.9-.5 7.7-3.6 18-6.8 29-32.1 22.9-76.7 32.9-114.3 7.2zm257.4-11.5c-.9 16.8-41.2 19.9-63.2 46.5-13.2 15.7-29.4 24.4-43.6 25.5s-26.5-4.8-33.7-19.3c-4.7-11.1-2.4-23.1 1.1-36.3 3.7-14.2 9.2-28.8 9.9-40.6.8-15.2 1.7-28.5 4.2-38.7 2.6-10.3 6.6-17.2 13.7-21.1.3-.2.7-.3 1-.5.8 13.2 7.3 26.6 18.8 29.5 12.6 3.3 30.7-7.5 38.4-16.3 9-.3 15.7-.9 22.6 5.1 9.9 8.5 7.1 30.3 17.1 41.6 10.6 11.6 14 19.5 13.7 24.6zM173.3 148.7c2 1.9 4.7 4.5 8 7.1 6.6 5.2 15.8 10.6 27.3 10.6 11.6 0 22.5-5.9 31.8-10.8 4.9-2.6 10.9-7 14.8-10.4s5.9-6.3 3.1-6.6-2.6 2.6-6 5.1c-4.4 3.2-9.7 7.4-13.9 9.8-7.4 4.2-19.5 10.2-29.9 10.2s-18.7-4.8-24.9-9.7c-3.1-2.5-5.7-5-7.7-6.9-1.5-1.4-1.9-4.6-4.3-4.9-1.4-.1-1.8 3.7 1.7 6.5z"/>
+                                                </svg>
+                                            </span>
+                                            On Linux: "<span class="game-version-depot-linux">DEPOT_ID</span>"
+                                        </li>
+                                    </ul>
+                                    The Manifest ID depends on both the Depot and the game version. Refer to the table below:
+                                </p>
+
+                                <p></p>
+                                
+                                <table id="tableManifests" class="table table-bordered table-sm border-dark">
+                                    <thead>
+                                        <tr>
+                                            <th rowspan="2" scope="col">Version Name</th>
+                                            <th colspan="3" scope="col">Manifest ID for:</th>
+                                        </tr>
+                                        <tr>
+                                            <th scope="col">
+                                                <i class="bi-windows" aria-hidden="true"></i>
+                                                Windows (<span class="fw-500 game-version-depot-windows">DEPOT_ID</span>)
+                                            </th>
+                                            <th scope="col">
+                                                <i class="bi-apple" aria-hidden="true"></i>
+                                                MacOS (<span class="fw-500 game-version-depot-macos">DEPOT_ID</span>)
+                                            </th>
+                                            <th scope="col">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" aria-hidden="true" viewBox="0 0 448 512">
+                                                    <!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+                                                    <path d="M220.8 123.3c1 .5 1.8 1.7 3 1.7 1.1 0 2.8-.4 2.9-1.5.2-1.4-1.9-2.3-3.2-2.9-1.7-.7-3.9-1-5.5-.1-.4.2-.8.7-.6 1.1.3 1.3 2.3 1.1 3.4 1.7zm-21.9 1.7c1.2 0 2-1.2 3-1.7 1.1-.6 3.1-.4 3.5-1.6.2-.4-.2-.9-.6-1.1-1.6-.9-3.8-.6-5.5.1-1.3.6-3.4 1.5-3.2 2.9.1 1 1.8 1.5 2.8 1.4zM420 403.8c-3.6-4-5.3-11.6-7.2-19.7-1.8-8.1-3.9-16.8-10.5-22.4-1.3-1.1-2.6-2.1-4-2.9-1.3-.8-2.7-1.5-4.1-2 9.2-27.3 5.6-54.5-3.7-79.1-11.4-30.1-31.3-56.4-46.5-74.4-17.1-21.5-33.7-41.9-33.4-72C311.1 85.4 315.7.1 234.8 0 132.4-.2 158 103.4 156.9 135.2c-1.7 23.4-6.4 41.8-22.5 64.7-18.9 22.5-45.5 58.8-58.1 96.7-6 17.9-8.8 36.1-6.2 53.3-6.5 5.8-11.4 14.7-16.6 20.2-4.2 4.3-10.3 5.9-17 8.3s-14 6-18.5 14.5c-2.1 3.9-2.8 8.1-2.8 12.4 0 3.9.6 7.9 1.2 11.8 1.2 8.1 2.5 15.7.8 20.8-5.2 14.4-5.9 24.4-2.2 31.7 3.8 7.3 11.4 10.5 20.1 12.3 17.3 3.6 40.8 2.7 59.3 12.5 19.8 10.4 39.9 14.1 55.9 10.4 11.6-2.6 21.1-9.6 25.9-20.2 12.5-.1 26.3-5.4 48.3-6.6 14.9-1.2 33.6 5.3 55.1 4.1.6 2.3 1.4 4.6 2.5 6.7v.1c8.3 16.7 23.8 24.3 40.3 23 16.6-1.3 34.1-11 48.3-27.9 13.6-16.4 36-23.2 50.9-32.2 7.4-4.5 13.4-10.1 13.9-18.3.4-8.2-4.4-17.3-15.5-29.7zM223.7 87.3c9.8-22.2 34.2-21.8 44-.4 6.5 14.2 3.6 30.9-4.3 40.4-1.6-.8-5.9-2.6-12.6-4.9 1.1-1.2 3.1-2.7 3.9-4.6 4.8-11.8-.2-27-9.1-27.3-7.3-.5-13.9 10.8-11.8 23-4.1-2-9.4-3.5-13-4.4-1-6.9-.3-14.6 2.9-21.8zM183 75.8c10.1 0 20.8 14.2 19.1 33.5-3.5 1-7.1 2.5-10.2 4.6 1.2-8.9-3.3-20.1-9.6-19.6-8.4.7-9.8 21.2-1.8 28.1 1 .8 1.9-.2-5.9 5.5-15.6-14.6-10.5-52.1 8.4-52.1zm-13.6 60.7c6.2-4.6 13.6-10 14.1-10.5 4.7-4.4 13.5-14.2 27.9-14.2 7.1 0 15.6 2.3 25.9 8.9 6.3 4.1 11.3 4.4 22.6 9.3 8.4 3.5 13.7 9.7 10.5 18.2-2.6 7.1-11 14.4-22.7 18.1-11.1 3.6-19.8 16-38.2 14.9-3.9-.2-7-1-9.6-2.1-8-3.5-12.2-10.4-20-15-8.6-4.8-13.2-10.4-14.7-15.3-1.4-4.9 0-9 4.2-12.3zm3.3 334c-2.7 35.1-43.9 34.4-75.3 18-29.9-15.8-68.6-6.5-76.5-21.9-2.4-4.7-2.4-12.7 2.6-26.4v-.2c2.4-7.6.6-16-.6-23.9-1.2-7.8-1.8-15 .9-20 3.5-6.7 8.5-9.1 14.8-11.3 10.3-3.7 11.8-3.4 19.6-9.9 5.5-5.7 9.5-12.9 14.3-18 5.1-5.5 10-8.1 17.7-6.9 8.1 1.2 15.1 6.8 21.9 16l19.6 35.6c9.5 19.9 43.1 48.4 41 68.9zm-1.4-25.9c-4.1-6.6-9.6-13.6-14.4-19.6 7.1 0 14.2-2.2 16.7-8.9 2.3-6.2 0-14.9-7.4-24.9-13.5-18.2-38.3-32.5-38.3-32.5-13.5-8.4-21.1-18.7-24.6-29.9s-3-23.3-.3-35.2c5.2-22.9 18.6-45.2 27.2-59.2 2.3-1.7.8 3.2-8.7 20.8-8.5 16.1-24.4 53.3-2.6 82.4.6-20.7 5.5-41.8 13.8-61.5 12-27.4 37.3-74.9 39.3-112.7 1.1.8 4.6 3.2 6.2 4.1 4.6 2.7 8.1 6.7 12.6 10.3 12.4 10 28.5 9.2 42.4 1.2 6.2-3.5 11.2-7.5 15.9-9 9.9-3.1 17.8-8.6 22.3-15 7.7 30.4 25.7 74.3 37.2 95.7 6.1 11.4 18.3 35.5 23.6 64.6 3.3-.1 7 .4 10.9 1.4 13.8-35.7-11.7-74.2-23.3-84.9-4.7-4.6-4.9-6.6-2.6-6.5 12.6 11.2 29.2 33.7 35.2 59 2.8 11.6 3.3 23.7.4 35.7 16.4 6.8 35.9 17.9 30.7 34.8-2.2-.1-3.2 0-4.2 0 3.2-10.1-3.9-17.6-22.8-26.1-19.6-8.6-36-8.6-38.3 12.5-12.1 4.2-18.3 14.7-21.4 27.3-2.8 11.2-3.6 24.7-4.4 39.9-.5 7.7-3.6 18-6.8 29-32.1 22.9-76.7 32.9-114.3 7.2zm257.4-11.5c-.9 16.8-41.2 19.9-63.2 46.5-13.2 15.7-29.4 24.4-43.6 25.5s-26.5-4.8-33.7-19.3c-4.7-11.1-2.4-23.1 1.1-36.3 3.7-14.2 9.2-28.8 9.9-40.6.8-15.2 1.7-28.5 4.2-38.7 2.6-10.3 6.6-17.2 13.7-21.1.3-.2.7-.3 1-.5.8 13.2 7.3 26.6 18.8 29.5 12.6 3.3 30.7-7.5 38.4-16.3 9-.3 15.7-.9 22.6 5.1 9.9 8.5 7.1 30.3 17.1 41.6 10.6 11.6 14 19.5 13.7 24.6zM173.3 148.7c2 1.9 4.7 4.5 8 7.1 6.6 5.2 15.8 10.6 27.3 10.6 11.6 0 22.5-5.9 31.8-10.8 4.9-2.6 10.9-7 14.8-10.4s5.9-6.3 3.1-6.6-2.6 2.6-6 5.1c-4.4 3.2-9.7 7.4-13.9 9.8-7.4 4.2-19.5 10.2-29.9 10.2s-18.7-4.8-24.9-9.7c-3.1-2.5-5.7-5-7.7-6.9-1.5-1.4-1.9-4.6-4.3-4.9-1.4-.1-1.8 3.7 1.7 6.5z"/>
+                                                </svg>
+                                                Linux (<span class="fw-500 game-version-depot-linux">DEPOT_ID</span>)
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Version Name Here</td>
+                                            <td>MANIFEST_ID</td>
+                                            <td>MANIFEST_ID</td>
+                                            <td>MANIFEST_ID</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Version Name Here</td>
+                                            <td>MANIFEST_ID</td>
+                                            <td>MANIFEST_ID</td>
+                                            <td>MANIFEST_ID</td>
+                                        </tr>
+                                        <tr>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div> <!-- end of accordion -->
+        </div> <!-- end of card (if it's a card) -->
+
+    </div>
+
+    <div class="container-lg background-container pt-2 mb-5">
+        <h2 class="h5"><i class="bi-sliders" aria-hidden="true"></i> Save File Parameters</h2>
+        <div class="card mb-3 py-2 px-4">
+            <div class="row">
+                <div class="col-3 d-flex align-items-center">
+                    <span class="fw-500">Styling indications:</span>
+                </div>
+                <div class="col-4 save-data-val">
+                    Version uses this parameter
+                </div>
+                <div class="col-4 offset-1 save-data-val unused">
+                    Version ignores this parameter
+                </div>
+            </div>
+        </div>
+        <div class="card mb-3 py-2 px-4">
+            <div class="row">
+                <div class="col-2 d-flex align-items-center">
+                    <span class="fw-500">Quick actions:</span>
+                </div>
+                <div class="col-10">
+                    <div class="row">
+                        <div class="col-md-3 col-sm-6 my-1">
+                            <button id="quickActMoney" onclick="doQuickActMoney" class="btn btn-secondary w-100">1 Million Money</button>
+                            <script> function doQuickActMoney() {
+                                // $('').val(1000000);
+                            } </script>
+                        </div>
+                        <div class="col-md-3 col-sm-6 my-1">
+                            <button id="quickActStamps" onclick="doQuickActStamps" class="btn btn-secondary w-100">1000 Stamps</button>
+                            <script> function doQuickActStamps() {
+                                // $('').val(1000000);
+                            } </script>
+                        </div>
+                        <div class="col-md-3 col-sm-6 my-1">
+                            <button id="quickActItems" onclick="doQuickActItems" class="btn btn-secondary w-100">Get All Items</button>
+                            <script> function doQuickActItems() {
+                                // $('').val(1000000);
+                            } </script>
+                        </div>
+                        <div class="col-md-3 col-sm-6 my-1">
+                            <button id="quickActBlueprints" onclick="doQuickActBlueprints" class="btn btn-secondary w-100">Get All Blueprints</button>
+                            <script> function doQuickActBlueprints() {
+                                // $('').val(1000000);
+                            } </script>
+                        </div>
+                        <div class="col-md-3 col-sm-6 my-1">
+                            <button id="quickActHints" onclick="doQuickActHints" class="btn btn-secondary w-100">Get All Hints</button>
+                            <script> function doQuickActHints() {
+                                // $('').val(1000000);
+                            } </script>
+                        </div>
+                        <div class="col-md-3 col-sm-6 my-1">
+                            <button id="quickActClothing" onclick="doQuickActClothing" class="btn btn-secondary w-100">Get All Clothing</button>
+                            <script> function doQuickActClothing() {
+                                // $('').val(1000000);
+                            } </script>
+                        </div>
+                        <div class="col-md-3 col-sm-6 my-1">
+                            <button id="quickActConstructions" onclick="doQuickActConstructions" class="btn btn-secondary w-100">All Constructions</button>
+                            <script> function doQuickActConstructions() {
+                                // $('').val(1000000);
+                            } </script>
+                        </div>
+                        <div class="col-md-3 col-sm-6 my-1">
+                            <button id="quickActDefault" onclick="doQuickActDefault" class="btn btn-secondary w-100">Reset to Default</button>
+                            <script> function doQuickActDefault() {
+                                // $('').val(1000000);
+                            } </script>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- <div class="card mb-3 py-2 px-4">
+            <div class="row">
+                <div class="col-3 d-flex align-items-center">
+                    <span class="fw-500">Styling indications:</span>
+                </div>
+                <div class="col-4 save-data-val">
+                    Version uses this parameter
+                </div>
+                <div class="col-4 offset-1 save-data-val unused">
+                    Version ignores this parameter
+                </div>
+            </div>
+        </div> -->
+
+        <div class="row">
+            <h2 class="h5 w-auto">Parameters</h2>
+            <button id="btnCollapseAll" onclick="doCollapseAll" class="btn btn-secondary w-auto ms-auto btn-close px-1"><i class="bi-arrows-collapse"></i>Collapse All</button>
+        </div>
+        <div class="row"></div>
+        <form id="saveForm" class="mx-2 mb-3">
+
+            <!--  -->
+            <div class="row mb-1">
+                <div class="col-4 save-data-descr">
+                    <span>Parameter description</span>
+                    <br><span class="form-text">@parameterNameInFile@</span>
+                </div>
+                <!-- <div class="col save-data-val"> -->
+                <div style="overflow:hidden" class="col save-data-val">
+                    <span>Value editor for selected save version</span>
+                    <!-- <br><span style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis">(Version selected here lorem ipsum)</span> -->
+                    <br><div style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis">(Version selected here lorem ipsum)</div>
+                    <!-- <br><span class="form-text">valueInFile</span> -->
+                    <span class="form-text">valueInFile</span>
+                </div>
+                <!-- <div class="col save-data-val editor-comp"> -->
+                <div style="overflow:hidden" class="col save-data-val editor-comp">
+                    <span>Value editor for selected comparison version</span>
+                    <!-- <br><span style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis">(Version selected here lorem ipsum)</span> -->
+                    <br><div style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis">(Version selected here lorem ipsum)</div>
+                    <!-- <br><span class="form-text">@convertedName@</span> -->
+                    <span class="form-text">@convertedName@</span>
+                </div>
+                <div class="col-2 save-data-raw editor-raw">
+                    <span>Raw value editor</span>
+                    <br><span class="form-text">valueInFile</span>
+                </div>
+            </div>
+
+            <!--  -->
+            <div class="row">
+                <div class="col save-data-val">
+                    Lorem ipsum
+                </div>
+                <div class="col save-data-val unused">
+                    Lorem ipsum
+                </div>
+            </div>
+            <div class="row">
+                <div class="col save-data-val">
+                    Lorem ipsum
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-4 save-data-descr">
+                    <span>Property descriptor lorem ipsum</span> Lorem ipsum dolor
+                </div>
+                <div class="col save-data-val unused">
+                    Lorem ipsum
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-4 save-data-descr">
+                    <span>Property descriptor lorem ipsum</span>
+                </div>
+                <div class="col save-data-val">
+                    Lorem ipsum
+                </div>
+                <div class="col save-data-val">
+                    Lorem ipsum 2
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-4 save-data-descr">
+                    <span>Property desc</span>
+                    <br><span class="form-text">@property@</span>
+                </div>
+                <div class="col save-data-val">
+                    Lorem ipsum
+                    <label class="form-check-label" for="testPropCheck1">
+                    Check Label
+                    </label>
+                    <input class="form-check-input" type="checkbox" name="testPropCheck1" id="testPropCheck1" checked>
+                    <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="option2">
+                </div>
+            </div>
+
+            <!-- collapse test -->
+            <!-- <a class="btn btn-primary" data-bs-toggle="collapse" href="#collapseTest" role="button" aria-expanded="false" aria-controls="collapseTest"> -->
+            <!-- <a class="btn btn-primary col-12 save-data-collapse-bar" data-bs-toggle="collapse" href="#collapseTest" role="button" aria-expanded="false" aria-controls="collapseTest"> -->
+                <!-- Link with href
+            </a> -->
+            <script>
+                // handle icon toggling
+                function toggleIcon(event) {
+                    $(event.target)
+                        .prev('.save-data-collapse-bar')
+                        .find('i')
+                        .toggleClass('bi-caret-right-fill bi-caret-down-fill');
+                }
+                $(document).ready(function() {
+                    $('.collapse').on('hidden.bs.collapse',toggleIcon);
+                    $('.collapse').on('shown.bs.collapse',toggleIcon);
+                });
+            </script>
+            
+            <!-- collapse header -->
+            <div class="row save-data-collapse-bar" data-bs-toggle="collapse" href="#collapseTest" role="button" aria-expanded="false" aria-controls="collapseTest">
+                <span><i class="bi-caret-right-fill"></i> CollapseDivText</span>
+            </div>
+            <!-- collapse -->
+            <div id="collapseTest" class="col-12 collapse"> <!-- <<<<--- DOES THIS NEED TO BE a ROW? -->
+                <div class="row">
+                    <div class="col save-data-val">
+                        Lorem ipsum collapse
+                    </div>
+                    <div class="col save-data-val">
+                        Lorem ipsum collapse
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col save-data-val">
+                        Lorem ipsum collapse
+                    </div>
+                </div>
+            </div>
+
+            <!-- collapse header -->
+            <div class="row save-data-collapse-bar" data-bs-toggle="collapse" href="#collapseTestOpen" role="button" aria-expanded="true" aria-controls="collapseTestOpen">
+                <span><i class="bi-caret-down-fill"></i> CollapseDivText2</span>
+            </div>
+            <!-- collapse -->
+            <div id="collapseTestOpen" class="col-12 collapse show"> <!-- <<<<--- DOES THIS NEED TO BE a ROW? -->
+                <div class="row">
+                    <div class="col save-data-val">
+                        Lorem ipsum not collapse
+                    </div>
+                    <div class="col save-data-val">
+                        Lorem ipsum not collapse
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col save-data-val">
+                        Lorem ipsum not collapse
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="--col-12 accordion accordion-flush" id="accordionExample">
+
+                <!-- accordion item (header button + collapsible content) -->
+                <div class="row accordion-item">
+                
+                    <div class="px-0 accordion-header">
+                        <button class="accordion-button save-data-collapse-bar" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                            Accordion Item #1
+                        </button>
+                    </div>
+                    <div id="collapseOne" class="accordion-collapse collapse show">
+                        <!-- <div class="accordion-body"> -->
+                            <strong>This is the first item's accordion body.</strong> It is shown by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+                            <div class="row">
+                                <div class="col save-data-val">
+                                    Lorem ipsum not collapse
+                                </div>
+                                <div class="col save-data-val">
+                                    Lorem ipsum not collapse
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col save-data-val">
+                                    Lorem ipsum not collapse
+                                </div>
+                            </div>
+                        <!-- </div> -->
+                    </div>
+                </div>
+            </div>
+            
+        </form>
+        
+        
+        <!-- download buttons -->
+        <h2 class="h5 mt-3">Download Save</h2>
+        <div class="row mb-3 justify-content-center">
+            <div class="col-4">
+                <button class="btn btn-primary w-100"><i class="bi-file-earmark-arrow-down"></i> Download Edited File</button>
+            </div>
+            <div class="col-4 editor-comp">
+                <button class="btn btn-secondary w-100"><i class="bi-pen"></i> <i class="bi-file-earmark-arrow-down"></i> Download Converted File</button>
+            </div>
+        </div>
+        
+    </div>
+
+    abc
+
+    <div class="container-lg background-container pt-2 mb-5">
+        <p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent iaculis posuere quam et rutrum. Etiam elementum dapibus nibh, ac aliquam ex commodo sed. Nulla volutpat auctor consectetur. Nullam vulputate luctus est, ac malesuada risus vestibulum nec. Cras quis pharetra urna. Sed consectetur sodales dictum. In aliquam ante metus, sed luctus libero efficitur dignissim. Aliquam non sem orci. Nullam ut ex at diam ultricies aliquet. Aenean maximus pellentesque lacus id sodales. Pellentesque vitae feugiat diam. Quisque ultricies tempus neque, non malesuada ligula euismod id. Ut gravida ipsum in nibh dictum, quis sodales sapien tempus.
+        </p>
+        <p>
+            Cras eleifend laoreet nibh sit amet posuere. Vivamus molestie sit amet nibh non lacinia. Donec commodo dignissim dui, quis feugiat augue dapibus in. Quisque imperdiet felis ut lorem tincidunt, eget cursus arcu imperdiet. Aenean eget viverra turpis. Phasellus congue pulvinar tortor, et vehicula arcu ultrices quis. Cras nec tincidunt orci. Integer posuere lacus sed sem laoreet posuere quis volutpat nisl. Etiam id urna sit amet quam molestie consectetur. Nulla eget pulvinar erat. Etiam at auctor mi. Integer eget nisl lacus.
+        </p>
+        <p>
+            Aenean mattis ornare nisl, vestibulum sagittis est vestibulum sed. Suspendisse potenti. Morbi id quam quis mi congue ornare. Nulla eu gravida lacus. Pellentesque at est nisi. Cras non magna bibendum, sagittis neque rhoncus, ultrices dui. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Nam facilisis eget leo ac porttitor. Integer fringilla ullamcorper dui ac rhoncus. Nullam porttitor gravida diam, eget tempus mi sollicitudin sit amet.
+        </p>
+        <p>
+            Proin euismod augue nec erat pharetra, ullamcorper sodales metus tristique. Nam fringilla tellus magna, eu varius nisi imperdiet placerat. Vestibulum quis euismod dolor, vel pellentesque dui. Integer maximus bibendum dignissim. Integer magna sapien, sagittis quis mauris sed, aliquet pretium eros. Donec a nisl mi. Cras arcu nisl, commodo sed scelerisque a, blandit vitae tellus. In molestie est erat, vel pretium nibh rhoncus et.
+        </p>
+        <p>
+            Aliquam congue metus purus, sit amet sodales tellus finibus id. Nulla facilisi. Aliquam volutpat aliquet leo, vel euismod quam varius nec. Ut porta consectetur hendrerit. Aenean imperdiet euismod diam et porttitor. Duis elit augue, dignissim sed pellentesque sit amet, volutpat vitae libero. Proin et commodo lectus, sollicitudin auctor tellus. Nulla eget dolor porttitor, mattis ligula vel, interdum dolor. Praesent bibendum varius ex, sed volutpat nisi vehicula non. Proin sollicitudin euismod sapien, gravida consequat magna pulvinar at.
+        </p>
+    </div>
+
+    <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent iaculis posuere quam et rutrum. Etiam elementum dapibus nibh, ac aliquam ex commodo sed. Nulla volutpat auctor consectetur. Nullam vulputate luctus est, ac malesuada risus vestibulum nec. Cras quis pharetra urna. Sed consectetur sodales dictum. In aliquam ante metus, sed luctus libero efficitur dignissim. Aliquam non sem orci. Nullam ut ex at diam ultricies aliquet. Aenean maximus pellentesque lacus id sodales. Pellentesque vitae feugiat diam. Quisque ultricies tempus neque, non malesuada ligula euismod id. Ut gravida ipsum in nibh dictum, quis sodales sapien tempus.
+    </p>
+    <p>
+        Cras eleifend laoreet nibh sit amet posuere. Vivamus molestie sit amet nibh non lacinia. Donec commodo dignissim dui, quis feugiat augue dapibus in. Quisque imperdiet felis ut lorem tincidunt, eget cursus arcu imperdiet. Aenean eget viverra turpis. Phasellus congue pulvinar tortor, et vehicula arcu ultrices quis. Cras nec tincidunt orci. Integer posuere lacus sed sem laoreet posuere quis volutpat nisl. Etiam id urna sit amet quam molestie consectetur. Nulla eget pulvinar erat. Etiam at auctor mi. Integer eget nisl lacus.
+    </p>
+    <p>
+        Aenean mattis ornare nisl, vestibulum sagittis est vestibulum sed. Suspendisse potenti. Morbi id quam quis mi congue ornare. Nulla eu gravida lacus. Pellentesque at est nisi. Cras non magna bibendum, sagittis neque rhoncus, ultrices dui. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Nam facilisis eget leo ac porttitor. Integer fringilla ullamcorper dui ac rhoncus. Nullam porttitor gravida diam, eget tempus mi sollicitudin sit amet.
+    </p>
+    <p>
+        Proin euismod augue nec erat pharetra, ullamcorper sodales metus tristique. Nam fringilla tellus magna, eu varius nisi imperdiet placerat. Vestibulum quis euismod dolor, vel pellentesque dui. Integer maximus bibendum dignissim. Integer magna sapien, sagittis quis mauris sed, aliquet pretium eros. Donec a nisl mi. Cras arcu nisl, commodo sed scelerisque a, blandit vitae tellus. In molestie est erat, vel pretium nibh rhoncus et.
+    </p>
+    <p>
+        Aliquam congue metus purus, sit amet sodales tellus finibus id. Nulla facilisi. Aliquam volutpat aliquet leo, vel euismod quam varius nec. Ut porta consectetur hendrerit. Aenean imperdiet euismod diam et porttitor. Duis elit augue, dignissim sed pellentesque sit amet, volutpat vitae libero. Proin et commodo lectus, sollicitudin auctor tellus. Nulla eget dolor porttitor, mattis ligula vel, interdum dolor. Praesent bibendum varius ex, sed volutpat nisi vehicula non. Proin sollicitudin euismod sapien, gravida consequat magna pulvinar at.
+    </p>
+    
+</body>
+</html>
