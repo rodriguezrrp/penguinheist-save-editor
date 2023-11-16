@@ -12,6 +12,12 @@ $bg_unusedprop: rgb(200, 212, 223);
 // $bg_usedprop: lightblue;
 $bg_usedprop: lightblue; //#ADD8E6
 $bg_collapse: hsl(203, 90%, 76%);
+$defaultblack: rgb(33, 37, 41);
+
+
+.defaultblack {
+    color: $defaultblack;
+}
 
 
 body {
@@ -165,7 +171,7 @@ span.listicons {
     padding-bottom: 0.5rem;
     /*important beats accordion button styling*/
     background-color: $bg_collapse !important;
-    color: rgb(33, 37, 41);
+    color: $defaultblack;
     border: 1px solid $bordercolor;
     font-weight: 500;
 }

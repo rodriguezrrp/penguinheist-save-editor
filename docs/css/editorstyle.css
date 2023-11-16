@@ -1,3 +1,7 @@
+.defaultblack {
+  color: rgb(33, 37, 41);
+}
+
 body {
   /* color: lightblue; */
   background-color: #d1e8f0;
