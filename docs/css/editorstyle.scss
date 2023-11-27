@@ -11,6 +11,7 @@ $bg_unusedprop: rgb(200, 212, 223);
 // $bg_usedprop: lightskyblue;
 // $bg_usedprop: lightblue;
 $bg_usedprop: lightblue; //#ADD8E6
+$bg_warningprop: thistle; //#ADD8E6
 $bg_collapse: hsl(203, 90%, 76%);
 $defaultblack: rgb(33, 37, 41);
 
@@ -18,7 +19,6 @@ $defaultblack: rgb(33, 37, 41);
 .defaultblack {
     color: $defaultblack;
 }
-
 
 body {
     /* color: lightblue; */
@@ -48,6 +48,11 @@ div.background-container {
     /* max-width: 1140px; */
     /* width: min(1000px, 90vw); */
     width: min(1100px, 92vw);
+}
+
+div.header-link-justify {
+    display: flex;
+    justify-content: space-between;
 }
 
 svg.icon {
@@ -104,19 +109,26 @@ span.listicons {
     background-color: $bg_usedprop;
     border: 1px solid $bordercolor;
 }
-
 .save-data-descr {
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
     background-color: transparent;
     border: 1px solid $bordercolor;
 }
+.save-data-warning {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    background-color: $bg_warningprop;
+    border: 1px solid $bordercolor;
+}
+
 /* override accordion header button (and its arrow) styling */
 .accordion-button:focus {
     /* box-shadow: none; */
     outline: 0;
     /* box-shadow: 0 0 0 .25rem rgba(13,110,253,.25); */
     border: 1px solid $bordercolor;
+    /*important beats bootstrap accordion button styling*/
     background-color: color-mix(in srgb, $bg_collapse 90%, black) !important;
 }
 .accordion-button:not(.collapsed) {
@@ -169,7 +181,7 @@ span.listicons {
 .save-data-collapse-bar {
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
-    /*important beats accordion button styling*/
+    /*important beats bootstrap accordion button styling*/
     background-color: $bg_collapse !important;
     color: $defaultblack;
     border: 1px solid $bordercolor;

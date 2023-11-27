@@ -32,6 +32,11 @@ div.background-container {
   width: min(1100px, 92vw);
 }
 
+div.header-link-justify {
+  display: flex;
+  justify-content: space-between;
+}
+
 svg.icon {
   width: 1em;
   height: 1em;
