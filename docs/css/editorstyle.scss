@@ -14,10 +14,15 @@ $bg_usedprop: lightblue; //#ADD8E6
 $bg_warningprop: thistle; //#ADD8E6
 $bg_collapse: hsl(203, 90%, 76%);
 $defaultblack: rgb(33, 37, 41);
+$textgray: #6c757d;
 
 
 .defaultblack {
     color: $defaultblack;
+}
+
+.textgray {
+    color: $textgray;
 }
 
 body {
@@ -35,6 +40,10 @@ body {
     /* https://isotropic.co/tool/hex-color-to-css-filter/ */
     filter: invert(47%) sepia(6%) saturate(636%) hue-rotate(167deg) brightness(94%) contrast(87%)
 }
+
+// input[type="file"]::-webkit-file-upload-button {
+//     vertical-align: middle;
+// }
 
 div.background-container {
     background-color: $bg_light;
@@ -103,6 +112,13 @@ span.listicons {
     /* background-color: rgb(179, 205, 230); */
 }
 
+.save-data-val.warning {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    background-color: $bg_warningprop;
+    border: 1px solid $bordercolor;
+}
+
 .save-data-val {
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
@@ -113,12 +129,6 @@ span.listicons {
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
     background-color: transparent;
-    border: 1px solid $bordercolor;
-}
-.save-data-warning {
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
-    background-color: $bg_warningprop;
     border: 1px solid $bordercolor;
 }
 
