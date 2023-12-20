@@ -6,7 +6,16 @@ const DEPOTS_INFO = {
 }
 
 const VERSION_INFO = {
-    'vCHP': {
+    'vHH_initial': {
+        'name': 'Heist and Housing Update',
+        'supported': false,
+		'steamdb_buildid': '12980251',
+		'crc32_windows': undefined,
+        'manifest_windows': undefined,
+        'manifest_macos': undefined,
+        'manifest_linux': undefined,
+    },
+    'vCHP_latest': {
         'name': 'Patch + Cosmetics + Heist Planner Update',
         'supported': true,
 		'steamdb_buildid': '12437491',
@@ -17,7 +26,7 @@ const VERSION_INFO = {
     },
     'vCHP_initial': {
         'name': 'Patch + Cosmetics + Heist Planner Update (initial build)',
-        'supported': true,
+        'supported': false,
 		'hideindropdown': true,
 		'firstbuild': true,
 		'steamdb_buildid': '12268751',
@@ -30,7 +39,7 @@ const VERSION_INFO = {
         'name': 'Enemies + Vehicles Update',
 		'supported': false,
 		'steamdb_buildid': '12146743',
-		'crc32_windows': '--------',
+		'crc32_windows': undefined,
         'manifest_windows': '5323332575527167787',
         'manifest_macos': '30505314974738315',
         'manifest_linux': '4224516891669427196',
@@ -86,7 +95,7 @@ const VERSION_INFO = {
     'vGS3': {
         'name': 'Graphics+Maps+Noots, Spr Patch 3',
         'long_name': 'Graphics + Maps + Noots, Spring Patch 3',
-        'supported': true,
+        'supported': false,
         'manifest_windows': undefined,
         'manifest_macos': undefined,
         'manifest_linux': undefined,
@@ -94,7 +103,7 @@ const VERSION_INFO = {
     'vGS2': {
         'name': 'Graphics+Maps+Noots, Spr Patch 2',
         'long_name': 'Graphics + Maps + Noots, Spring Patch 2',
-        'supported': true,
+        'supported': false,
         'manifest_windows': undefined,
         'manifest_macos': undefined,
         'manifest_linux': undefined,
@@ -109,14 +118,14 @@ const VERSION_INFO = {
     },
     'vJ': {
         'name': 'January Update',
-        'supported': true,
+        'supported': false,
         'manifest_windows': undefined,
         'manifest_macos': undefined,
         'manifest_linux': undefined,
     },
     'vP': {
         'name': 'Post Office Update',
-        'supported': true,
+        'supported': false,
         'manifest_windows': undefined,
         'manifest_macos': undefined,
         'manifest_linux': undefined,
@@ -130,7 +139,7 @@ const VERSION_INFO = {
     },
     'vBP': {
         'name': 'Blueprint Update',
-        'supported': true,
+        'supported': false,
         'manifest_windows': undefined,
         'manifest_macos': undefined,
         'manifest_linux': undefined,

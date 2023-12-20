@@ -1,0 +1,41 @@
+{
+    "money": {
+        "name":"Money",
+        "expanded":true
+    },
+    "loadout": {
+        "name":"Previous Loadout"
+    },
+    "items": {
+        "name":"All Weapons and Items"
+    },
+    "outfit": {
+        "name":"Current Outfit"
+    },
+    "clothing": {
+        "name":"All Clothing"
+    },
+    "graphics": {
+        "name":"Graphics Settings"
+    },
+    "controls": {
+        "name":"Controls"
+    },
+    "settings": {
+        "name":"Game Settings"
+    },
+    "constructions": {
+        "name":"Constructions"
+    },
+    "challenges": {
+        "name":"Challenges"
+    },
+    "misc": {
+        "name":"Miscellaneous",
+        "expanded":true
+    },
+    "unknown": {
+        "name":"Unknown Properties",
+        "expanded":true
+    }
+}

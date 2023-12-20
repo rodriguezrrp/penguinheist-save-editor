@@ -1,0 +1,12 @@
+{
+    "version_dependent": true,
+    "vCHP_latest": {
+        "inherit": false,
+        "values": {
+            "0": "TODO: Skin [0] Name",
+            "1": "TODO: Skin [1] Name",
+            "2": "TODO: Skin [2] Name",
+            "3": "TODO: Skin [3] Name"
+        }
+    }
+}

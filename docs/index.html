@@ -19,6 +19,11 @@
     <link rel="stylesheet" href="./css/editorstyle.css">
     <script src="./js/editor.js"></script>
     <script src="./js/version_info.js"></script>
+    
+    <script src="./js/props_info_generated.js"></script>
+    <script src="./js/name_maps_generated.js"></script>
+    <script src="./js/version_prop_defaults_generated.js"></script>
+    <script src="./js/version_prop_relevants_generated.js"></script>
 
     <!-- reload form when ready -->
     <script> $(document).ready(repopulateParamsForm(null,null)); </script>
@@ -280,7 +285,18 @@
                     }
                     // console.log('entries:', Array.from(formData.entries()));
                     // Object.fromEntries(formData);
+                    let showRelevantOptions = !!formData.get('showRelevantOptions');
+                    let showRawEditors = !!formData.get('showRawEditors')
+                    let saveType1 = formData.get('saveType1');
+                    let saveType2 = formData.get('saveType2');
+                    // let showSaveType2 = !!saveType2;
+
+                    // get save file params
+                    let fileValues = readFile(formData.get('fileSelect'));
+                    // fill out the save file params form
+                    fillParamsForm(saveType1, saveType2, showRelevantOptions, showRawEditors, PROP_INFO, fileValues);
                 }
+                
                 $('#btnManualDoFileFormData').on('click', doFileFormData);
 
                 function parseFileTest(event) {

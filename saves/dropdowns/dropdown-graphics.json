@@ -1,0 +1,24 @@
+{
+    "version_dependent": true,
+    "vHH": {
+        "inherit": false,
+        "values": {
+            "0": "TODO: Graphics [0] Name [for Heist & Housing update]",
+            "1": "TODO: Graphics [1] Name [for Heist & Housing update]",
+            "2": "TODO: Graphics [2] Name [for Heist & Housing update]",
+            "3": "TODO: Graphics [3] Name [for Heist & Housing update]"
+        }
+    },
+    "vCHP_latest": {
+        "inherit": "_earliest_known_values_so_far"
+    },
+    "_earliest_known_values_so_far": {
+        "inherit": false,
+        "values": {
+            "0": "TODO: Graphics [0] Name [for Cosmetics & Heist Planner update]",
+            "1": "TODO: Graphics [1] Name [for Cosmetics & Heist Planner update]",
+            "2": "TODO: Graphics [2] Name [for Cosmetics & Heist Planner update]",
+            "3": "TODO: Graphics [3] Name [for Cosmetics & Heist Planner update]"
+        }
+    }
+}
