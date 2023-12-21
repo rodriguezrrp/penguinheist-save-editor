@@ -111,6 +111,17 @@ span.listicons {
   border: 1px solid steelblue;
 }
 
+.save-data-descr .d-parent-hover-block, .save-data-descr .d-parent-hover-inline {
+  display: none;
+}
+
+.save-data-descr:hover .d-parent-hover-block {
+  display: block;
+}
+.save-data-descr:hover .d-parent-hover-inline {
+  display: block;
+}
+
 /* override accordion header button (and its arrow) styling */
 .accordion-button:focus {
   /* box-shadow: none; */

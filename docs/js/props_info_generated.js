@@ -86,7 +86,7 @@ const PROP_INFO = {
     "objectRetrieved": {
         "category": "misc",
         "name": "Retrieved {name}",
-        "name_map": {},
+        "name_map": "_self",
         "type": "bool"
     },
     "money": {
@@ -314,7 +314,7 @@ const PROP_INFO = {
     "speechIndex": {
         "category": "misc",
         "name": "Speech Index for {name}",
-        "name_map": {},
+        "name_map": "_self",
         "type": "int"
     },
     "hasNewShopItem": {

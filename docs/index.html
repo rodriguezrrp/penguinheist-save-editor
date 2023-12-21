@@ -19,8 +19,9 @@
     <link rel="stylesheet" href="./css/editorstyle.css">
     <script src="./js/editor.js"></script>
     <script src="./js/version_info.js"></script>
-    
+
     <script src="./js/props_info_generated.js"></script>
+    <script src="./js/props_categories_generated.js"></script>
     <script src="./js/name_maps_generated.js"></script>
     <script src="./js/version_prop_defaults_generated.js"></script>
     <script src="./js/version_prop_relevants_generated.js"></script>
@@ -242,7 +243,8 @@
                 </div>
                 <div class="col-12 mb-3">
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="showRawEditors" id="showRawEditors">
+                        <!-- <input class="form-check-input" type="checkbox" name="showRawEditors" id="showRawEditors"> -->
+                        <input class="form-check-input" type="checkbox" name="showRawEditors" id="showRawEditors" checked disabled>
                         <label class="form-check-label" for="showRawEditors">
                         Show raw value editors
                         </label>
@@ -263,6 +265,352 @@
             
             <button id="btnManualDoFileFormData" type="button" class="btn btn-outline-secondary" onclick="doFileFormData">doFileFormData</button>
             <script>
+                // Short-circuiting, and saving a parse operation
+                function isInt(value) {
+                    var x;
+                    if (isNaN(value)) {
+                        return false;
+                    }
+                    x = parseFloat(value);
+                    return (x | 0) === x;
+                }
+
+                function fillParamsForm(saveType1, saveType2, showRelevantOptions, showRawEditors, /*mappedPropInfoDict,*/ fileValuesMap) {
+                    const formBody = $('#saveForm');
+                    // cleanup any old tooltips before emptying form
+                    paramsFormTooltipList.map(tooltip => tooltip.dispose());
+                    paramsFormTooltipList = [];
+
+                    formBody.empty();
+
+                    // setup property category dropdowns
+                    var propCollapses = '';
+                    for (const [categoryKey, catInfo] of Object.entries(CATEGORY_INFO)) {
+                        let name = catInfo.name;
+                        let expanded = catInfo.expanded ?? false;
+                        propCollapses += `<!-- accordion item (header button + collapsible content) -->
+                        <div class="--col-12 accordion accordion-flush">
+                            <div class="row accordion-item">
+                                <div class="px-0 accordion-header">
+                                    <button class="accordion-button save-data-collapse-bar ${expanded ? '' : 'collapsed'}" aria-expanded="${expanded ? 'true' : 'false'}"
+                                    type="button" data-bs-toggle="collapse" data-bs-target="#propCollapse-${categoryKey}" aria-controls="propCollapse-${categoryKey}"
+                                    >
+                                    <span class="visually-hidden">Category for</span><span>${name}</span>
+                                    </button>
+                                </div>
+
+                                <div id="propCollapse-${categoryKey}" class="accordion-collapse collapse ${expanded ? 'show' : ''}">
+                                `
+                                // empty; gets populated below
+                                +`
+                            </div>
+                        </div>`
+                    }
+                    // formBody.append(propCollapses);
+                    formBody.append(propCollapses);
+
+                    $('.prop-collapse').on('hidden.bs.collapse',toggleIcon);
+                    $('.prop-collapse').on('shown.bs.collapse',toggleIcon);
+                    
+
+                    // if the first save version is not specified, just use all known properties
+                    const propMapRelevant1 = !saveType1 ? VERSION_RELEVANTS['all'] : VERSION_RELEVANTS[saveType1];
+                    // if no comparison save version, then don't have a comparison map
+                    const propMapRelevant2 = !saveType2 ? {} : VERSION_RELEVANTS[saveType2];
+                    // if no file was put in, we should fall back to default for the selected version
+                    // fileValuesMap = fileValuesMap ?? VERSION_DEFAULTS[saveType1 ?? 'all'];
+                    // if no file was put in, the file shouldn't contain any mappings
+                    fileValuesMap = fileValuesMap ?? {};
+
+                    console.log('propMapRelevant1', propMapRelevant1);
+                    console.log('propMapRelevant2', propMapRelevant2);
+                    console.log('fileValuesMap', fileValuesMap);
+
+
+                    // all prop keys to make editors for.
+                    // This combination is to include any Unknown properties found in the file
+                    const allPropKeys = [...new Set(
+                        [Object.keys(fileValuesMap).map(k => k.split(' ',1)[0]), Object.keys(PROP_INFO)].flat()
+                    )];
+
+                    console.log('allPropKeys', allPropKeys);
+
+                    // fill in all property editors
+                    for (let i = 0; i < allPropKeys.length; i++) {
+                        const propKey = allPropKeys[i];
+
+                        // find all full property keys where the primary part of the key exists in them
+                        const save1AllPropFullKeys = Object.keys(propMapRelevant1).filter(k => (k.split(' ',1)[0] == propKey)); // space is used as key delimiter
+                        const save2AllPropFullKeys = Object.keys(propMapRelevant2).filter(k => (k.split(' ',1)[0] == propKey)); // space is used as key delimiter
+                        const saveFileAllPropFullKeys = Object.keys(fileValuesMap).filter(k => (k.split(' ',1)[0] == propKey)); // space is used as key delimiter
+                        // bool for if they have that property at least once
+                        const usedInSaveV1 = save1AllPropFullKeys.length > 0;
+                        const usedInSaveV2 = save2AllPropFullKeys.length > 0;
+                        const inFile = saveFileAllPropFullKeys.length > 0;
+
+                        // using Set to unique all the key lists
+                        const combinedAllPropFullKeys = [...new Set(
+                            [save1AllPropFullKeys, save2AllPropFullKeys, saveFileAllPropFullKeys].flat()
+                        )];
+                        combinedAllPropFullKeys.sort();
+                        
+                        // console.log('propKey', propKey);
+                        // console.log('combinedAllPropFullKeys', combinedAllPropFullKeys);
+                        // console.log('save1AllPropFullKeys', save1AllPropFullKeys);
+                        // console.log('save2AllPropFullKeys', save2AllPropFullKeys);
+                        // console.log('saveFileAllPropFullKeys', saveFileAllPropFullKeys);
+                        // console.log('usedInSaveV1', usedInSaveV1);
+                        // console.log('usedInSaveV2', usedInSaveV2);
+                        // console.log('inFile', inFile);
+
+                        // if we should only showRelevantOptions, skip keys that aren't in either of the save versions or the file itself
+                        if (showRelevantOptions && !(usedInSaveV1 || usedInSaveV2 || inFile)) {
+                            continue;
+                        }
+                        
+                        // generate editors for all the full keys of the properties
+                        for (let j = 0; j < combinedAllPropFullKeys.length; j++) {
+                            const fullKey = combinedAllPropFullKeys[j];
+
+                            // extract the extra away from the primary key part
+                            // The EXTRA is the IMPORTANT PART we want from this!
+                            let _keysplit = fullKey.split(' ');
+
+                            const _propKeyPrimary = _keysplit[0], propKeyExtra = _keysplit.slice(1).join(' ');
+
+                            // sanity check, it should be matching
+                            if(_propKeyPrimary != propKey) {
+                                console.error(`Why was ${fullKey} found in filtered while not being in the allPropKeys property key list?`)
+                            }
+
+                            // generate and add the editor for it
+                            
+                            let editorDiv = `<div class="row"><span>Oops! editor for @${fullKey}@ is not showing. This is not supposed to happen.</span></div>`;
+                            let propInfo;
+                            if (PROP_INFO.hasOwnProperty(propKey)) {
+                                propInfo = PROP_INFO[propKey];
+                            } else {
+                                // default info for an editor if we don't know this property yet.
+                                propInfo = {
+                                    'category': 'unknown',
+                                    'name': `@${fullKey}@`,
+                                    // allow for it being anything. Give it a plain old string editor.
+                                    'type': 'string'
+                                }
+                            }
+                            
+                            // derive common info of this property such as its category, type, and resolved name.
+                            const category = propInfo.category;
+                            const propNameMap = propInfo.name_map;
+                            let propNameMapResult;
+                            // resolve name map if needed
+                            if(typeof(propNameMap) === "string") {
+                                // it is referring to another known name map, not in the same file. could be version-dynamic.
+                                switch (propNameMap) {
+                                    case "_self":
+                                        propNameMapResult = { 'name': propKeyExtra };
+                                        break;
+                                    case "item":
+                                        propNameMapResult = NAME_MAP_ITEMS[propKeyExtra] ?? { 'name': propKeyExtra };
+                                        break;
+                                    case "clothing":
+                                        propNameMapResult = NAME_MAP_CLOTHING[propKeyExtra] ?? { 'name': propKeyExtra };
+                                        break;
+                                    // case "structure":
+                                    //     propNameMap = NAME_MAP_STRUCTURE[propKeyExtra] ?? { 'name': propKeyExtra };
+                                    //     break;
+                                    default:
+                                        console.error(`Unknown name map "${propNameMap}" referenced! Defaulting to null.`)
+                                        propNameMapResult = null;
+                                        break;
+                                }
+                            } else if(typeof(propNameMap) === "object") {
+                                // console.log(propNameMap);
+                                // console.log(propKeyExtra, propNameMap[propKeyExtra]);
+                                propNameMapResult = propNameMap[propKeyExtra];
+                            }
+                            const propName = propNameMapResult
+                                                ? propInfo.name?.replace('{name}', (
+                                                                    typeof(propNameMapResult) === "string" || typeof(propNameMapResult) === "number"
+                                                                        ? propNameMapResult
+                                                                        : propNameMapResult.name
+                                                                    ))
+                                                : propInfo.name;
+                            const type = propInfo.type;
+                            const propNote = propInfo.note;
+
+                            // console.log('fullKey', fullKey);
+                            // console.log('propKeyExtra', propKeyExtra);
+                            // console.log('propNameMap', propNameMap);
+
+                            // find the accordion collapse body to append it into
+                            const categoryCollapseDiv = $(`#propCollapse-${category}`);
+                            if (!categoryCollapseDiv ?? categoryCollapseDiv.length <= 0) {
+                                console.error(`Category "${category}" collapse not found for propKey ${propKey}! Putting in "misc" for now.`);
+                                category = 'misc';
+                                const categoryCollapseDiv = $(`#propCollapse-${category}`);
+                            }
+
+                            const fullKeyNoSpaces = fullKey.replaceAll(' ','_');
+                            
+                            
+                            // create the editor
+                            if(showRawEditors || !showRawEditors) { // TODO: remove the !showRawEditors
+                                // raw editor; treat all as individuals. Can disregard the key specifics for special editors
+                                editorDiv = `<div class="row">
+                                    <div class="col --d-sm-none --d-md-block save-data-descr">
+                                        <span>${propName}</span>
+                                        ${propNote ? `<a class="form-text" id="propHelp-${fullKeyNoSpaces}" tabindex="0"
+                                            data-bs-toggle="tooltip" data-bs-placement="top" title="${propNote}"
+                                            ><i class="bi-question-circle"></i></a>` : ''}
+                                        <div class="col">
+                                            ${usedInSaveV1
+                                                ? `<span class="form-text d-parent-hover-inline">Key name: @${fullKey}@</span>`
+                                                : ''}
+                                            ${usedInSaveV2 && fullKey != fullKey // TODO: can change this if/when the game edits the actual save key in a version (may be never)
+                                                ? `<span class="form-text d-parent-hover-inline">Key name in comparison version: @${fullKey}@</span>`
+                                                : ''}
+                                        </div>
+                                    </div>`;
+                                // add usage indicators
+                                editorDiv += `<div id="useIn1-${fullKeyNoSpaces}"
+                                                class="col --col-1 col-md-auto save-data-val ${!usedInSaveV1 ? 'unused' : ''}"
+                                                prop-unused="${!usedInSaveV1 ? 'true' : 'false'}">
+                                    ${usedInSaveV1
+                                        ? '<i class="not-warning bi-check-lg" title="used by selected save version" aria-label="used by selected save version"></i>'
+                                        : '<i class="not-warning bi-x-lg" title="ignored by selected save version" aria-label="ignored by selected save version"></i>'}
+                                    <i class="yes-warning d-none bi-exclamation-triangle" title="selected save version may not accept the value"
+                                    aria-label="selected save version may not accept the value"
+                                    data-bs-toggle="tooltip" data-bs-placement="top"></i>
+                                </div>`;
+                                editorDiv += `<div id="useIn2-${fullKeyNoSpaces}"
+                                                class="col --col-1 col-md-auto save-data-val ${!saveType2 ? 'd-none' : ''} ${!usedInSaveV2 ? 'unused' : ''}"
+                                                prop-unused="${!usedInSaveV2 ? 'true' : 'false'}">
+                                    ${usedInSaveV2
+                                        ? '<i class="not-warning bi-check-lg" title="used by selected comparison version" aria-label="used by selected comparison version"></i>'
+                                        : '<i class="not-warning bi-x-lg" title="ignored by selected comparison version" aria-label="ignored by selected comparison version"></i>'}
+                                    <i class="yes-warning d-none bi-exclamation-triangle" title="selected save version may not accept the value"
+                                    aria-label="selected save version may not accept the value"
+                                    data-bs-toggle="tooltip" data-bs-placement="top"></i>
+                                </div>`;
+                                // add actual value editor
+                                editorDiv += `<div class="col-12 col-md-6 save-data-val">`;
+                                switch (type) {
+                                    // case 'bool':
+                                    //     break;
+                                    // case 'color':
+                                    //     break;
+                                    case 'floatrange':
+                                        editorDiv += `<input type="range" id="inputRaw-${fullKeyNoSpaces}" name="${fullKeyNoSpaces}"/>`;
+                                        break;
+                                    case 'int':
+                                        editorDiv += `<input type="number" id="inputRaw-${fullKeyNoSpaces}" name="${fullKeyNoSpaces}"/>`;
+                                        break;
+                                    // case 'intlist':
+                                    //     break;
+                                    // case 'int-dropdown':
+                                    //     break;
+                                    case 'string':
+                                    default:
+                                        editorDiv += `<input type="text" id="inputRaw-${fullKeyNoSpaces}" name="${fullKeyNoSpaces}"/>`;
+                                        break;
+                                    }
+                                    editorDiv += `${type}`;
+                                editorDiv += `</div>`;
+                            } else {
+                                console.error('TODO show fancy editor (not raw editor)! ' + fullKey);
+                            }
+                            categoryCollapseDiv.append(editorDiv);
+
+                            let helpElem = document.querySelector(`#propHelp-${fullKeyNoSpaces}`);
+                            if(helpElem) {
+                                let tooltip = new bootstrap.Tooltip(helpElem);
+                                paramsFormTooltipList.push(tooltip);
+                            }
+                            let useIn1Indicator = document.querySelector(`#useIn1-${fullKeyNoSpaces}>i.yes-warning`);
+                            let useIn2Indicator = document.querySelector(`#useIn2-${fullKeyNoSpaces}>i.yes-warning`);
+                            // console.log(`#useIn1-${fullKeyNoSpaces}`);
+                            // console.log(useIn1Indicator);
+                            let useIn1tooltip = new bootstrap.Tooltip(useIn1Indicator);
+                            let useIn2tooltip = new bootstrap.Tooltip(useIn2Indicator);
+                            useIn1tooltip.disable();
+                            useIn2tooltip.disable();
+                            paramsFormTooltipList.push(useIn1tooltip);
+                            paramsFormTooltipList.push(useIn2tooltip);
+
+                            let editorUpdateCallback = function(warnMessage) {
+                                console.log('editorUpdateCallback');
+                                let useIn1IndicatorColjQ = $(`#useIn1-${fullKeyNoSpaces}`);
+                                let useIn2IndicatorColjQ = $(`#useIn2-${fullKeyNoSpaces}`);
+                                // get the tooltips made for the warning indicators
+                                let useIn1tooltip = bootstrap.Tooltip.getInstance(useIn1IndicatorColjQ.find('i.yes-warning')[0]);
+                                let useIn2tooltip = bootstrap.Tooltip.getInstance(useIn2IndicatorColjQ.find('i.yes-warning')[0]);
+                                // convert to jquery for use below in the warnMessage parsing
+                                // handle any warning messages that may have come through
+                                if(usedInSaveV1 && warnMessage?.v1) {
+                                    // warning show, and enable warning tooltip.
+                                    useIn1IndicatorColjQ.addClass('warning');
+                                    useIn1IndicatorColjQ.removeClass('unused');
+                                    useIn1IndicatorColjQ.find('i.no-warning').addClass('d-none');
+                                    useIn1IndicatorColjQ.find('i.yes-warning').removeClass('d-none');
+                                    useIn1IndicatorColjQ.find('i.yes-warning').attr('title', warnMessage.v1);
+                                    useIn1IndicatorColjQ.find('i.yes-warning').attr('aria-label', warnMessage.v1);
+                                    useIn1tooltip.enable();
+                                } else {
+                                    // back to normal. disable warning tooltip.
+                                    useIn1IndicatorColjQ.removeClass('warning');
+                                    if(useIn1IndicatorColjQ.attr('prop-unused') == 'true')
+                                        useIn1IndicatorColjQ.addClass('unused');
+                                    useIn1IndicatorColjQ.find('i.not-warning').removeClass('d-none');
+                                    useIn1IndicatorColjQ.find('i.yes-warning').addClass('d-none');
+                                    useIn1tooltip.disable();
+                                }
+                                console.log('editorUpdateCallback');
+                                $(`#inputRaw-${fullKeyNoSpaces}`)
+                            }
+                            let rawEditor = $(`#inputRaw-${fullKeyNoSpaces}`);
+                            let neatEditor = $(`#inputNeat-${fullKeyNoSpaces}`);
+                            rawEditor.change(e => updateSaveProp(fullKey, propInfo, rawEditor.val(), editorUpdateCallback));
+                            neatEditor.change(e => updateSaveProp(fullKey, propInfo, neatEditor.val(), editorUpdateCallback));
+                        } // end for all full property keys
+
+                    } // end for all property keys
+
+                    // updateGameVersionInfoOnPage(null, $('#saveType1').val());
+                };
+
+                function updateSaveProp(fullKey, propInfo, newValue, editorUpdateCallback) {
+                    console.log('updateSaveProp');
+                    currentSaveData[fullKey] = newValue;
+                    let warnMessage = {};
+                    // validate
+                    switch(propInfo.type) {
+                        // case 'bool':
+                        //     break;
+                        // case 'color':
+                        //     break;
+                        // case 'floatrange':
+                        //     break;
+                        case 'int':
+                            if(!isInt(newValue)) {
+                                warnMessage['v1'] = 'Expects the value to be a number!'
+                                warnMessage['v2'] = 'Expects the value to be a number!'
+                            }
+                            break;
+                        // case 'intlist':
+                        //     break;
+                        // case 'int-dropdown':
+                        //     break;
+                        case 'string':
+                        default:
+                            break;
+                    }
+                    editorUpdateCallback(warnMessage);
+                };
+
+                var paramsFormTooltipList = [];
+                var currentSaveData = {};
+
                 function doFileFormData(event) {
                     // Event.stop(event);
                     event.preventDefault();
@@ -292,9 +640,9 @@
                     // let showSaveType2 = !!saveType2;
 
                     // get save file params
-                    let fileValues = readFile(formData.get('fileSelect'));
+                    let fileValuesMap = readFile(formData.get('fileSelect'), saveType1);
                     // fill out the save file params form
-                    fillParamsForm(saveType1, saveType2, showRelevantOptions, showRawEditors, PROP_INFO, fileValues);
+                    fillParamsForm(saveType1, saveType2, showRelevantOptions, showRawEditors, /*PROP_INFO,*/ fileValuesMap);
                 }
                 
                 $('#btnManualDoFileFormData').on('click', doFileFormData);

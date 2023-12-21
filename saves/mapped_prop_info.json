@@ -69,7 +69,7 @@
     "objectRetrieved": {
         "category":"misc",
         "name":"Retrieved {name}",
-        "name_map":{},
+        "name_map":"_self",
         "type":"bool"
     },
     "money": {
@@ -277,7 +277,7 @@
     "speechIndex": {
         "category":"misc",
         "name":"Speech Index for {name}",
-        "name_map":{},
+        "name_map":"_self",
         "type":"int"
     },
     "hasNewShopItem": {

@@ -15,6 +15,12 @@ function readImage(file) {
 }
 
 
+function readFile(fileSelectVal, verison) {
+    // check if the file is a save file
+    // perform param parsing according to version selected
+}
+
+
 
 // for toggling collapsible divs
 // function toggleIcon(event) {
