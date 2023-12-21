@@ -6,7 +6,7 @@ Minimal: Built into one webpage with local dependencies so you can download the 
 ⭐🎮⚙️ Additionally comes with a whole guide on how to _downgrade_ your Penguin Heist game to an _older version!_  
 Table of common Steam build & manifest info for Windows, Apple OS, and Linux is included.
 
-## **🛠️ CURRENTLY in BETA! 🛠️ Prototyping, fixing dynamic form generation based on scraped and gathered game version data.**
+# **🛠️ CURRENTLY in BETA! 🛠️ Prototyping, fixing dynamic form generation based on scraped and gathered game version data.**
 The main page itself is `docs/index.html`. The `docs/` folder will become the GitHub pages source once out of this Beta prototyping phase.
 
 Most data about versions, their properties, the types of values the properties can hold, the allowed ranges of those values, etc. are in `.json` files throughout `saves/`.
