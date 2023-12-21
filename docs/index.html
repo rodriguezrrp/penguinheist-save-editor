@@ -13,6 +13,9 @@
     <link rel="stylesheet" href="./icons/bootstrap-icons-1.10.4/font/bootstrap-icons.css">
     
     <script src="./js/jquery-3.6.4.min.js"></script>
+
+    <!-- tom-select provides nice searchable selects! -->
+    <script src="./js/tom-select.complete.js"></script>
     
     <!-- Custom scripts and css -->
     
@@ -352,7 +355,7 @@
                         const combinedAllPropFullKeys = [...new Set(
                             [save1AllPropFullKeys, save2AllPropFullKeys, saveFileAllPropFullKeys].flat()
                         )];
-                        combinedAllPropFullKeys.sort();
+                        combinedAllPropFullKeys.sort((a,b) => (a.localeCompare(b, undefined, { numeric: true })));
                         
                         // console.log('propKey', propKey);
                         // console.log('combinedAllPropFullKeys', combinedAllPropFullKeys);
@@ -458,7 +461,9 @@
                             if(showRawEditors || !showRawEditors) { // TODO: remove the !showRawEditors
                                 // raw editor; treat all as individuals. Can disregard the key specifics for special editors
                                 editorDiv = `<div class="row">
-                                    <div class="col --d-sm-none --d-md-block save-data-descr">
+                                    <div class="col --d-sm-none --d-md-block save-data-descr"
+                                        prop-used-in-v1="${usedInSaveV1?'true':'false'}" prop-used-in-v2="${usedInSaveV2?'true':'false'}" prop-in-file="${inFile?'true':'false'}"
+                                        >
                                         <span>${propName}</span>
                                         ${propNote ? `<a class="form-text" id="propHelp-${fullKeyNoSpaces}" tabindex="0"
                                             data-bs-toggle="tooltip" data-bs-placement="top" title="${propNote}"
@@ -474,7 +479,7 @@
                                     </div>`;
                                 // add usage indicators
                                 editorDiv += `<div id="useIn1-${fullKeyNoSpaces}"
-                                                class="col --col-1 col-md-auto save-data-val ${!usedInSaveV1 ? 'unused' : ''}"
+                                                class="col --col-1 col-md-auto fs-5 save-data-val ${!usedInSaveV1 ? 'unused' : ''}"
                                                 prop-unused="${!usedInSaveV1 ? 'true' : 'false'}">
                                     ${usedInSaveV1
                                         ? '<i class="not-warning bi-check-lg" title="used by selected save version" aria-label="used by selected save version"></i>'
@@ -484,7 +489,7 @@
                                     data-bs-toggle="tooltip" data-bs-placement="top"></i>
                                 </div>`;
                                 editorDiv += `<div id="useIn2-${fullKeyNoSpaces}"
-                                                class="col --col-1 col-md-auto save-data-val ${!saveType2 ? 'd-none' : ''} ${!usedInSaveV2 ? 'unused' : ''}"
+                                                class="col --col-1 col-md-auto fs-5 save-data-val ${!saveType2 ? 'd-none' : ''} ${!usedInSaveV2 ? 'unused' : ''}"
                                                 prop-unused="${!usedInSaveV2 ? 'true' : 'false'}">
                                     ${usedInSaveV2
                                         ? '<i class="not-warning bi-check-lg" title="used by selected comparison version" aria-label="used by selected comparison version"></i>'
@@ -493,36 +498,68 @@
                                     aria-label="selected save version may not accept the value"
                                     data-bs-toggle="tooltip" data-bs-placement="top"></i>
                                 </div>`;
+
                                 // add actual value editor
                                 editorDiv += `<div class="col-12 col-md-6 save-data-val">`;
+                                editorDiv += `<div class="row">`; // inner row for layout
+                                let rawInputColClass = 'col-3';
+                                let rawInputMinWidth = '15ch';
                                 switch (type) {
-                                    // case 'bool':
-                                    //     break;
+                                    case 'bool':
+                                        editorDiv += `<div class="col">
+                                                <div class="form-switch">
+                                                    <input class="form-check-input switch-lg" type="checkbox" id="inputNeat-${fullKeyNoSpaces}" name="${fullKeyNoSpaces}"
+                                                    aria-label="${propName}"/>
+                                                </div>
+                                            </div>`;
+                                        break;
                                     // case 'color':
                                     //     break;
-                                    case 'floatrange':
-                                        editorDiv += `<input type="range" id="inputRaw-${fullKeyNoSpaces}" name="${fullKeyNoSpaces}"/>`;
+                                    case 'float-range':
+                                        editorDiv += `<div class="col">
+                                                <input class="form-range" type="range" id="inputNeat-${fullKeyNoSpaces}" name="${fullKeyNoSpaces}"
+                                                min="${propInfo.min ?? 0}" max="${propInfo.min ?? 1}" step="${propInfo.step ?? 0.01}"/>
+                                            </div>`;
                                         break;
                                     case 'int':
-                                        editorDiv += `<input type="number" id="inputRaw-${fullKeyNoSpaces}" name="${fullKeyNoSpaces}"/>`;
+                                        editorDiv += `<div class="col">
+                                                <input class="form-control" type="number" id="inputNeat-${fullKeyNoSpaces}" name="${fullKeyNoSpaces}"/>
+                                            </div>`;
                                         break;
-                                    // case 'intlist':
-                                    //     break;
                                     // case 'int-dropdown':
+                                    //     break;
+                                    // case 'intlist':
                                     //     break;
                                     case 'string':
                                     default:
-                                        editorDiv += `<input type="text" id="inputRaw-${fullKeyNoSpaces}" name="${fullKeyNoSpaces}"/>`;
+                                        editorDiv += `<div class="col">
+                                                <input class="form-control" type="text" id="inputNeat-${fullKeyNoSpaces}" name="${fullKeyNoSpaces}"/>
+                                            </div>`;
                                         break;
-                                    }
-                                    editorDiv += `${type}`;
+                                }
+                                // add eraser
+                                editorDiv += `<div class="col p-0 col-auto">${type}
+                                        <button id="btnErase-${fullKeyNoSpaces}" type="button"
+                                        class="btn btn-outline-secondary h-100 py-0 px-2 border-0 invisible"
+                                        title="Erase parameter value" aria-label="Erase parameter value">
+                                            <i class="fs-5 bi-eraser-fill"></i>
+                                        </button>
+                                    </div>`;
+                                // add raw value
+                                editorDiv += `<div class="col ${rawInputColClass} align-self-end" style="min-width:${rawInputMinWidth}">
+                                                <input class="form-control" type="text" id="inputRaw-${fullKeyNoSpaces}" name="${fullKeyNoSpaces}"
+                                                title="Actual raw value that the save file will hold" placeholder="no value" disabled/>
+                                            </div>`;
+                                editorDiv += `</div>`; // close inner row
                                 editorDiv += `</div>`;
                             } else {
                                 console.error('TODO show fancy editor (not raw editor)! ' + fullKey);
                             }
                             categoryCollapseDiv.append(editorDiv);
 
-                            let helpElem = document.querySelector(`#propHelp-${fullKeyNoSpaces}`);
+
+                            // setup tooltips
+                            let helpElem = document.getElementById(`#propHelp-${fullKeyNoSpaces}`);
                             if(helpElem) {
                                 let tooltip = new bootstrap.Tooltip(helpElem);
                                 paramsFormTooltipList.push(tooltip);
@@ -537,41 +574,77 @@
                             useIn2tooltip.disable();
                             paramsFormTooltipList.push(useIn1tooltip);
                             paramsFormTooltipList.push(useIn2tooltip);
+                            
+                            if(type == 'int-dropdown') {
+                                // setup TomSelect searchable dropdown
+                            }
 
-                            let editorUpdateCallback = function(warnMessage) {
+                            let eraseBtn = document.getElementById(`btnErase-${fullKeyNoSpaces}`);
+                            eraseBtn.onclick = (e) => updateSaveProp(fullKey, propInfo, '', editorUpdateCallback);
+
+
+                            let editorUpdateCallback = function(warnMessage, saveDataValue) {
                                 console.log('editorUpdateCallback');
-                                let useIn1IndicatorColjQ = $(`#useIn1-${fullKeyNoSpaces}`);
-                                let useIn2IndicatorColjQ = $(`#useIn2-${fullKeyNoSpaces}`);
+                                let useIn1ColjQ = $(`#useIn1-${fullKeyNoSpaces}`);
+                                let useIn2ColjQ = $(`#useIn2-${fullKeyNoSpaces}`);
                                 // get the tooltips made for the warning indicators
-                                let useIn1tooltip = bootstrap.Tooltip.getInstance(useIn1IndicatorColjQ.find('i.yes-warning')[0]);
-                                let useIn2tooltip = bootstrap.Tooltip.getInstance(useIn2IndicatorColjQ.find('i.yes-warning')[0]);
-                                // convert to jquery for use below in the warnMessage parsing
+                                let useIn1tooltip = bootstrap.Tooltip.getInstance(useIn1ColjQ.find('i.yes-warning')[0]);
+                                let useIn2tooltip = bootstrap.Tooltip.getInstance(useIn2ColjQ.find('i.yes-warning')[0]);
+                                // console.log(paramsFormTooltipList.find((elem) => elem === useIn1tooltip));
+                                // console.log(paramsFormTooltipList.find((elem) => elem === useIn2tooltip));
+                                let eraseBtn = $(`#btnErase-${fullKeyNoSpaces}`);
+                                
+                                if(!saveDataValue) eraseBtn.addClass('invisible');
+                                else eraseBtn.removeClass('invisible');
+                                
                                 // handle any warning messages that may have come through
                                 if(usedInSaveV1 && warnMessage?.v1) {
                                     // warning show, and enable warning tooltip.
-                                    useIn1IndicatorColjQ.addClass('warning');
-                                    useIn1IndicatorColjQ.removeClass('unused');
-                                    useIn1IndicatorColjQ.find('i.no-warning').addClass('d-none');
-                                    useIn1IndicatorColjQ.find('i.yes-warning').removeClass('d-none');
-                                    useIn1IndicatorColjQ.find('i.yes-warning').attr('title', warnMessage.v1);
-                                    useIn1IndicatorColjQ.find('i.yes-warning').attr('aria-label', warnMessage.v1);
+                                    useIn1ColjQ.addClass('warning');
+                                    // useIn1ColjQ.removeClass('unused');
+                                    useIn1ColjQ.find('i.not-warning').addClass('d-none');
+                                    useIn1ColjQ.find('i.yes-warning').removeClass('d-none');
+                                    useIn1ColjQ.find('i.yes-warning').attr('data-bs-original-title', warnMessage.v1);
+                                    useIn1ColjQ.find('i.yes-warning').attr('aria-label', warnMessage.v1);
                                     useIn1tooltip.enable();
                                 } else {
                                     // back to normal. disable warning tooltip.
-                                    useIn1IndicatorColjQ.removeClass('warning');
-                                    if(useIn1IndicatorColjQ.attr('prop-unused') == 'true')
-                                        useIn1IndicatorColjQ.addClass('unused');
-                                    useIn1IndicatorColjQ.find('i.not-warning').removeClass('d-none');
-                                    useIn1IndicatorColjQ.find('i.yes-warning').addClass('d-none');
+                                    useIn1ColjQ.removeClass('warning');
+                                    // if(useIn1ColjQ.attr('prop-unused') == 'true')
+                                    //     useIn1ColjQ.addClass('unused');
+                                    useIn1ColjQ.find('i.not-warning').removeClass('d-none');
+                                    useIn1ColjQ.find('i.yes-warning').addClass('d-none');
                                     useIn1tooltip.disable();
                                 }
-                                console.log('editorUpdateCallback');
-                                $(`#inputRaw-${fullKeyNoSpaces}`)
+                                // set the save data's value into both to keep them in sync.
+                                if(type == 'bool') {
+                                    // saveDataValue would be 1 or 0
+                                    // console.log('saveDataValue:',saveDataValue);
+                                    $(`#inputRaw-${fullKeyNoSpaces}`).val(saveDataValue);
+                                    $(`#inputNeat-${fullKeyNoSpaces}`)[0].checked = (saveDataValue === '0' ? false : !!saveDataValue); // truthy
+                                } else {
+                                    $(`#inputRaw-${fullKeyNoSpaces}`).val(saveDataValue);
+                                    $(`#inputNeat-${fullKeyNoSpaces}`).val(saveDataValue);
+                                }
                             }
+                            // apply listeners
                             let rawEditor = $(`#inputRaw-${fullKeyNoSpaces}`);
                             let neatEditor = $(`#inputNeat-${fullKeyNoSpaces}`);
-                            rawEditor.change(e => updateSaveProp(fullKey, propInfo, rawEditor.val(), editorUpdateCallback));
-                            neatEditor.change(e => updateSaveProp(fullKey, propInfo, neatEditor.val(), editorUpdateCallback));
+                            if(type == 'float-range') {
+                                rawEditor.change(e => updateSaveProp(fullKey, propInfo, rawEditor.val(), editorUpdateCallback));
+                                neatEditor.on('input', e => updateSaveProp(fullKey, propInfo, neatEditor.val(), editorUpdateCallback));
+                            } else if(type == 'bool') {
+                                // checkboxes handle value differently
+                                rawEditor.change(e => updateSaveProp(fullKey, propInfo, rawEditor.val(), editorUpdateCallback));
+                                neatEditor.change(e => updateSaveProp(fullKey, propInfo, neatEditor[0].checked, editorUpdateCallback));
+                            } else {
+                                rawEditor.change(e => updateSaveProp(fullKey, propInfo, rawEditor.val(), editorUpdateCallback));
+                                // neatEditor.on('input', e => updateSaveProp(fullKey, propInfo, neatEditor.val(), editorUpdateCallback));
+                                neatEditor.change(e => updateSaveProp(fullKey, propInfo, neatEditor.val(), editorUpdateCallback));
+                            }
+                            
+                            if (currentSaveData[fullKey])
+                                updateSaveProp(fullKey, propInfo, currentSaveData[fullKey], editorUpdateCallback);
                         } // end for all full property keys
 
                     } // end for all property keys
@@ -579,33 +652,52 @@
                     // updateGameVersionInfoOnPage(null, $('#saveType1').val());
                 };
 
-                function updateSaveProp(fullKey, propInfo, newValue, editorUpdateCallback) {
+                function updateSaveProp(fullKey, propInfo, editorNewValue, editorUpdateCallback) {
                     console.log('updateSaveProp');
-                    currentSaveData[fullKey] = newValue;
                     let warnMessage = {};
-                    // validate
-                    switch(propInfo.type) {
-                        // case 'bool':
-                        //     break;
-                        // case 'color':
-                        //     break;
-                        // case 'floatrange':
-                        //     break;
-                        case 'int':
-                            if(!isInt(newValue)) {
-                                warnMessage['v1'] = 'Expects the value to be a number!'
-                                warnMessage['v2'] = 'Expects the value to be a number!'
-                            }
-                            break;
-                        // case 'intlist':
-                        //     break;
-                        // case 'int-dropdown':
-                        //     break;
-                        case 'string':
-                        default:
-                            break;
+                    if(!propInfo.required && editorNewValue === "" && propInfo.type != 'intlist') {
+                        // only intlist should keep a value of "" for example.
+                        delete currentSaveData[fullKey];
+                    } else {
+                        // validate
+                        switch(propInfo.type) {
+                            case 'bool':
+                                if(editorNewValue === true) editorNewValue = '1';
+                                else if(editorNewValue === false) editorNewValue = '0';
+                                if(editorNewValue !== '1' && editorNewValue !== '0') {
+                                    warnMessage['v1'] = 'Expects the value to be 1 or 0 (true or false)!'
+                                    warnMessage['v2'] = 'Expects the value to be 1 or 0 (true or false)!'
+                                }
+                                break;
+                            // case 'color':
+                            //     break;
+                            case 'float-range':
+                                if(propInfo.min && Number(editorNewValue) < propInfo.min) {
+                                    warnMessage['v1'] = `Expects the value to be > ${propInfo.min}!`
+                                    warnMessage['v2'] = `Expects the value to be > ${propInfo.min}!`
+                                }
+                                if(propInfo.max && Number(editorNewValue) > propInfo.max) {
+                                    warnMessage['v1'] = `Expects the value to be < ${propInfo.max}!`
+                                    warnMessage['v2'] = `Expects the value to be < ${propInfo.max}!`
+                                }
+                                break;
+                            case 'int':
+                                if(!isInt(editorNewValue)) {
+                                    warnMessage['v1'] = 'Expects the value to be a number!'
+                                    warnMessage['v2'] = 'Expects the value to be a number!'
+                                }
+                                break;
+                            // case 'int-dropdown':
+                            //     break;
+                            // case 'intlist':
+                            //     break;
+                            case 'string':
+                            default:
+                                break;
+                        }
+                        currentSaveData[fullKey] = editorNewValue;
                     }
-                    editorUpdateCallback(warnMessage);
+                    editorUpdateCallback(warnMessage, currentSaveData[fullKey]);
                 };
 
                 var paramsFormTooltipList = [];
@@ -645,7 +737,7 @@
                     fillParamsForm(saveType1, saveType2, showRelevantOptions, showRawEditors, /*PROP_INFO,*/ fileValuesMap);
                 }
                 
-                $('#btnManualDoFileFormData').on('click', doFileFormData);
+                document.getElementById('btnManualDoFileFormData').onclick = doFileFormData;
 
                 function parseFileTest(event) {
                     console.log('file input event:', event);
@@ -1102,15 +1194,15 @@
                     <span class="fw-500">Styling indications:</span>
                 </div>
                 <div class="mx-1 col save-data-val">
-                    <i class="bi-check-lg" aria-label="Used"></i>
+                    <i class="fs-5 bi-check-lg" aria-label="Used"></i>
                     Version uses this parameter
                 </div>
                 <div class="mx-1 col save-data-val unused">
-                    <i class="bi-x-lg" aria-label="Ignored"></i>
+                    <i class="fs-5 bi-x-lg" aria-label="Ignored"></i>
                     Version ignores this parameter
                 </div>
                 <div class="mx-1 col save-data-val warning">
-                    <i class="bi-exclamation-triangle" aria-label="Warning"></i>
+                    <i class="fs-5 bi-exclamation-triangle" aria-label="Warning"></i>
                     Problem with parameter's value
                 </div>
             </div>

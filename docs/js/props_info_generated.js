@@ -27,7 +27,8 @@ const PROP_INFO = {
     "previousLoadout": {
         "category": "items",
         "name": "Loadout",
-        "type": "intlist"
+        "type": "intlist",
+        "max_map": "loadout"
     },
     "clothingOwned": {
         "category": "clothing",
