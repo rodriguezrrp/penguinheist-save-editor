@@ -25,7 +25,7 @@ const PROP_INFO = {
         "type": "bool"
     },
     "previousLoadout": {
-        "category": "items",
+        "category": "loadout",
         "name": "Loadout",
         "type": "intlist",
         "max_map": "loadout"

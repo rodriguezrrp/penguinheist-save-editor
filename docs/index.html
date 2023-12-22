@@ -15,6 +15,7 @@
     <script src="./js/jquery-3.6.4.min.js"></script>
 
     <!-- tom-select provides nice searchable selects! -->
+    <link rel="stylesheet" href="./css/tom-select.bootstrap5.css">
     <script src="./js/tom-select.complete.js"></script>
     
     <!-- Custom scripts and css -->
@@ -24,6 +25,7 @@
     <script src="./js/version_info.js"></script>
 
     <script src="./js/props_info_generated.js"></script>
+    <script src="./js/dropdown_maps_generated.js"></script>
     <script src="./js/props_categories_generated.js"></script>
     <script src="./js/name_maps_generated.js"></script>
     <script src="./js/version_prop_defaults_generated.js"></script>
@@ -232,6 +234,7 @@
                         populateVersionDropdowns();
                         populateManifestTable();
                         updateGameVersionInfoOnPage(null, $('#saveType1').val());
+                        doFileFormData(null);
                     });
 
                     $('#saveType1').change((e) => updateGameVersionInfoOnPage(e, $('#saveType1').val()));
@@ -278,11 +281,46 @@
                     return (x | 0) === x;
                 }
 
+                function resolveDropdown(dropdownRefName, saveType1, saveType2) {
+                    console.log('resolveDropdown');
+                    let dropdownMap = DROPDOWN_MAPS[dropdownRefName];
+                    if(!dropdownMap) return {};
+                    if(!dropdownMap.version_dependent) {
+                        return dropdownMap.values;
+                    }
+                    // handle version-dependent. Can involve inheritance, etc.
+                    let vals1 = {};
+                    let vals2 = {};
+                    console.log('versions:', saveType1, saveType2);
+                    if(saveType1) {
+                        let version = saveType1;
+                        vals1 = dropdownMap[version].values ?? {};
+                        // add in values from the chain of inheritance
+                        while(dropdownMap[version].inherit) {
+                            version = dropdownMap[version].inherit;
+                            vals1 = {...dropdownMap[version].values ?? {}, ...vals1}; // newest should override in the inheritance chain
+                        }
+                    }
+                    console.log(vals1);
+                    if(saveType2) {
+                        let version = saveType2;
+                        vals2 = dropdownMap[version].values ?? {};
+                        // add in values from the chain of inheritance
+                        while(dropdownMap[version].inherit) {
+                            version = dropdownMap[version].inherit;
+                            vals2 = {...dropdownMap[version].values ?? {}, ...vals2}; // newest should override in the inheritance chain
+                        }
+                    }
+                    return {...vals2, ...vals1}; // save's version overrides any duplicates from comparison's version
+                }
+
                 function fillParamsForm(saveType1, saveType2, showRelevantOptions, showRawEditors, /*mappedPropInfoDict,*/ fileValuesMap) {
                     const formBody = $('#saveForm');
                     // cleanup any old tooltips before emptying form
-                    paramsFormTooltipList.map(tooltip => tooltip.dispose());
+                    paramsFormTooltipList.forEach(tooltip => tooltip.dispose());
                     paramsFormTooltipList = [];
+                    paramsFormTomSelectList.forEach(tomselect => tomselect.destroy());
+                    paramsFormTomSelectList = [];
 
                     formBody.empty();
 
@@ -312,8 +350,8 @@
                     // formBody.append(propCollapses);
                     formBody.append(propCollapses);
 
-                    $('.prop-collapse').on('hidden.bs.collapse',toggleIcon);
-                    $('.prop-collapse').on('shown.bs.collapse',toggleIcon);
+                    // $('.prop-collapse').on('hidden.bs.collapse',toggleIcon);
+                    // $('.prop-collapse').on('shown.bs.collapse',toggleIcon);
                     
 
                     // if the first save version is not specified, just use all known properties
@@ -455,7 +493,27 @@
                             }
 
                             const fullKeyNoSpaces = fullKey.replaceAll(' ','_');
-                            
+
+                            if(type == 'float-range' && propInfo.range) {
+                                // break propInfo.range into min and max
+                                propInfo.min = propInfo.range[0];
+                                propInfo.max = propInfo.range[1];
+                            }
+
+                            let propDropdownValues;
+                            if(type == 'int-dropdown') {
+                                // get the dropdown's values
+                                if(typeof(propInfo.dropdown) === "string") {
+                                    // resolve a possibly version-specific result
+                                    propDropdownValues = resolveDropdown(propInfo.dropdown, saveType1, saveType2);
+                                    console.log('propDropdownValues:', propDropdownValues);
+                                } else if(typeof(propInfo.dropdown) === "object") {
+                                    propDropdownValues = propInfo.dropdown;
+                                }
+                                // add any extra values for this property
+                                if(typeof(propInfo.dropdown_extra) === "object")
+                                    propDropdownValues = {...propDropdownValues, ...propInfo.dropdown_extra};
+                            }
                             
                             // create the editor
                             if(showRawEditors || !showRawEditors) { // TODO: remove the !showRawEditors
@@ -506,7 +564,7 @@
                                 let rawInputMinWidth = '15ch';
                                 switch (type) {
                                     case 'bool':
-                                        editorDiv += `<div class="col">
+                                        editorDiv += `<div class="col m-auto">
                                                 <div class="form-switch">
                                                     <input class="form-check-input switch-lg" type="checkbox" id="inputNeat-${fullKeyNoSpaces}" name="${fullKeyNoSpaces}"
                                                     aria-label="${propName}"/>
@@ -518,16 +576,28 @@
                                     case 'float-range':
                                         editorDiv += `<div class="col">
                                                 <input class="form-range" type="range" id="inputNeat-${fullKeyNoSpaces}" name="${fullKeyNoSpaces}"
-                                                min="${propInfo.min ?? 0}" max="${propInfo.min ?? 1}" step="${propInfo.step ?? 0.01}"/>
+                                                min="${propInfo.min ?? 0}" max="${propInfo.max ?? 1}" step="${propInfo.step ?? 0.01}"/>
                                             </div>`;
                                         break;
                                     case 'int':
                                         editorDiv += `<div class="col">
                                                 <input class="form-control" type="number" id="inputNeat-${fullKeyNoSpaces}" name="${fullKeyNoSpaces}"/>
                                             </div>`;
+                                            break;
+                                            case 'int-dropdown':
+                                        editorDiv += `<div class="col w-25">
+                                                <select id="inputNeat-${fullKeyNoSpaces}" name="${fullKeyNoSpaces}" placeholder="Type to search value..." autocomplete="off"
+                                                class="mw-100">
+                                        `;
+                                        // editorDiv += `<option value="" disabled selected>Unset</option>`;
+                                        // add the options inside the select
+                                        for (const [optionValue, optionContents] of Object.entries(propDropdownValues)) {
+                                            editorDiv += `<option value="${optionValue}">${optionContents}</option>`;
+                                        }
+                                        editorDiv +=`
+                                                </select>
+                                            </div>`;
                                         break;
-                                    // case 'int-dropdown':
-                                    //     break;
                                     // case 'intlist':
                                     //     break;
                                     case 'string':
@@ -538,7 +608,7 @@
                                         break;
                                 }
                                 // add eraser
-                                editorDiv += `<div class="col p-0 col-auto">${type}
+                                editorDiv += `<div class="col p-0 col-auto d-flex flex-row justify-content-end">
                                         <button id="btnErase-${fullKeyNoSpaces}" type="button"
                                         class="btn btn-outline-secondary h-100 py-0 px-2 border-0 invisible"
                                         title="Erase parameter value" aria-label="Erase parameter value">
@@ -559,11 +629,27 @@
 
 
                             // setup tooltips
-                            let helpElem = document.getElementById(`#propHelp-${fullKeyNoSpaces}`);
+                            let helpElem = document.getElementById(`propHelp-${fullKeyNoSpaces}`);
                             if(helpElem) {
                                 let tooltip = new bootstrap.Tooltip(helpElem);
                                 paramsFormTooltipList.push(tooltip);
                             }
+                            // setup tomselect searchable select dropdown
+                            let selectElem = document.querySelector(`select#inputNeat-${fullKeyNoSpaces}`);
+                            console.log('tomselect\'s selectElem:', selectElem);
+                            if(selectElem) {
+                                // let tomselect = new TomSelect("#select-beast",{
+                                let tomselect = new TomSelect(selectElem, {
+                                    create: false,
+                                    sortField: {
+                                        field: "text"
+                                        // direction: "asc"
+                                    }
+                                    , maxOptions: null  // default was 50; this will allow ALL <option> s to show
+                                });
+                                paramsFormTomSelectList.push(tomselect);
+                            }
+
                             let useIn1Indicator = document.querySelector(`#useIn1-${fullKeyNoSpaces}>i.yes-warning`);
                             let useIn2Indicator = document.querySelector(`#useIn2-${fullKeyNoSpaces}>i.yes-warning`);
                             // console.log(`#useIn1-${fullKeyNoSpaces}`);
@@ -574,10 +660,6 @@
                             useIn2tooltip.disable();
                             paramsFormTooltipList.push(useIn1tooltip);
                             paramsFormTooltipList.push(useIn2tooltip);
-                            
-                            if(type == 'int-dropdown') {
-                                // setup TomSelect searchable dropdown
-                            }
 
                             let eraseBtn = document.getElementById(`btnErase-${fullKeyNoSpaces}`);
                             eraseBtn.onclick = (e) => updateSaveProp(fullKey, propInfo, '', editorUpdateCallback);
@@ -622,6 +704,9 @@
                                     // console.log('saveDataValue:',saveDataValue);
                                     $(`#inputRaw-${fullKeyNoSpaces}`).val(saveDataValue);
                                     $(`#inputNeat-${fullKeyNoSpaces}`)[0].checked = (saveDataValue === '0' ? false : !!saveDataValue); // truthy
+                                } else if(type == 'int-dropdown') {
+                                    $(`#inputRaw-${fullKeyNoSpaces}`).val(saveDataValue);
+                                    document.getElementById(`inputNeat-${fullKeyNoSpaces}`).tomselect.setValue(saveDataValue, true); // silent true
                                 } else {
                                     $(`#inputRaw-${fullKeyNoSpaces}`).val(saveDataValue);
                                     $(`#inputNeat-${fullKeyNoSpaces}`).val(saveDataValue);
@@ -701,11 +786,12 @@
                 };
 
                 var paramsFormTooltipList = [];
+                var paramsFormTomSelectList = [];
                 var currentSaveData = {};
 
                 function doFileFormData(event) {
                     // Event.stop(event);
-                    event.preventDefault();
+                    event?.preventDefault();
                     getFileFormData();
                     // console.log(event);
                     return true;
@@ -1393,17 +1479,17 @@
                 <!-- Link with href
             </a> -->
             <script>
-                // handle icon toggling
-                function toggleIcon(event) {
-                    $(event.target)
-                        .prev('.save-data-collapse-bar')
-                        .find('i')
-                        .toggleClass('bi-caret-right-fill bi-caret-down-fill');
-                }
-                $(document).ready(function() {
-                    $('.collapse').on('hidden.bs.collapse',toggleIcon);
-                    $('.collapse').on('shown.bs.collapse',toggleIcon);
-                });
+                // // handle icon toggling
+                // function toggleIcon(event) {
+                //     $(event.target)
+                //         .prev('.save-data-collapse-bar')
+                //         .find('i')
+                //         .toggleClass('bi-caret-right-fill bi-caret-down-fill');
+                // }
+                // $(document).ready(function() {
+                //     $('.collapse').on('hidden.bs.collapse',toggleIcon);
+                //     $('.collapse').on('shown.bs.collapse',toggleIcon);
+                // });
             </script>
             
             <!-- collapse header -->

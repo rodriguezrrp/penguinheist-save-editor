@@ -73,7 +73,7 @@ savemap_fp_prefix = './saves_mapped/mapped-'
 savemap_fp_default_suffix = '-default.json'
 savemap_fp_relevant_suffix = '-relevant.json'
 
-dropdown_fp_prefix = './dropdowns/dropdown-'
+dropdown_fp_prefix = './dropdowns/'
 dropdown_fp_suffix = '.json'
 
 if __name__ == '__main__':
@@ -165,7 +165,7 @@ if __name__ == '__main__':
         for dropdown_fp in glob(dropdown_fp_prefix+'*'+dropdown_fp_suffix):
             # obtain version from file name
             dropdown_map_name = dropdown_fp.replace('\\','/').removeprefix(dropdown_fp_prefix).removesuffix(dropdown_fp_suffix)
-            assert dropdown_map_name.isalpha(), f'unexpected dropdown_map_name name {dropdown_map_name!r}'
+            assert dropdown_map_name.removeprefix('dropdown-').isalpha(), f'unexpected dropdown_map_name name {dropdown_map_name!r}'
             # put that mapped default save file's info into the aggregating dict
             with open(dropdown_fp, 'r') as jf:
                 contents_dropdowns[dropdown_map_name] = json.load(jf)
