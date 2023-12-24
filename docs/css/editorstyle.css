@@ -6,6 +6,20 @@
   color: #6c757d;
 }
 
+.w-0 {
+  width: 0% !important;
+}
+
+.record-input {
+  max-width: 14ch;
+}
+
+.ts-dropdown {
+  min-width: 100%;
+  width: -moz-max-content;
+  width: max-content;
+}
+
 body {
   /* color: lightblue; */
   background-color: #d1e8f0;
@@ -63,6 +77,14 @@ span.listicons {
   text-align: center;
   width: 2em;
   line-height: inherit;
+}
+
+.form-range::-moz-range-thumb, .form-range::-webkit-slider-thumb {
+  cursor: pointer;
+}
+
+.form-check-input {
+  cursor: pointer;
 }
 
 input[type=checkbox].switch-lg {

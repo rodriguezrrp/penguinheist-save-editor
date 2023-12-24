@@ -25,6 +25,22 @@ $textgray: #6c757d;
     color: $textgray;
 }
 
+.w-0 {
+    width: 0% !important;
+}
+
+.record-input {
+    max-width: 14ch;
+}
+
+// overriding TomSelect dropdown
+.ts-dropdown {
+    // keep dropdown from shrinking below the width of the select
+    min-width: 100%;
+    // allow dropdown to show long elements that may overflow the width of the select normally
+    width: max-content;  // overrides default of 100%
+}
+
 body {
     /* color: lightblue; */
     background-color: $bg_light;
@@ -86,6 +102,16 @@ span.listicons {
     line-height: inherit;
 }
 
+// override some bootstrap
+.form-range {
+    &::-moz-range-thumb, &::-webkit-slider-thumb {
+        cursor: pointer;
+    }
+}
+.form-check-input {
+    cursor: pointer;
+}
+// add a .switch-lg class for the toggle switch checkbox
 input[type=checkbox].switch-lg {
     height: 1.5em;
     width: 2.5em;

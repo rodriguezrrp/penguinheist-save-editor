@@ -6,7 +6,6 @@
     <link rel="stylesheet" href="./css/bootstrap.min.css">
 
     <!-- bundle to include Popper JS -->
-    <!-- <script src="./js/popper-2.11.8.min.js"></script> -->
     <script src="./js/bootstrap.bundle.min.js"></script>
 
     <!-- bootstrap icons -->
@@ -17,12 +16,8 @@
     <!-- tom-select provides nice searchable selects! -->
     <link rel="stylesheet" href="./css/tom-select.bootstrap5.css">
     <script src="./js/tom-select.complete.js"></script>
-    
-    <!-- Custom scripts and css -->
-    
-    <link rel="stylesheet" href="./css/editorstyle.css">
-    <script src="./js/editor.js"></script>
-    <script src="./js/version_info.js"></script>
+
+    <!-- Generated scripts, holding data -->
 
     <script src="./js/props_info_generated.js"></script>
     <script src="./js/dropdown_maps_generated.js"></script>
@@ -30,6 +25,13 @@
     <script src="./js/name_maps_generated.js"></script>
     <script src="./js/version_prop_defaults_generated.js"></script>
     <script src="./js/version_prop_relevants_generated.js"></script>
+    
+    <!-- Custom scripts and css -->
+    
+    <link rel="stylesheet" href="./css/editorstyle.css">
+    <script src="./js/editor.js"></script>
+    <script src="./js/version_info.js"></script>
+    <script src="./js/unity_mapping.js"></script>
 
     <!-- reload form when ready -->
     <script> $(document).ready(repopulateParamsForm(null,null)); </script>
@@ -514,6 +516,8 @@
                                 if(typeof(propInfo.dropdown_extra) === "object")
                                     propDropdownValues = {...propDropdownValues, ...propInfo.dropdown_extra};
                             }
+
+                            const doInputRecord = (type == 'int-dropdown' && propInfo.dropdown == 'dropdown-keybinds');
                             
                             // create the editor
                             if(showRawEditors || !showRawEditors) { // TODO: remove the !showRawEditors
@@ -574,7 +578,7 @@
                                     // case 'color':
                                     //     break;
                                     case 'float-range':
-                                        editorDiv += `<div class="col">
+                                        editorDiv += `<div class="col m-auto">
                                                 <input class="form-range" type="range" id="inputNeat-${fullKeyNoSpaces}" name="${fullKeyNoSpaces}"
                                                 min="${propInfo.min ?? 0}" max="${propInfo.max ?? 1}" step="${propInfo.step ?? 0.01}"/>
                                             </div>`;
@@ -583,11 +587,23 @@
                                         editorDiv += `<div class="col">
                                                 <input class="form-control" type="number" id="inputNeat-${fullKeyNoSpaces}" name="${fullKeyNoSpaces}"/>
                                             </div>`;
-                                            break;
-                                            case 'int-dropdown':
-                                        editorDiv += `<div class="col w-25">
-                                                <select id="inputNeat-${fullKeyNoSpaces}" name="${fullKeyNoSpaces}" placeholder="Type to search value..." autocomplete="off"
-                                                class="mw-100">
+                                        break;
+                                    case 'int-dropdown':
+                                        if (doInputRecord) {
+                                            rawInputMinWidth = '10ch';
+                                            rawInputColClass = 'col-2';
+                                            editorDiv += `<div class="col w-0">
+                                                <div class="input-group">
+                                                    <input id="inputRecord-${fullKeyNoSpaces}" record-input-for="inputNeat-${fullKeyNoSpaces}" type="text"
+                                                    placeholder="Record input" class="form-control record-input"
+                                                    title="Press any key or gamepad or mouse click in this box to record its input ID. To exit, click out of this box."
+                                                    oncontextmenu="return false;">
+                                                    `;
+                                        } else {
+                                            editorDiv += `<div class="col w-25">`;
+                                        }
+                                        editorDiv += `<select id="inputNeat-${fullKeyNoSpaces}" name="${fullKeyNoSpaces}" placeholder="Type to search value..." autocomplete="off"
+                                                    class="mw-100">
                                         `;
                                         // editorDiv += `<option value="" disabled selected>Unset</option>`;
                                         // add the options inside the select
@@ -595,7 +611,8 @@
                                             editorDiv += `<option value="${optionValue}">${optionContents}</option>`;
                                         }
                                         editorDiv +=`
-                                                </select>
+                                                    </select>
+                                                ${doInputRecord ? '</div>' : ''}
                                             </div>`;
                                         break;
                                     // case 'intlist':
@@ -616,7 +633,7 @@
                                         </button>
                                     </div>`;
                                 // add raw value
-                                editorDiv += `<div class="col ${rawInputColClass} align-self-end" style="min-width:${rawInputMinWidth}">
+                                editorDiv += `<div class="col ${rawInputColClass}" style="min-width:${rawInputMinWidth}">
                                                 <input class="form-control" type="text" id="inputRaw-${fullKeyNoSpaces}" name="${fullKeyNoSpaces}"
                                                 title="Actual raw value that the save file will hold" placeholder="no value" disabled/>
                                             </div>`;
@@ -636,8 +653,10 @@
                             }
                             // setup tomselect searchable select dropdown
                             let selectElem = document.querySelector(`select#inputNeat-${fullKeyNoSpaces}`);
-                            console.log('tomselect\'s selectElem:', selectElem);
+                            // console.log('tomselect\'s selectElem:', selectElem);
                             if(selectElem) {
+                                // start the select as empty
+                                selectElem.value = '';
                                 // let tomselect = new TomSelect("#select-beast",{
                                 let tomselect = new TomSelect(selectElem, {
                                     create: false,
@@ -648,6 +667,11 @@
                                     , maxOptions: null  // default was 50; this will allow ALL <option> s to show
                                 });
                                 paramsFormTomSelectList.push(tomselect);
+                            }
+                            // setup input recorder
+                            let inputRecordElem = document.getElementById(`inputRecord-${fullKeyNoSpaces}`);
+                            if(inputRecordElem) {
+                                setupInputRecorder(inputRecordElem, (ucode) => updateSaveProp(fullKey, propInfo, ucode, editorUpdateCallback));
                             }
 
                             let useIn1Indicator = document.querySelector(`#useIn1-${fullKeyNoSpaces}>i.yes-warning`);
@@ -706,7 +730,13 @@
                                     $(`#inputNeat-${fullKeyNoSpaces}`)[0].checked = (saveDataValue === '0' ? false : !!saveDataValue); // truthy
                                 } else if(type == 'int-dropdown') {
                                     $(`#inputRaw-${fullKeyNoSpaces}`).val(saveDataValue);
-                                    document.getElementById(`inputNeat-${fullKeyNoSpaces}`).tomselect.setValue(saveDataValue, true); // silent true
+                                    let inputNeatDropdown = document.getElementById(`inputNeat-${fullKeyNoSpaces}`);
+                                    if(inputNeatDropdown.tomselect)
+                                        // handle value change through TomSelect instead
+                                        inputNeatDropdown.tomselect.setValue(saveDataValue, true); // set silent to true
+                                    else
+                                        // no TomSelect attached then. Regular dropdown
+                                        inputNeatDropdown.value = saveDataValue;
                                 } else {
                                     $(`#inputRaw-${fullKeyNoSpaces}`).val(saveDataValue);
                                     $(`#inputNeat-${fullKeyNoSpaces}`).val(saveDataValue);
@@ -728,8 +758,10 @@
                                 neatEditor.change(e => updateSaveProp(fullKey, propInfo, neatEditor.val(), editorUpdateCallback));
                             }
                             
-                            if (currentSaveData[fullKey])
+                            // give an initial value, if applicable.
+                            if (currentSaveData[fullKey]) {
                                 updateSaveProp(fullKey, propInfo, currentSaveData[fullKey], editorUpdateCallback);
+                            }
                         } // end for all full property keys
 
                     } // end for all property keys
@@ -788,6 +820,37 @@
                 var paramsFormTooltipList = [];
                 var paramsFormTomSelectList = [];
                 var currentSaveData = {};
+
+                function setupInputRecorder(elem, unityCodeCallback) {
+                    elem.addEventListener("keydown", (e) => {
+                        // Handling key presses (keydown).
+                        let unityCode = keyToUnity(e);
+                        if(unityCode !== null) {
+                            unityCodeCallback(unityCode);
+                        } else {
+                            console.error(`Oops. No keycode mapping was found for recorded input (key="${e.key}" code="${e.code}").`);
+                            alert(`Oops. No keycode mapping was found for recorded input (key="${e.key}" code="${e.code}").`);
+                        }
+                        e.preventDefault();
+                        return false;
+                    });
+                    elem.addEventListener("mouseup", (e) => {
+                        // Handling mouse buttons (mouseup).
+                        // Note: browser forward and back may not be captured (and/or prevented) in all browsers.
+                        let unityCode = mouseToUnity(e);
+                        if(unityCode !== null) {
+                            unityCodeCallback(unityCode);
+                        } else {
+                            console.error(`Oops. No keycode mapping was found for recorded input (mouse button=${e.button}).`);
+                            alert(`Oops. No keycode mapping was found for recorded input (mouse button=${e.button}).`);
+                        }
+                        // TODO delayed clear from linux?
+                        // Note that linux could paste with middle mouse.
+
+                        e.preventDefault();
+                        return;
+                    });
+                }
 
                 function doFileFormData(event) {
                     // Event.stop(event);
