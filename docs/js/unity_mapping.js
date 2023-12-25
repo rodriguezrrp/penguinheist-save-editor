@@ -48,7 +48,7 @@ kc("KeyZ", 122); // Z
 
 kc("Escape", 27); // Escape
 kc("Backquote", 96); // BackQuote
-kc("Backspace", 57); // BackSpace
+kc("Backspace", 8); // BackSpace
 kc("Tab", 9); // Tab
 kc("BracketLeft", 91); // LeftBracket
 kc("BracketRight", 93); // RightBracket
@@ -97,6 +97,11 @@ kc("Home", 278); // Home
 kc("End", 279); // End
 kc("PageUp", 280); // PageUp
 kc("PageDown", 281); // PageDown
+
+kc("ArrowUp", 273); // UpArrow
+kc("ArrowDown", 274); // DownArrow
+kc("ArrowLeft", 276); // LeftArrow
+kc("ArrowRight", 275); // RightArrow
 
 kc("NumLock", 300); // Numlock
 kc("NumpadDivide", 267); // KeypadDivide

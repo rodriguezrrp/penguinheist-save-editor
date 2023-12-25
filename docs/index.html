@@ -191,6 +191,10 @@
                     <div id="saveType2Desc" class="form-text">If selected, shows parameter columns for comparing/converting values</div>
                 </div>
                 <script>
+                    var paramsFormTooltipList = [];
+                    var paramsFormTomSelectList = [];
+                    var currentSaveData = undefined;
+
                     function updateGameVersionInfoOnPage(event, version) {
                         // var version = $('#saveType1').val();
                         console.log('updateGameVersionInfoOnPage', version);
@@ -236,7 +240,9 @@
                         populateVersionDropdowns();
                         populateManifestTable();
                         updateGameVersionInfoOnPage(null, $('#saveType1').val());
-                        doFileFormData(null);
+                        let fileSelectElem = document.getElementById('fileSelect');
+                        currentSaveData = fileSelectElem.files[0] ? readFile(fileSelectElem.files[0]) : VERSION_DEFAULTS[$('#saveType1').val()];
+                        getFileFormData();
                     });
 
                     $('#saveType1').change((e) => updateGameVersionInfoOnPage(e, $('#saveType1').val()));
@@ -245,7 +251,7 @@
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" name="showRelevantOptions" id="showRelevantOptions" checked>
                         <label class="form-check-label" for="showRelevantOptions">
-                        Show relevant save file parameters only (always true for Misc. category)
+                        Show relevant save file parameters only (always true for Unknown category)
                         </label>
                     </div>
                 </div>
@@ -254,7 +260,7 @@
                         <!-- <input class="form-check-input" type="checkbox" name="showRawEditors" id="showRawEditors"> -->
                         <input class="form-check-input" type="checkbox" name="showRawEditors" id="showRawEditors" checked disabled>
                         <label class="form-check-label" for="showRawEditors">
-                        Show raw value editors
+                        Show individual value editors
                         </label>
                     </div>
                 </div>
@@ -281,6 +287,94 @@
                     }
                     x = parseFloat(value);
                     return (x | 0) === x;
+                }
+                
+                var SAVE_COL_PATTERN = /^((0(\.\d+)?|1);){3}(0(\.\d+)?|1)$/g;
+                var HEX_COL_PATTERN = /^#([\da-f]{2})([\da-f]{2})([\da-f]{2})([\da-f]{2})?$/gi;
+
+                // FWIW: according to UnityEngine.Color32, conversion between 0-255 and 0-1 is done by dividing and multiplying by 255.
+                // #000000  <==>  0;0;0;1
+                // #ffffff  <==>  1;1;1;1
+                function saveToHex(saveCol) {
+                    if(!saveCol.match(SAVE_COL_PATTERN)) return null;
+                    let rgbaArr = saveCol.split(';');
+                    let res = '#' + rgbaArr.map(n => (Math.round(parseFloat(n)*255)).toString(16)).map(n => n.length == 1 ? '0'+n : n).join('');
+                    // trim off alpha part of #rrggbbaa if alpha was 1 as in x;x;x;1
+                    return res.length == 9 && res.endsWith('ff') ? res.substring(0, 7) : res;
+                }
+                function hexToSave(hexCol) {
+                    if(!hexCol.match(HEX_COL_PATTERN)) return null;
+                    let rgbaArr = HEX_COL_PATTERN.exec(hexCol).slice(1);
+                    return rgbaArr.map(n => n === undefined ? '1' : (parseInt(n,16)/255).toPrecision(8).replaceAll(',','.').replaceAll(/\.?0+$/g,'')).join(';');
+                }
+
+                function addIntlistElem(intlistColElem, fullKeyNoSpaces, intlistChangeCallback, intlistDeleteCallback, initVal, dropdown) {
+                    const lindex = intlistColElem.children.length-1;
+                    // add new value to column's intlist property
+                    initVal = (initVal===null || typeof(initVal)==="undefined") ? '' : initVal;
+                    intlistColElem.intlist.push(initVal.toString());
+
+                    // create containing row div
+                    const newItemRowElem = Object.assign(
+                        document.createElement('div'),
+                        { className: 'row mb-2 intlist-item-row' });
+                    // create children elements
+                    if(!dropdown) {
+                        const _itemInput = Object.assign(
+                            document.createElement('input'),
+                            { className: 'form-control', type: 'number',
+                            listindex: lindex, value: initVal }
+                        );
+                        _itemInput.addEventListener('change', (e) => {
+                            console.log(intlistColElem.intlist);
+                            intlistColElem.intlist[e.target.listindex] = e.target.value;
+                            console.log(intlistColElem.intlist);
+                            intlistChangeCallback();
+                        });
+                        const _itemInputCol = Object.assign(
+                            document.createElement('div'), { className: 'col' }
+                        );
+                        _itemInputCol.append(_itemInput);
+                        newItemRowElem.append(_itemInputCol);
+                    } else {
+                        //
+                    }
+                    const _delBtn = Object.assign(
+                        document.createElement('button'),
+                        { className: "btn btn-outline-secondary h-100 py-0 px-2 border-0",
+                        type: 'button', title: "Erase item from list parameter",
+                        listindex: lindex }
+                    )
+                    _delBtn.setAttribute('aria-label', "Erase item from list parameter");
+                    _delBtn.append(Object.assign(
+                        document.createElement('i'), { className: 'fs-5 bi-trash-fill' }
+                    ));
+                    const _delBtnCol = Object.assign(
+                        document.createElement('div'), { className: 'col col-auto' }
+                    );
+                    _delBtnCol.append(_delBtn);
+                    newItemRowElem.append(_delBtnCol);
+
+                    // add row into column
+                    intlistColElem.insertBefore(newItemRowElem, intlistColElem.lastChild);
+                    // handle removal of this item's editor
+                    _delBtn.onclick = (e) => {
+                        intlistColElem.intlist.splice(
+                            // get input of the same row
+                            e.target.closest('.intlist-item-row').querySelector('input').listindex,
+                            1);
+                        // decrement listindex of all other inputs following this one, to fit with the splice above.
+                        let _rowelem = e.target.closest('.intlist-item-row').nextSibling;
+                        while(_rowelem.classList.contains('intlist-item-row')) {
+                            // get input of the row
+                            _rowelem.querySelector('input').listindex--;
+                            // move to the next row
+                            _rowelem = _rowelem.nextSibling;
+                        }
+                        // now remove this element
+                        intlistDeleteCallback();
+                        newItemRowElem.remove();
+                    }
                 }
 
                 function resolveDropdown(dropdownRefName, saveType1, saveType2) {
@@ -563,46 +657,54 @@
 
                                 // add actual value editor
                                 editorDiv += `<div class="col-12 col-md-6 save-data-val">`;
-                                editorDiv += `<div class="row">`; // inner row for layout
+                                editorDiv += `<div class="row input-editors-row">`; // inner row for layout
                                 let rawInputColClass = 'col-3';
                                 let rawInputMinWidth = '15ch';
                                 switch (type) {
                                     case 'bool':
                                         editorDiv += `<div class="col m-auto">
                                                 <div class="form-switch">
-                                                    <input class="form-check-input switch-lg" type="checkbox" id="inputNeat-${fullKeyNoSpaces}" name="${fullKeyNoSpaces}"
-                                                    aria-label="${propName}"/>
+                                                    <input class="form-check-input switch-lg" type="checkbox" id="inputNeat-${fullKeyNoSpaces}"
+                                                    aria-label="${propName}">
                                                 </div>
                                             </div>`;
                                         break;
-                                    // case 'color':
-                                    //     break;
+                                    case 'color':
+                                        editorDiv += `<div class="col">
+                                                <div class="input-group">
+                                                    <input class="form-control form-control-color" type="color" id="inputNeat-${fullKeyNoSpaces}"
+                                                    title="Choose a color" value="">
+                                                    <input class="form-control hex-color-input" type="text" id="inputHex-${fullKeyNoSpaces}"
+                                                    title="Edit hex value of color" placeholder="Hex color">
+                                                </div>
+                                            </div>`;
+                                        break;
                                     case 'float-range':
                                         editorDiv += `<div class="col m-auto">
-                                                <input class="form-range" type="range" id="inputNeat-${fullKeyNoSpaces}" name="${fullKeyNoSpaces}"
-                                                min="${propInfo.min ?? 0}" max="${propInfo.max ?? 1}" step="${propInfo.step ?? 0.01}"/>
+                                                <input class="form-range" type="range" id="inputNeat-${fullKeyNoSpaces}"
+                                                min="${propInfo.min ?? 0}" max="${propInfo.max ?? 1}" step="${propInfo.step ?? 0.01}">
                                             </div>`;
                                         break;
                                     case 'int':
                                         editorDiv += `<div class="col">
-                                                <input class="form-control" type="number" id="inputNeat-${fullKeyNoSpaces}" name="${fullKeyNoSpaces}"/>
+                                                <input class="form-control" type="number" id="inputNeat-${fullKeyNoSpaces}">
                                             </div>`;
                                         break;
                                     case 'int-dropdown':
                                         if (doInputRecord) {
                                             rawInputMinWidth = '10ch';
                                             rawInputColClass = 'col-2';
-                                            editorDiv += `<div class="col w-0">
+                                            editorDiv += `<div class="col w-1">
                                                 <div class="input-group">
                                                     <input id="inputRecord-${fullKeyNoSpaces}" record-input-for="inputNeat-${fullKeyNoSpaces}" type="text"
                                                     placeholder="Record input" class="form-control record-input"
-                                                    title="Press any key or gamepad or mouse click in this box to record its input ID. To exit, click out of this box."
+                                                    title="Press any key or mouse click in this box to record its input ID. To exit, click out of this box."
                                                     oncontextmenu="return false;">
                                                     `;
                                         } else {
                                             editorDiv += `<div class="col w-25">`;
                                         }
-                                        editorDiv += `<select id="inputNeat-${fullKeyNoSpaces}" name="${fullKeyNoSpaces}" placeholder="Type to search value..." autocomplete="off"
+                                        editorDiv += `<select id="inputNeat-${fullKeyNoSpaces}" placeholder="Type to search value..." autocomplete="off"
                                                     class="mw-100">
                                         `;
                                         // editorDiv += `<option value="" disabled selected>Unset</option>`;
@@ -615,12 +717,18 @@
                                                 ${doInputRecord ? '</div>' : ''}
                                             </div>`;
                                         break;
-                                    // case 'intlist':
-                                    //     break;
+                                    case 'intlist':
+                                        rawInputColClass = 'col-7';
+                                        editorDiv += `<div class="col">
+                                                <button id="btnIntlistAdd-${fullKeyNoSpaces}" type="button"
+                                                class="btn btn-secondary" title="Erase parameter value" aria-label="Erase parameter value">
+                                                <i class="bi-plus-lg"></i>Add</button>
+                                            </div>`;
+                                        break;
                                     case 'string':
                                     default:
                                         editorDiv += `<div class="col">
-                                                <input class="form-control" type="text" id="inputNeat-${fullKeyNoSpaces}" name="${fullKeyNoSpaces}"/>
+                                                <input class="form-control" type="text" id="inputNeat-${fullKeyNoSpaces}">
                                             </div>`;
                                         break;
                                 }
@@ -634,8 +742,8 @@
                                     </div>`;
                                 // add raw value
                                 editorDiv += `<div class="col ${rawInputColClass}" style="min-width:${rawInputMinWidth}">
-                                                <input class="form-control" type="text" id="inputRaw-${fullKeyNoSpaces}" name="${fullKeyNoSpaces}"
-                                                title="Actual raw value that the save file will hold" placeholder="no value" disabled/>
+                                                <input class="form-control raw-input" type="text" id="inputRaw-${fullKeyNoSpaces}" name="${fullKeyNoSpaces}"
+                                                title="Actual raw value that the save file will hold" placeholder="no value" disabled>
                                             </div>`;
                                 editorDiv += `</div>`; // close inner row
                                 editorDiv += `</div>`;
@@ -672,6 +780,26 @@
                             let inputRecordElem = document.getElementById(`inputRecord-${fullKeyNoSpaces}`);
                             if(inputRecordElem) {
                                 setupInputRecorder(inputRecordElem, (ucode) => updateSaveProp(fullKey, propInfo, ucode, editorUpdateCallback));
+                            }
+                            // setup intlist element adder
+                            let btnAddElem = document.getElementById(`btnIntlistAdd-${fullKeyNoSpaces}`);
+                            if(btnAddElem) {
+                                // let intlistColElem = document.getElementById(`intlistCol-${fullKeyNoSpaces}`);
+                                // back it out to the entire col which contains the row which contains the col that this is in
+                                let intlistColElem = btnAddElem.parentElement.parentElement.parentElement;
+                                intlistColElem.intlist = []; // initialize the list of values (currently empty)
+                                let intlistChangeCallback = () => {
+                                    // handle the item changing
+                                    updateSaveProp(fullKey, propInfo, intlistColElem.intlist.filter(v=>v!==''&&typeof(v)!=="undefined").join(' '), editorUpdateCallback);
+                                }
+                                btnAddElem.onclick = (e) => {
+                                    // TODO: add dropdown specified, NAME_MAP[propKeyExtra] ?  and handle updating input with new vals
+                                    addIntlistElem(intlistColElem, fullKeyNoSpaces,
+                                        intlistChangeCallback, intlistChangeCallback
+                                    );
+                                    // call the updater right after adding, because a new item got added
+                                    intlistChangeCallback();
+                                }
                             }
 
                             let useIn1Indicator = document.querySelector(`#useIn1-${fullKeyNoSpaces}>i.yes-warning`);
@@ -727,7 +855,7 @@
                                     // saveDataValue would be 1 or 0
                                     // console.log('saveDataValue:',saveDataValue);
                                     $(`#inputRaw-${fullKeyNoSpaces}`).val(saveDataValue);
-                                    $(`#inputNeat-${fullKeyNoSpaces}`)[0].checked = (saveDataValue === '0' ? false : !!saveDataValue); // truthy
+                                    document.getElementById(`inputNeat-${fullKeyNoSpaces}`).checked = (saveDataValue === '0' ? false : !!saveDataValue); // truthy
                                 } else if(type == 'int-dropdown') {
                                     $(`#inputRaw-${fullKeyNoSpaces}`).val(saveDataValue);
                                     let inputNeatDropdown = document.getElementById(`inputNeat-${fullKeyNoSpaces}`);
@@ -737,11 +865,17 @@
                                     else
                                         // no TomSelect attached then. Regular dropdown
                                         inputNeatDropdown.value = saveDataValue;
+                                } else if(type == 'color') {
+                                    let hexmatch = saveDataValue?.match(HEX_COL_PATTERN), savematch = saveDataValue?.match(SAVE_COL_PATTERN);
+                                    $(`#inputRaw-${fullKeyNoSpaces}`).val(hexmatch ? hexToSave(saveDataValue) : saveDataValue);
+                                    $(`#inputNeat-${fullKeyNoSpaces}`).val(savematch ? saveToHex(saveDataValue) : saveDataValue);
+                                    $(`#inputHex-${fullKeyNoSpaces}`).val(savematch ? saveToHex(saveDataValue) : hexmatch ? saveDataValue : '');
                                 } else {
                                     $(`#inputRaw-${fullKeyNoSpaces}`).val(saveDataValue);
                                     $(`#inputNeat-${fullKeyNoSpaces}`).val(saveDataValue);
                                 }
                             }
+
                             // apply listeners
                             let rawEditor = $(`#inputRaw-${fullKeyNoSpaces}`);
                             let neatEditor = $(`#inputNeat-${fullKeyNoSpaces}`);
@@ -752,6 +886,11 @@
                                 // checkboxes handle value differently
                                 rawEditor.change(e => updateSaveProp(fullKey, propInfo, rawEditor.val(), editorUpdateCallback));
                                 neatEditor.change(e => updateSaveProp(fullKey, propInfo, neatEditor[0].checked, editorUpdateCallback));
+                            } else if(type == 'color') {
+                                let textHexEditor = document.getElementById(`inputHex-${fullKeyNoSpaces}`);
+                                rawEditor.change(e => updateSaveProp(fullKey, propInfo, rawEditor.val(), editorUpdateCallback));
+                                neatEditor.change(e => updateSaveProp(fullKey, propInfo, neatEditor.val(), editorUpdateCallback));
+                                textHexEditor.addEventListener('change', e => updateSaveProp(fullKey, propInfo, textHexEditor.value, editorUpdateCallback));
                             } else {
                                 rawEditor.change(e => updateSaveProp(fullKey, propInfo, rawEditor.val(), editorUpdateCallback));
                                 // neatEditor.on('input', e => updateSaveProp(fullKey, propInfo, neatEditor.val(), editorUpdateCallback));
@@ -759,12 +898,16 @@
                             }
                             
                             // give an initial value, if applicable.
-                            if (currentSaveData[fullKey]) {
-                                updateSaveProp(fullKey, propInfo, currentSaveData[fullKey], editorUpdateCallback);
+                            // console.log('fullkey:', fullKey, 'currentSaveData.hasOwnProperty(fullKey)', currentSaveData.hasOwnProperty(fullKey), 'currentSaveData[fullKey]', currentSaveData[fullKey]);
+                            console.log('fullkey:', fullKey, 'currentSaveData.has(fullKey)', currentSaveData.has(fullKey), 'currentSaveData.get(fullKey)', currentSaveData.get(fullKey));
+                            if (currentSaveData.has(fullKey)) {
+                                updateSaveProp(fullKey, propInfo, currentSaveData.get(fullKey), editorUpdateCallback);
                             }
                         } // end for all full property keys
 
                     } // end for all property keys
+
+                    console.log(currentSaveData);
 
                     // updateGameVersionInfoOnPage(null, $('#saveType1').val());
                 };
@@ -774,7 +917,7 @@
                     let warnMessage = {};
                     if(!propInfo.required && editorNewValue === "" && propInfo.type != 'intlist') {
                         // only intlist should keep a value of "" for example.
-                        delete currentSaveData[fullKey];
+                        currentSaveData.delete(fullKey);
                     } else {
                         // validate
                         switch(propInfo.type) {
@@ -786,8 +929,12 @@
                                     warnMessage['v2'] = 'Expects the value to be 1 or 0 (true or false)!'
                                 }
                                 break;
-                            // case 'color':
-                            //     break;
+                            case 'color':
+                                if(!editorNewValue.match(SAVE_COL_PATTERN) && !editorNewValue.match(HEX_COL_PATTERN)) {
+                                    warnMessage['v1'] = 'Expects the value to be a valid color! (R;G;B;A and each value is 0-1)'
+                                    warnMessage['v2'] = 'Expects the value to be a valid color! (R;G;B;A and each value is 0-1)'
+                                }
+                                break;
                             case 'float-range':
                                 if(propInfo.min && Number(editorNewValue) < propInfo.min) {
                                     warnMessage['v1'] = `Expects the value to be > ${propInfo.min}!`
@@ -812,14 +959,10 @@
                             default:
                                 break;
                         }
-                        currentSaveData[fullKey] = editorNewValue;
+                        currentSaveData.set(fullKey, editorNewValue);
                     }
-                    editorUpdateCallback(warnMessage, currentSaveData[fullKey]);
+                    editorUpdateCallback(warnMessage, currentSaveData.get(fullKey));
                 };
-
-                var paramsFormTooltipList = [];
-                var paramsFormTomSelectList = [];
-                var currentSaveData = {};
 
                 function setupInputRecorder(elem, unityCodeCallback) {
                     elem.addEventListener("keydown", (e) => {
@@ -880,7 +1023,7 @@
                     let saveType2 = formData.get('saveType2');
                     // let showSaveType2 = !!saveType2;
 
-                    // get save file params
+                    // get save file original params (not currentSaveData, which may have some changes)
                     let fileValuesMap = readFile(formData.get('fileSelect'), saveType1);
                     // fill out the save file params form
                     fillParamsForm(saveType1, saveType2, showRelevantOptions, showRawEditors, /*PROP_INFO,*/ fileValuesMap);
@@ -893,7 +1036,11 @@
                     console.log('event.target.files:', event.target.files);
                 }
 
-                $('#fileSelect').change(parseFileTest);
+                // $('#fileSelect').change(parseFileTest);
+                $('#fileSelect').change((e) => {
+                    currentSaveData = readFile(document.getElementById('fileSelect').files[0]);
+                    getFileFormData();
+                });
                 $('#fileForm').change(function() {
                     console.log('form change detected!');
                     getFileFormData();

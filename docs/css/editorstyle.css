@@ -6,12 +6,16 @@
   color: #6c757d;
 }
 
-.w-0 {
-  width: 0% !important;
+.w-1 {
+  width: 1% !important;
 }
 
 .record-input {
   max-width: 14ch;
+}
+
+.hex-color-input {
+  min-width: 10.4ch !important;
 }
 
 .ts-dropdown {

@@ -25,13 +25,18 @@ $textgray: #6c757d;
     color: $textgray;
 }
 
-.w-0 {
-    width: 0% !important;
+.w-1 {
+    width: 1% !important;
 }
 
 .record-input {
     max-width: 14ch;
 }
+.hex-color-input {
+    min-width: 10.4ch !important; // !important to beat css specificity from bootstrap
+}
+// .input-editors-row > .raw-input {
+// }
 
 // overriding TomSelect dropdown
 .ts-dropdown {
