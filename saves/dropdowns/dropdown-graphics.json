@@ -11,9 +11,9 @@
         }
     },
     "vCHP_latest": {
-        "inherit": "_earliest_known_values_so_far"
+        "inherit": "_earliest_supported_value_list"
     },
-    "_earliest_known_values_so_far": {
+    "_earliest_supported_value_list": {
         "inherit": false,
         "values": {
             "0": "TODO: Graphics [0] Name [for Cosmetics & Heist Planner update]",

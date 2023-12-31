@@ -7,7 +7,7 @@ const DEPOTS_INFO = {
 
 const VERSION_INFO = {
     'vHH_initial': {
-        'name': 'Heist and Housing Update',
+        'name': 'Heist and Housing Update (initial build)',
         'supported': false,
 		'steamdb_buildid': '12980251',
 		'crc32_windows': undefined,
@@ -17,6 +17,7 @@ const VERSION_INFO = {
     },
     'vCHP_latest': {
         'name': 'Patch + Cosmetics + Heist Planner Update',
+        '_note': 'Last public branch build before HH update',
         'supported': true,
 		'steamdb_buildid': '12437491',
 		'crc32_windows': '98F3F212',

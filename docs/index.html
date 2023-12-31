@@ -28,6 +28,7 @@
     
     <!-- Custom scripts and css -->
     
+    <!-- <link rel="stylesheet" href="./css/fallback-background.css"> -->
     <link rel="stylesheet" href="./css/editorstyle.css">
     <script src="./js/editor.js"></script>
     <script src="./js/version_info.js"></script>
@@ -49,8 +50,7 @@
                         <div class="col-md-6 pb-1">
                             <!-- <label for="fileSelect" class="form-label">Upload Save</label> -->
                             <input type="file" name="fileSelect" id="fileSelect"
-                                value="Upload Save" class="btn btn-outline-secondary --form-control w-100 h-100"
-                                style="cursor:pointer;"
+                                value="Upload Save" class="btn btn-outline-secondary --form-control w-100 h-100 file-select"
                                 aria-describedby="fileSelectDesc"
                             >
                         </div>
@@ -65,13 +65,15 @@
                         </div> -->
                     </div>
                     The default save file name is "<span class="mono-text">PHSaveMain.sav</span>".
+                    Backups use the name "<span class="mono-text fw-500">PHSaveMainBackup.sav</span>",
+                    and rejected files use the name "<span class="mono-text fw-500">PHSaveMainCORRUPT.sav</span>".
                     <div id="fileSelectDesc">
                         <span id="defaultsavelocation">Default save location</span> on:
                         <ul class="listicons">
                             <li class="listicons inst-windows">
                                 <span class="listicons"><i class="bi-windows" aria-hidden="true"></i></span>
                                 Windows:
-                                folder "<span class="mono-text">%appdata%/LocalLow/FishSoft/Penguin&nbsp;Heist/</span>".
+                                folder "<span class="mono-text"><abbr title="%userprofile%/AppData/">%appdata%/../</abbr>LocalLow/FishSoft/Penguin&nbsp;Heist/</span>".
                                 <br>
                                 One easy way to reach this folder is to open the Run dialog box with
                                 <span class="fw-700 defaultblack"><i class="bi-windows" title="Windows" aria-label="Windows"></i>&nbsp;+&nbsp;R</span>,
@@ -85,7 +87,7 @@
                                 folder "<span class="mono-text">~/Library/Application Support/FishSoft/Penguin&nbsp;Heist/</span>".
                                 <br>
                                 If you are using the file explorer and you do not see the "<span class="mono-text fw-500">Library</span>" folder in
-                                "<span class="mono-text fw-500">Users</span>" > <span class="mono-text fw-500">your user name</span>,
+                                "<span class="mono-text fw-500">Users</span>" &gt; <span class="mono-text fw-500">your user name</span>,
                                 then it may be hidden. Right click and choose "Show View Options". Make sure "Show Library File" is checked. 
                             </li>
                             <li class="listicons inst-linux">
@@ -97,7 +99,8 @@
                                     </svg>
                                 </span>
                                 Linux:
-                                folder "<span class="mono-text">$HOME/.config/unity3d/</span>" or "<span class="mono-text">$XDG_CONFIG_HOME/unity3d/</span>".
+                                folder "<span class="mono-text">$HOME/.config/unity3d/</span>"
+                                or "<span class="mono-text"><abbr title="The base Steam installation folder">&lt;Steam-folder&gt;</abbr>/steamapps/compatdata/1451480/pfx/</span>".
                                 <br><i class="bi-info-circle" aria-label="Note"></i>&nbsp;This may vary depending on your distribution and your method of installing Steam games.
                                 If this folder location is incorrect, try searching for "<span class="mono-text fw-500">FishSoft</span>", "<span class="mono-text fw-500">Penguin Heist</span>", or "<span class="mono-text fw-500">PHSaveMain.sav</span>" in your file explorer.
                             </li>
@@ -241,7 +244,9 @@
                         populateManifestTable();
                         updateGameVersionInfoOnPage(null, $('#saveType1').val());
                         let fileSelectElem = document.getElementById('fileSelect');
-                        currentSaveData = fileSelectElem.files[0] ? readFile(fileSelectElem.files[0]) : VERSION_DEFAULTS[$('#saveType1').val()];
+                        currentSaveData = fileSelectElem.files[0] ? readFile(fileSelectElem.files[0])
+                                            : new Map(Object.entries(VERSION_DEFAULTS[$('#saveType1').val()]));
+                        createParamsFormCollapses();  // create them only once
                         getFileFormData();
                     });
 
@@ -308,28 +313,34 @@
                     return rgbaArr.map(n => n === undefined ? '1' : (parseInt(n,16)/255).toPrecision(8).replaceAll(',','.').replaceAll(/\.?0+$/g,'')).join(';');
                 }
 
-                function addIntlistElem(intlistColElem, fullKeyNoSpaces, intlistChangeCallback, intlistDeleteCallback, initVal, dropdown) {
+                function addIntlistElem(intlistColElem, fullKeyNoSpaces, intlistChangeCallback, intlistDeleteCallback, initVal, dropdownValues) {
                     const lindex = intlistColElem.children.length-1;
                     // add new value to column's intlist property
-                    initVal = (initVal===null || typeof(initVal)==="undefined") ? '' : initVal;
+                    initVal = (initVal===null || typeof(initVal)==="undefined")
+                                ? '' : initVal;
                     intlistColElem.intlist.push(initVal.toString());
 
                     // create containing row div
+                    // Note: the list index for this item is stored as a property of this .intlist-item-row element.
                     const newItemRowElem = Object.assign(
                         document.createElement('div'),
-                        { className: 'row mb-2 intlist-item-row' });
+                        // { className: 'row mb-2 intlist-item-row' });
+                        { className: 'row mb-2 intlist-item-row', listindex: lindex });
                     // create children elements
-                    if(!dropdown) {
+                    if(!dropdownValues) {
+                        // just number inputs
                         const _itemInput = Object.assign(
                             document.createElement('input'),
                             { className: 'form-control', type: 'number',
-                            listindex: lindex, value: initVal }
+                            // listindex: lindex, value: initVal }
+                            value: initVal }
                         );
                         _itemInput.addEventListener('change', (e) => {
                             console.log(intlistColElem.intlist);
-                            intlistColElem.intlist[e.target.listindex] = e.target.value;
+                            // intlistColElem.intlist[e.target.listindex] = e.target.value;
+                            intlistColElem.intlist[e.target.closest('.intlist-item-row').listindex] = e.target.value;
                             console.log(intlistColElem.intlist);
-                            intlistChangeCallback();
+                            intlistChangeCallback(e);
                         });
                         const _itemInputCol = Object.assign(
                             document.createElement('div'), { className: 'col' }
@@ -337,7 +348,43 @@
                         _itemInputCol.append(_itemInput);
                         newItemRowElem.append(_itemInputCol);
                     } else {
-                        //
+                        // dropdowns
+                        const _itemSelect = Object.assign(
+                            document.createElement('select'),
+                            { className: 'mw-100', placeholder: 'Type to search value...',
+                            autocomplete: 'off', value: initVal }
+                        );
+                        // add <option> s
+                        for (const [optionValue, optionContents] of Object.entries(dropdownValues)) {
+                            const _optionElem = Object.assign(
+                                document.createElement('option'),
+                                { value: optionValue, innerHTML: optionContents }
+                            );
+                            _itemSelect.append(_optionElem);
+                        }
+                        const _itemInputCol = Object.assign(
+                            document.createElement('div'), { className: 'col' }
+                        );
+                        _itemInputCol.append(_itemSelect);
+                        newItemRowElem.append(_itemInputCol);
+
+                        // setup TomSelect for searching options
+                        let tomselect = new TomSelect(_itemSelect, {
+                            create: false,
+                            sortField: {
+                                field: "text"
+                                // direction: "asc"
+                            }
+                            , maxOptions: null  // default was 50; this will allow ALL <option> s to show
+                        });
+                        paramsFormTomSelectList.push(tomselect);
+                        _itemSelect.addEventListener('change', (e) => {
+                            console.log(intlistColElem.intlist);
+                            // intlistColElem.intlist[e.target.listindex] = e.target.value;
+                            intlistColElem.intlist[e.target.closest('.intlist-item-row').listindex] = e.target.value;
+                            console.log(intlistColElem.intlist);
+                            intlistChangeCallback(e);
+                        });
                     }
                     const _delBtn = Object.assign(
                         document.createElement('button'),
@@ -359,21 +406,72 @@
                     intlistColElem.insertBefore(newItemRowElem, intlistColElem.lastChild);
                     // handle removal of this item's editor
                     _delBtn.onclick = (e) => {
+                        let enclosingIntlistItemRow = e.target.closest('.intlist-item-row');
                         intlistColElem.intlist.splice(
                             // get input of the same row
-                            e.target.closest('.intlist-item-row').querySelector('input').listindex,
+                            // enclosingIntlistItemRow.querySelector('input').listindex,
+                            enclosingIntlistItemRow.listindex,
                             1);
                         // decrement listindex of all other inputs following this one, to fit with the splice above.
-                        let _rowelem = e.target.closest('.intlist-item-row').nextSibling;
+                        let _rowelem = enclosingIntlistItemRow.nextSibling;
                         while(_rowelem.classList.contains('intlist-item-row')) {
                             // get input of the row
-                            _rowelem.querySelector('input').listindex--;
+                            // _rowelem.querySelector('input').listindex--;
+                            _rowelem.listindex--;
                             // move to the next row
                             _rowelem = _rowelem.nextSibling;
                         }
                         // now remove this element
-                        intlistDeleteCallback();
-                        newItemRowElem.remove();
+                        // remove TomSelect if it exists
+                        let tomselect = enclosingIntlistItemRow.querySelector('select').tomselect;
+                        if(tomselect) {
+                            tomselect.destroy();
+                            let i = paramsFormTomSelectList.indexOf(tomselect);
+                            if(i > -1)
+                                paramsFormTomSelectList.splice(i, 1);
+                        }
+                        // newItemRowElem.remove();
+                        // fully remove the element from the DOM
+                        enclosingIntlistItemRow.remove();
+                        // let the callback know it was removed, to handle other stuff (such as updating the value in currentSaveData)
+                        intlistDeleteCallback(e);
+                    }
+
+                    // fire change listener to apply any initVal it may have immediately to the intlist (as if it was manually selected)
+                    if(!dropdownValues) {
+                        newItemRowElem.querySelector('input').dispatchEvent(new Event('change', { bubbles: true }))
+                    } else {
+                        newItemRowElem.querySelector('select').dispatchEvent(new Event('change', { bubbles: true }))
+                    }
+                }
+
+                function resolveDropdown_nameMapIfNeeded(dropdownMapResult) {
+                    /* If the result's .values is an array instead of an object (mapping),
+                        create an object (mapping) from the array using the name map to make key-value pairs.
+                        Otherwise, return the .values ?? {}.
+                    */
+                    if(Array.isArray(dropdownMapResult.values)) {
+                        // there should be a name_map specified
+                        const valuesNameMap = dropdownMapResult.name_map;
+                        let nameMap = null;
+                        switch (valuesNameMap) {
+                            case "item":
+                                nameMap = NAME_MAP_ITEMS;
+                                break;
+                            case "clothing":
+                                nameMap = NAME_MAP_CLOTHING;
+                                break;
+                            default:
+                                console.error(`resolveDropdown_nameMapIfNeeded(): Unknown name map "${valuesNameMap}" referenced! Defaulting to null.`)
+                                nameMap = null;
+                                break;
+                        }
+                        if(nameMap === null)
+                            return {};
+                        // convert each value into a key-value pair
+                        return Object.fromEntries(dropdownMapResult.values.map((value) => [value, nameMap[value].name]));
+                    } else {
+                        return dropdownMapResult.values ?? {};
                     }
                 }
 
@@ -390,37 +488,44 @@
                     console.log('versions:', saveType1, saveType2);
                     if(saveType1) {
                         let version = saveType1;
-                        vals1 = dropdownMap[version].values ?? {};
+                        vals1 = resolveDropdown_nameMapIfNeeded(dropdownMap[version]) ?? {};
                         // add in values from the chain of inheritance
                         while(dropdownMap[version].inherit) {
                             version = dropdownMap[version].inherit;
-                            vals1 = {...dropdownMap[version].values ?? {}, ...vals1}; // newest should override in the inheritance chain
+                            // newest should override in the inheritance chain (newest is values already found)
+                            vals1 = {...resolveDropdown_nameMapIfNeeded(dropdownMap[version]) ?? {}, ...vals1};
                         }
                     }
-                    console.log(vals1);
+                    console.log('vals1', vals1);
                     if(saveType2) {
                         let version = saveType2;
-                        vals2 = dropdownMap[version].values ?? {};
+                        vals2 = resolveDropdown_nameMapIfNeeded(dropdownMap[version]) ?? {};
                         // add in values from the chain of inheritance
                         while(dropdownMap[version].inherit) {
                             version = dropdownMap[version].inherit;
-                            vals2 = {...dropdownMap[version].values ?? {}, ...vals2}; // newest should override in the inheritance chain
+                            // newest should override in the inheritance chain (newest is values already found)
+                            vals2 = {...resolveDropdown_nameMapIfNeeded(dropdownMap[version]) ?? {}, ...vals2};
                         }
                     }
+                    console.log('vals2', vals2);
                     return {...vals2, ...vals1}; // save's version overrides any duplicates from comparison's version
                 }
 
-                function fillParamsForm(saveType1, saveType2, showRelevantOptions, showRawEditors, /*mappedPropInfoDict,*/ fileValuesMap) {
-                    const formBody = $('#saveForm');
-                    // cleanup any old tooltips before emptying form
+                function cleanupTooltipsAndTomSelects() {
                     paramsFormTooltipList.forEach(tooltip => tooltip.dispose());
                     paramsFormTooltipList = [];
                     paramsFormTomSelectList.forEach(tomselect => tomselect.destroy());
                     paramsFormTomSelectList = [];
+                }
+
+                function createParamsFormCollapses() {
+                    const formBody = $('#saveForm');
+                    // cleanup any old tooltips and tomselects before emptying form
+                    cleanupTooltipsAndTomSelects();
 
                     formBody.empty();
 
-                    // setup property category dropdowns
+                    // setup property category dropdowns (collapses)
                     var propCollapses = '';
                     for (const [categoryKey, catInfo] of Object.entries(CATEGORY_INFO)) {
                         let name = catInfo.name;
@@ -432,7 +537,7 @@
                                     <button class="accordion-button save-data-collapse-bar ${expanded ? '' : 'collapsed'}" aria-expanded="${expanded ? 'true' : 'false'}"
                                     type="button" data-bs-toggle="collapse" data-bs-target="#propCollapse-${categoryKey}" aria-controls="propCollapse-${categoryKey}"
                                     >
-                                    <span class="visually-hidden">Category for</span><span>${name}</span>
+                                    <span class="visually-hidden">Properties category for</span><span>${name}</span>
                                     </button>
                                 </div>
 
@@ -445,6 +550,20 @@
                     }
                     // formBody.append(propCollapses);
                     formBody.append(propCollapses);
+                }
+
+                function emptyParamsFormCollapses() {
+                    cleanupTooltipsAndTomSelects();
+                    const collapseBodies = document.getElementById('saveForm').querySelectorAll('div.accordion-collapse');
+                    // console.log('collapseBodies.length:', collapseBodies.length);
+                    collapseBodies.forEach((collapseBodyElem) => {
+                        $(collapseBodyElem).empty();
+                    })
+                }
+
+                function fillParamsForm(saveType1, saveType2, showRelevantOptions, showRawEditors, /*mappedPropInfoDict,*/ fileValuesMap) {
+                    // createParamsFormCollapses();
+                    emptyParamsFormCollapses();
 
                     // $('.prop-collapse').on('hidden.bs.collapse',toggleIcon);
                     // $('.prop-collapse').on('shown.bs.collapse',toggleIcon);
@@ -597,7 +716,7 @@
                             }
 
                             let propDropdownValues;
-                            if(type == 'int-dropdown') {
+                            if(type == 'int-dropdown' || type == 'intlist') {
                                 // get the dropdown's values
                                 if(typeof(propInfo.dropdown) === "string") {
                                     // resolve a possibly version-specific result
@@ -783,22 +902,24 @@
                             }
                             // setup intlist element adder
                             let btnAddElem = document.getElementById(`btnIntlistAdd-${fullKeyNoSpaces}`);
+                            let intlistChangeCallback;
                             if(btnAddElem) {
                                 // let intlistColElem = document.getElementById(`intlistCol-${fullKeyNoSpaces}`);
                                 // back it out to the entire col which contains the row which contains the col that this is in
                                 let intlistColElem = btnAddElem.parentElement.parentElement.parentElement;
                                 intlistColElem.intlist = []; // initialize the list of values (currently empty)
-                                let intlistChangeCallback = () => {
+                                intlistChangeCallback = (changeEvent) => {
                                     // handle the item changing
                                     updateSaveProp(fullKey, propInfo, intlistColElem.intlist.filter(v=>v!==''&&typeof(v)!=="undefined").join(' '), editorUpdateCallback);
                                 }
                                 btnAddElem.onclick = (e) => {
                                     // TODO: add dropdown specified, NAME_MAP[propKeyExtra] ?  and handle updating input with new vals
                                     addIntlistElem(intlistColElem, fullKeyNoSpaces,
-                                        intlistChangeCallback, intlistChangeCallback
+                                        intlistChangeCallback, intlistChangeCallback,
+                                        undefined, propDropdownValues
                                     );
                                     // call the updater right after adding, because a new item got added
-                                    intlistChangeCallback();
+                                    intlistChangeCallback(e);
                                 }
                             }
 
@@ -865,6 +986,57 @@
                                     else
                                         // no TomSelect attached then. Regular dropdown
                                         inputNeatDropdown.value = saveDataValue;
+                                } else if(type == 'intlist') {
+                                    $(`#inputRaw-${fullKeyNoSpaces}`).val(saveDataValue);
+                                    const intlistToSet = Array.isArray(saveDataValue) ? saveDataValue
+                                                        : saveDataValue ? saveDataValue.split(' ').filter(v=>v!==''&&typeof(v)!=="undefined")
+                                                        : [];
+                                    console.log('intlistToSet:', intlistToSet);
+                                    const intlistColElem = document.getElementById(`btnIntlistAdd-${fullKeyNoSpaces}`).closest('.save-data-val');
+                                    let i;
+                                    for (i = intlistColElem.children.length - 1; i >= 0; i--) {
+                                        const rowElem = intlistColElem.children[i];
+                                        if(!rowElem.classList.contains('intlist-item-row')) {
+                                            // not an editor
+                                            continue;
+                                        }
+                                        console.log('i:',i,'rowElem:',rowElem);
+                                        let editor, tomselect;
+                                        editor = rowElem.querySelector('input');
+                                        tomselect = rowElem.querySelector('select')?.tomselect;
+                                        if(i >= intlistToSet.length) {
+                                            // remove extra editor
+                                            if(tomselect) {
+                                                tomselect.destroy();
+                                                let i = paramsFormTomSelectList.indexOf(tomselect);
+                                                if(i > -1)
+                                                    paramsFormTomSelectList.splice(i, 1);
+                                            }
+                                            // remove the extra int from the column's intlist
+                                            intlistColElem.intlist.splice(
+                                                rowElem.listindex,
+                                                1);
+                                            console.log('intlistColElem.intlist after splice:', intlistColElem.intlist);
+                                            rowElem.remove();
+                                        } else {
+                                            // edit editor
+                                            if(tomselect) {
+                                                tomselect.setValue(intlistToSet[i], true); // set silent to true
+                                            } else {
+                                                editor.value = intlistToSet[i];
+                                            }
+                                            intlistColElem.intlist[i] = intlistToSet[i];
+                                        }
+                                    }
+                                    // console.log('i after going through rowElems:', i);
+                                    // make more if needed
+                                    i = intlistColElem.children.length;
+                                    while (i < intlistToSet.length) {
+                                        addIntlistElem(intlistColElem, fullKeyNoSpaces,
+                                            intlistChangeCallback, intlistChangeCallback,
+                                            undefined, propDropdownValues);
+                                        i++;
+                                    }
                                 } else if(type == 'color') {
                                     let hexmatch = saveDataValue?.match(HEX_COL_PATTERN), savematch = saveDataValue?.match(SAVE_COL_PATTERN);
                                     $(`#inputRaw-${fullKeyNoSpaces}`).val(hexmatch ? hexToSave(saveDataValue) : saveDataValue);
@@ -899,15 +1071,17 @@
                             
                             // give an initial value, if applicable.
                             // console.log('fullkey:', fullKey, 'currentSaveData.hasOwnProperty(fullKey)', currentSaveData.hasOwnProperty(fullKey), 'currentSaveData[fullKey]', currentSaveData[fullKey]);
-                            console.log('fullkey:', fullKey, 'currentSaveData.has(fullKey)', currentSaveData.has(fullKey), 'currentSaveData.get(fullKey)', currentSaveData.get(fullKey));
-                            if (currentSaveData.has(fullKey)) {
+                            // console.log('fullkey:', fullKey, 'currentSaveData.has(fullKey)', currentSaveData.has(fullKey), 'currentSaveData.get(fullKey)', currentSaveData.get(fullKey));
+                            // console.log('currentSaveData:', currentSaveData.toString());
+                            // console.log('typeof(currentSaveData):', (typeof(currentSaveData)).toString());
+                            if (currentSaveData?.has(fullKey)) {
                                 updateSaveProp(fullKey, propInfo, currentSaveData.get(fullKey), editorUpdateCallback);
                             }
                         } // end for all full property keys
 
                     } // end for all property keys
 
-                    console.log(currentSaveData);
+                    console.log(`currentSaveData after inserting all property keys:`, currentSaveData, 'size:', currentSaveData.size);
 
                     // updateGameVersionInfoOnPage(null, $('#saveType1').val());
                 };
@@ -1018,7 +1192,7 @@
                     // console.log('entries:', Array.from(formData.entries()));
                     // Object.fromEntries(formData);
                     let showRelevantOptions = !!formData.get('showRelevantOptions');
-                    let showRawEditors = !!formData.get('showRawEditors')
+                    let showRawEditors = !!formData.get('showRawEditors');
                     let saveType1 = formData.get('saveType1');
                     let saveType2 = formData.get('saveType2');
                     // let showSaveType2 = !!saveType2;
@@ -1037,14 +1211,35 @@
                 }
 
                 // $('#fileSelect').change(parseFileTest);
-                $('#fileSelect').change((e) => {
-                    currentSaveData = readFile(document.getElementById('fileSelect').files[0]);
+                // $('#fileSelect').change((e) => {
+                //     currentSaveData = readFile(document.getElementById('fileSelect').files[0], $('#saveType1').val());
+                //     console.log('fileSelect change');
+                //     // console.log(document.getElementById('fileSelect').files[0]);
+                //     // console.log(currentSaveData);
+                //     // return;
+                //     getFileFormData();
+                // });
+                $(document).ready(function() {
+                    let newFileValuesMap = readFile(document.getElementById('fileSelect').files[0], $('#saveType1').val());
+                    console.log('document.ready newFileValuesMap (opposed to #fileForm.change currently):', newFileValuesMap);
+                });
+
+                $('#fileForm').change((e) => {
+                    console.log('form change detected!');
+                    console.log('form change e.target:', e.target);
+                    // update currentSaveData if it's the file select. (A new file was likely uploaded.)
+                    if(e.target.id === 'fileSelect') {
+                        console.log('fileSelect change. updating currentSaveData.');
+                        let newFileValuesMap = readFile(document.getElementById('fileSelect').files[0], $('#saveType1').val());
+                        // if(currentSaveData && currentSaveData.size > 0) {
+                        //     alert('The upload of this file will overwrite currently edited values. Are you sure?')
+                        // }
+                        currentSaveData = newFileValuesMap;
+                        console.log('size:',currentSaveData.size);
+                    }
+                    return;
                     getFileFormData();
                 });
-                $('#fileForm').change(function() {
-                    console.log('form change detected!');
-                    getFileFormData();
-                })
             </script>
 
         </form>
@@ -1331,7 +1526,7 @@
                                     <ul class="listicons">
                                         <li class="listicons">
                                             <span class="listicons"><i class="bi-windows" aria-hidden="true"></i></span>
-                                            On Windows: folder "<span class="mono-text">%appdata%/LocalLow/FishSoft/Penguin&nbsp;Heist/</span>".
+                                            On Windows: folder "<span class="mono-text">%appdata%/../LocalLow/FishSoft/Penguin&nbsp;Heist/</span>".
                                         </li>
                                         <li class="listicons">
                                             <span class="listicons"><i class="bi-apple" aria-hidden="true"></i></span>
@@ -1344,8 +1539,10 @@
                                                     <path d="M220.8 123.3c1 .5 1.8 1.7 3 1.7 1.1 0 2.8-.4 2.9-1.5.2-1.4-1.9-2.3-3.2-2.9-1.7-.7-3.9-1-5.5-.1-.4.2-.8.7-.6 1.1.3 1.3 2.3 1.1 3.4 1.7zm-21.9 1.7c1.2 0 2-1.2 3-1.7 1.1-.6 3.1-.4 3.5-1.6.2-.4-.2-.9-.6-1.1-1.6-.9-3.8-.6-5.5.1-1.3.6-3.4 1.5-3.2 2.9.1 1 1.8 1.5 2.8 1.4zM420 403.8c-3.6-4-5.3-11.6-7.2-19.7-1.8-8.1-3.9-16.8-10.5-22.4-1.3-1.1-2.6-2.1-4-2.9-1.3-.8-2.7-1.5-4.1-2 9.2-27.3 5.6-54.5-3.7-79.1-11.4-30.1-31.3-56.4-46.5-74.4-17.1-21.5-33.7-41.9-33.4-72C311.1 85.4 315.7.1 234.8 0 132.4-.2 158 103.4 156.9 135.2c-1.7 23.4-6.4 41.8-22.5 64.7-18.9 22.5-45.5 58.8-58.1 96.7-6 17.9-8.8 36.1-6.2 53.3-6.5 5.8-11.4 14.7-16.6 20.2-4.2 4.3-10.3 5.9-17 8.3s-14 6-18.5 14.5c-2.1 3.9-2.8 8.1-2.8 12.4 0 3.9.6 7.9 1.2 11.8 1.2 8.1 2.5 15.7.8 20.8-5.2 14.4-5.9 24.4-2.2 31.7 3.8 7.3 11.4 10.5 20.1 12.3 17.3 3.6 40.8 2.7 59.3 12.5 19.8 10.4 39.9 14.1 55.9 10.4 11.6-2.6 21.1-9.6 25.9-20.2 12.5-.1 26.3-5.4 48.3-6.6 14.9-1.2 33.6 5.3 55.1 4.1.6 2.3 1.4 4.6 2.5 6.7v.1c8.3 16.7 23.8 24.3 40.3 23 16.6-1.3 34.1-11 48.3-27.9 13.6-16.4 36-23.2 50.9-32.2 7.4-4.5 13.4-10.1 13.9-18.3.4-8.2-4.4-17.3-15.5-29.7zM223.7 87.3c9.8-22.2 34.2-21.8 44-.4 6.5 14.2 3.6 30.9-4.3 40.4-1.6-.8-5.9-2.6-12.6-4.9 1.1-1.2 3.1-2.7 3.9-4.6 4.8-11.8-.2-27-9.1-27.3-7.3-.5-13.9 10.8-11.8 23-4.1-2-9.4-3.5-13-4.4-1-6.9-.3-14.6 2.9-21.8zM183 75.8c10.1 0 20.8 14.2 19.1 33.5-3.5 1-7.1 2.5-10.2 4.6 1.2-8.9-3.3-20.1-9.6-19.6-8.4.7-9.8 21.2-1.8 28.1 1 .8 1.9-.2-5.9 5.5-15.6-14.6-10.5-52.1 8.4-52.1zm-13.6 60.7c6.2-4.6 13.6-10 14.1-10.5 4.7-4.4 13.5-14.2 27.9-14.2 7.1 0 15.6 2.3 25.9 8.9 6.3 4.1 11.3 4.4 22.6 9.3 8.4 3.5 13.7 9.7 10.5 18.2-2.6 7.1-11 14.4-22.7 18.1-11.1 3.6-19.8 16-38.2 14.9-3.9-.2-7-1-9.6-2.1-8-3.5-12.2-10.4-20-15-8.6-4.8-13.2-10.4-14.7-15.3-1.4-4.9 0-9 4.2-12.3zm3.3 334c-2.7 35.1-43.9 34.4-75.3 18-29.9-15.8-68.6-6.5-76.5-21.9-2.4-4.7-2.4-12.7 2.6-26.4v-.2c2.4-7.6.6-16-.6-23.9-1.2-7.8-1.8-15 .9-20 3.5-6.7 8.5-9.1 14.8-11.3 10.3-3.7 11.8-3.4 19.6-9.9 5.5-5.7 9.5-12.9 14.3-18 5.1-5.5 10-8.1 17.7-6.9 8.1 1.2 15.1 6.8 21.9 16l19.6 35.6c9.5 19.9 43.1 48.4 41 68.9zm-1.4-25.9c-4.1-6.6-9.6-13.6-14.4-19.6 7.1 0 14.2-2.2 16.7-8.9 2.3-6.2 0-14.9-7.4-24.9-13.5-18.2-38.3-32.5-38.3-32.5-13.5-8.4-21.1-18.7-24.6-29.9s-3-23.3-.3-35.2c5.2-22.9 18.6-45.2 27.2-59.2 2.3-1.7.8 3.2-8.7 20.8-8.5 16.1-24.4 53.3-2.6 82.4.6-20.7 5.5-41.8 13.8-61.5 12-27.4 37.3-74.9 39.3-112.7 1.1.8 4.6 3.2 6.2 4.1 4.6 2.7 8.1 6.7 12.6 10.3 12.4 10 28.5 9.2 42.4 1.2 6.2-3.5 11.2-7.5 15.9-9 9.9-3.1 17.8-8.6 22.3-15 7.7 30.4 25.7 74.3 37.2 95.7 6.1 11.4 18.3 35.5 23.6 64.6 3.3-.1 7 .4 10.9 1.4 13.8-35.7-11.7-74.2-23.3-84.9-4.7-4.6-4.9-6.6-2.6-6.5 12.6 11.2 29.2 33.7 35.2 59 2.8 11.6 3.3 23.7.4 35.7 16.4 6.8 35.9 17.9 30.7 34.8-2.2-.1-3.2 0-4.2 0 3.2-10.1-3.9-17.6-22.8-26.1-19.6-8.6-36-8.6-38.3 12.5-12.1 4.2-18.3 14.7-21.4 27.3-2.8 11.2-3.6 24.7-4.4 39.9-.5 7.7-3.6 18-6.8 29-32.1 22.9-76.7 32.9-114.3 7.2zm257.4-11.5c-.9 16.8-41.2 19.9-63.2 46.5-13.2 15.7-29.4 24.4-43.6 25.5s-26.5-4.8-33.7-19.3c-4.7-11.1-2.4-23.1 1.1-36.3 3.7-14.2 9.2-28.8 9.9-40.6.8-15.2 1.7-28.5 4.2-38.7 2.6-10.3 6.6-17.2 13.7-21.1.3-.2.7-.3 1-.5.8 13.2 7.3 26.6 18.8 29.5 12.6 3.3 30.7-7.5 38.4-16.3 9-.3 15.7-.9 22.6 5.1 9.9 8.5 7.1 30.3 17.1 41.6 10.6 11.6 14 19.5 13.7 24.6zM173.3 148.7c2 1.9 4.7 4.5 8 7.1 6.6 5.2 15.8 10.6 27.3 10.6 11.6 0 22.5-5.9 31.8-10.8 4.9-2.6 10.9-7 14.8-10.4s5.9-6.3 3.1-6.6-2.6 2.6-6 5.1c-4.4 3.2-9.7 7.4-13.9 9.8-7.4 4.2-19.5 10.2-29.9 10.2s-18.7-4.8-24.9-9.7c-3.1-2.5-5.7-5-7.7-6.9-1.5-1.4-1.9-4.6-4.3-4.9-1.4-.1-1.8 3.7 1.7 6.5z"/>
                                                 </svg>
                                             </span>
-                                            On Linux: folder "<span class="mono-text">$HOME/.config/unity3d/</span>" or "<span class="mono-text">$XDG_CONFIG_HOME/unity3d/</span>".
-                                            <br>This may depend on your distribution and your method of installing Steam games. See <a href="#defaultsavelocation">default save locations</a> at the top for more details.</span>
+                                            <!-- $XDG_CONFIG_HOME/unity3d/  ?? -->
+                                            On Linux: folder "<span class="mono-text">$HOME/.config/unity3d/</span>"
+                                            or "<span class="mono-text"><abbr title="The base Steam installation folder">&lt;Steam-folder&gt;</abbr>/steamapps/compatdata/1451480/pfx/</span>".
+                                            <br><i class="bi-info-circle" aria-label="Note"></i>&nbsp;This may depend on your distribution and method of installing Steam games. See <a href="#defaultsavelocation">default save locations</a> at the top for more details.</span>
                                         </li>
                                     </ul>
                                 </p>

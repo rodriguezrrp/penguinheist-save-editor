@@ -46,10 +46,10 @@ $textgray: #6c757d;
     width: max-content;  // overrides default of 100%
 }
 
+/* color: lightblue; */
+/* background-image: url(./imgs/heistpic.png); */
 body {
-    /* color: lightblue; */
     background-color: $bg_light;
-    /* background-image: url(./imgs/heistpic.png); */
     background-image: url(./imgs/ThatOtherFish-scrots/NI-7.png);
     background-size: cover;
     background-repeat: no-repeat;
@@ -83,6 +83,12 @@ div.background-container {
 div.header-link-justify {
     display: flex;
     justify-content: space-between;
+}
+
+input.file-select {
+    cursor: pointer;
+    border-style: dashed;
+    border-width: 2px;
 }
 
 svg.icon {

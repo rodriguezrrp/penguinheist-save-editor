@@ -32,6 +32,7 @@ function readFile(fileSelectVal, version) {
     
     reader.onload = (e) => {
         const contents = e.target.result;
+        // console.log(contents);
         // perform param or property parsing according to version selected
         // if(version)
             // currently not version-specific!

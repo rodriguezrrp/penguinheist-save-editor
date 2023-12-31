@@ -59,6 +59,12 @@ div.header-link-justify {
   justify-content: space-between;
 }
 
+input.file-select {
+  cursor: pointer;
+  border-style: dashed;
+  border-width: 2px;
+}
+
 svg.icon {
   width: 1em;
   height: 1em;

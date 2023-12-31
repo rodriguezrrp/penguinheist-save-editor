@@ -28,7 +28,7 @@ const PROP_INFO = {
         "category": "loadout",
         "name": "Loadout",
         "type": "intlist",
-        "max_map": "loadout"
+        "dropdown": "dropdown-items"
     },
     "clothingOwned": {
         "category": "clothing",
