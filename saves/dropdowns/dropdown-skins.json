@@ -3,10 +3,34 @@
     "vCHP_latest": {
         "inherit": false,
         "values": {
-            "0": "TODO: Skin [0] Name",
-            "1": "TODO: Skin [1] Name",
-            "2": "TODO: Skin [2] Name",
-            "3": "TODO: Skin [3] Name"
+            "0": "Default",
+            "66": "Adelie Penguin",
+            "157": "African Penguin",
+            "37": "Chicken",
+            "67": "Chinstrap Penguin",
+            "21": "Cow Penguin",
+            "64": "Emperor Penguin",
+            "45": "Fairy Penguin",
+            "80": "Fire Penguin",
+            "68": "Gentoo Penguin",
+            "175": "Ice Penguin",
+            "43": "Love Penguin",
+            "94": "Moleguin",
+            "124": "Monkeyguin",
+            "29": "Mummy",
+            "169": "Nature Penguin",
+            "39": "Owl",
+            "159": "Pandaguin",
+            "97": "Penguin 64",
+            "162": "Pigguin",
+            "47": "Pudding Penguin",
+            "96": "Puffin",
+            "179": "Rock Penguin",
+            "155": "Rockhopper Penguin",
+            "46": "Silver Penguin",
+            "156": "Spectral Penguin",
+            "20": "Tux",
+            "44": "Wooly Penguin"
         }
     }
 }

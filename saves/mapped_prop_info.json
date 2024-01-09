@@ -132,7 +132,7 @@
         "category":"controls",
         "name":"Mouse Sensitivity",
         "type":"float-range",
-        "range":[0,2]
+        "range":[0.5,2]
     },
     "mouseSmoothing": {
         "category":"controls",
@@ -221,7 +221,8 @@
         "category":"controls",
         "name":"Zoom",
         "type":"int-dropdown",
-        "dropdown":"dropdown-keybinds"
+        "dropdown":"dropdown-keybinds",
+        "note":"Use Scope"
     },
     "pngsns": {
         "category":"controls",
@@ -284,7 +285,8 @@
     "hasNewShopItem": {
         "category":"misc",
         "name":"Has New Shop Item",
-        "type":"bool"
+        "type":"bool",
+        "note":"Display of the &quot;New&quot; text on the Shop button"
     },
     "seenTutorial": {
         "category":"misc",

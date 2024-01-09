@@ -16,11 +16,11 @@
     "_earliest_supported_value_list": {
         "inherit": false,
         "values": {
-            "0": "TODO: Graphics [0] Name [for Cosmetics & Heist Planner update]",
-            "1": "TODO: Graphics [1] Name [for Cosmetics & Heist Planner update]",
-            "2": "TODO: Graphics [2] Name [for Cosmetics & Heist Planner update]",
-            "3": "TODO: Graphics [3] Name [for Cosmetics & Heist Planner update]",
-            "4": "TODO: Graphics [4] Name [for Cosmetics & Heist Planner update]"
+            "0": "Retro",
+            "1": "Low",
+            "2": "Medium",
+            "3": "High",
+            "4": "Ultra"
         }
     }
 }

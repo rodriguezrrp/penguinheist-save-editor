@@ -1,12 +1,20 @@
 {
     "version_dependent": true,
     "vCHP_latest": {
+        "inherit": "_earliest_supported_value_list"
+    },
+    "_earliest_supported_value_list": {
         "inherit": false,
         "values": {
-            "0": "TODO: Region [0] Name",
-            "1": "TODO: Region [1] Name",
-            "2": "TODO: Region [2] Name",
-            "3": "TODO: Region [3] Name"
+            "0": "USA, East",
+            "1": "USA, West",
+            "2": "Japan",
+            "3": "Europe",
+            "4": "South America",
+            "5": "Africa",
+            "6": "Australia",
+            "7": "Singapore",
+            "8": "Singapore"
         }
     }
 }
