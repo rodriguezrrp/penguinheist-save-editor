@@ -640,5 +640,930 @@ const NAME_MAP_CLOTHING = {
     "-1": {
         "name": "None",
         "imgname": "none.png"
+    },
+    "3": {
+        "name": "Cape",
+        "imgname": "cape.png",
+        "category": "clothes"
+    },
+    "35": {
+        "name": "Fancy Tie",
+        "imgname": "fancy_tie.png",
+        "category": "clothes"
+    },
+    "42": {
+        "name": "Bowtie",
+        "imgname": "bowtie.png",
+        "category": "clothes"
+    },
+    "63": {
+        "name": "Diaper",
+        "imgname": "diaper.png",
+        "category": "clothes"
+    },
+    "78": {
+        "name": "Bikini",
+        "imgname": "bikini.png",
+        "category": "clothes"
+    },
+    "102": {
+        "name": "Cuirass",
+        "imgname": "cuirass.png",
+        "category": "clothes"
+    },
+    "111": {
+        "name": "Apron",
+        "imgname": "apron.png",
+        "category": "clothes"
+    },
+    "115": {
+        "name": "24K Fish Necklace",
+        "imgname": "24k_fish_necklace.png",
+        "category": "clothes"
+    },
+    "116": {
+        "name": "Fake Parrot",
+        "imgname": "fake_parrot.png",
+        "category": "clothes"
+    },
+    "126": {
+        "name": "Eggshell Body",
+        "imgname": "eggshell_body.png",
+        "category": "clothes"
+    },
+    "137": {
+        "name": "Bunny Tail",
+        "imgname": "bunny_tail.png",
+        "category": "clothes"
+    },
+    "139": {
+        "name": "Fanny Pack",
+        "imgname": "fanny_pack.png",
+        "category": "clothes"
+    },
+    "148": {
+        "name": "Camouflaged T-Shirt",
+        "imgname": "camouflaged_t-shirt.png",
+        "category": "clothes"
+    },
+    "149": {
+        "name": "Camouflaged Shirt",
+        "imgname": "camouflaged_shirt.png",
+        "category": "clothes"
+    },
+    "158": {
+        "name": "Corn Suit",
+        "imgname": "corn_suit.png",
+        "category": "clothes"
+    },
+    "164": {
+        "name": "Baguette Suit",
+        "imgname": "baguette_suit.png",
+        "category": "clothes"
+    },
+    "170": {
+        "name": "Backpack",
+        "imgname": "backpack.png",
+        "category": "clothes"
+    },
+    "176": {
+        "name": "Belt",
+        "imgname": "belt.png",
+        "category": "clothes"
+    },
+    "177": {
+        "name": "Belt and Holster",
+        "imgname": "belt_and_holster.png",
+        "category": "clothes"
+    },
+    "178": {
+        "name": "Clown Shoes",
+        "imgname": "clown_shoes.png",
+        "category": "clothes"
+    },
+    "190": {
+        "name": "Collar",
+        "imgname": "collar.png",
+        "category": "clothes"
+    },
+    "204": {
+        "name": "Bracelets",
+        "imgname": "bracelets.png",
+        "category": "clothes"
+    },
+    "205": {
+        "name": "Avocado Suit",
+        "imgname": "avocado_suit.png",
+        "category": "clothes"
+    },
+    "216": {
+        "name": "Fish Flops",
+        "imgname": "fish_flops.png",
+        "category": "clothes"
+    },
+    "192": {
+        "name": "Fish Suit",
+        "imgname": "fish_suit.png",
+        "category": "clothes"
+    },
+    "100": {
+        "name": "Gi",
+        "imgname": "gi.png",
+        "category": "clothes"
+    },
+    "93": {
+        "name": "Hoodie",
+        "imgname": "hoodie.png",
+        "category": "clothes"
+    },
+    "87": {
+        "name": "Hook",
+        "imgname": "hook.png",
+        "category": "clothes"
+    },
+    "76": {
+        "name": "Karate Belt",
+        "imgname": "karate_belt.png",
+        "category": "clothes"
+    },
+    "195": {
+        "name": "Knife in the Back",
+        "imgname": "knife_in_the_back.png",
+        "category": "clothes"
+    },
+    "92": {
+        "name": "Lab Coat",
+        "imgname": "lab_coat.png",
+        "category": "clothes"
+    },
+    "136": {
+        "name": "Leaf Skirt",
+        "imgname": "leaf_skirt.png",
+        "category": "clothes"
+    },
+    "27": {
+        "name": "Leather Vest",
+        "imgname": "leather_vest.png",
+        "category": "clothes"
+    },
+    "112": {
+        "name": "Life Vest",
+        "imgname": "life_vest.png",
+        "category": "clothes"
+    },
+    "208": {
+        "name": "Medal",
+        "imgname": "medal.png",
+        "category": "clothes"
+    },
+    "117": {
+        "name": "Mittens",
+        "imgname": "mittens.png",
+        "category": "clothes"
+    },
+    "122": {
+        "name": "Monkeyguin Tail",
+        "imgname": "monkeyguin_tail.png",
+        "category": "clothes"
+    },
+    "197": {
+        "name": "Neck Towel",
+        "imgname": "neck_towel.png",
+        "category": "clothes"
+    },
+    "99": {
+        "name": "Overall",
+        "imgname": "overall.png",
+        "category": "clothes"
+    },
+    "140": {
+        "name": "Parka",
+        "imgname": "parka.png",
+        "category": "clothes"
+    },
+    "163": {
+        "name": "Pigtail",
+        "imgname": "pigtail.png",
+        "category": "clothes"
+    },
+    "138": {
+        "name": "Punk Bracelets",
+        "imgname": "punk_bracelets.png",
+        "category": "clothes"
+    },
+    "41": {
+        "name": "Robe",
+        "imgname": "robe.png",
+        "category": "clothes"
+    },
+    "72": {
+        "name": "Rubber Ducky",
+        "imgname": "rubber_ducky.png",
+        "category": "clothes"
+    },
+    "150": {
+        "name": "Sandals",
+        "imgname": "sandals.png",
+        "category": "clothes"
+    },
+    "9": {
+        "name": "Scarf",
+        "imgname": "arf.png",
+        "category": "clothes"
+    },
+    "51": {
+        "name": "Sharp Dress",
+        "imgname": "sharp_dress.png",
+        "category": "clothes"
+    },
+    "167": {
+        "name": "Sheriff's Badge",
+        "imgname": "sheriffs_badge.png",
+        "category": "clothes"
+    },
+    "10": {
+        "name": "Shirt",
+        "imgname": "shirt.png",
+        "category": "clothes"
+    },
+    "181": {
+        "name": "Simple Dress",
+        "imgname": "simple_dress.png",
+        "category": "clothes"
+    },
+    "48": {
+        "name": "Six-Pack Rings",
+        "imgname": "six-pack_rings.png",
+        "category": "clothes"
+    },
+    "182": {
+        "name": "Slippers",
+        "imgname": "slippers.png",
+        "category": "clothes"
+    },
+    "210": {
+        "name": "Snail Shell",
+        "imgname": "snail_shell.png",
+        "category": "clothes"
+    },
+    "125": {
+        "name": "Snowguin Body",
+        "imgname": "snowguin_body.png",
+        "category": "clothes"
+    },
+    "196": {
+        "name": "Spooky Sheet",
+        "imgname": "spooky_sheet.png",
+        "category": "clothes"
+    },
+    "86": {
+        "name": "Strapped Shark Fin",
+        "imgname": "strapped_shark_fin.png",
+        "category": "clothes"
+    },
+    "15": {
+        "name": "Suit",
+        "imgname": "suit.png",
+        "category": "clothes"
+    },
+    "50": {
+        "name": "Suit Jacket",
+        "imgname": "suit_jacket.png",
+        "category": "clothes"
+    },
+    "71": {
+        "name": "Swimwear",
+        "imgname": "swimwear.png",
+        "category": "clothes"
+    },
+    "153": {
+        "name": "Tank Top",
+        "imgname": "tank_top.png",
+        "category": "clothes"
+    },
+    "11": {
+        "name": "T-Shirt",
+        "imgname": "t-shirt.png",
+        "category": "clothes"
+    },
+    "141": {
+        "name": "Turtle Shell",
+        "imgname": "turtle_shell.png",
+        "category": "clothes"
+    },
+    "38": {
+        "name": "Tutu",
+        "imgname": "tutu.png",
+        "category": "clothes"
+    },
+    "185": {
+        "name": "V-Neck",
+        "imgname": "v-neck.png",
+        "category": "clothes"
+    },
+    "213": {
+        "name": "Watch",
+        "imgname": "watch.png",
+        "category": "clothes"
+    },
+    "22": {
+        "name": "Afro with Comb",
+        "imgname": "afro_with_comb.png",
+        "category": "headwear"
+    },
+    "201": {
+        "name": "Arrow",
+        "imgname": "arrow.png",
+        "category": "headwear"
+    },
+    "14": {
+        "name": "Assassin's Hood",
+        "imgname": "assassins_hood.png",
+        "category": "headwear"
+    },
+    "151": {
+        "name": "Balaclava",
+        "imgname": "balaclava.png",
+        "category": "headwear"
+    },
+    "57": {
+        "name": "Bandana",
+        "imgname": "bandana.png",
+        "category": "headwear"
+    },
+    "1": {
+        "name": "Beanie",
+        "imgname": "beanie.png",
+        "category": "headwear"
+    },
+    "61": {
+        "name": "Beret",
+        "imgname": "beret.png",
+        "category": "headwear"
+    },
+    "40": {
+        "name": "Bobbed Wig",
+        "imgname": "bobbed_wig.png",
+        "category": "headwear"
+    },
+    "132": {
+        "name": "Bowler Hat",
+        "imgname": "bowler_hat.png",
+        "category": "headwear"
+    },
+    "146": {
+        "name": "Bucket",
+        "imgname": "bucket.png",
+        "category": "headwear"
+    },
+    "145": {
+        "name": "Bucket Hat",
+        "imgname": "bucket_hat.png",
+        "category": "headwear"
+    },
+    "79": {
+        "name": "Bunny Ears",
+        "imgname": "bunny_ears.png",
+        "category": "headwear"
+    },
+    "2": {
+        "name": "Cap",
+        "imgname": "cap.png",
+        "category": "headwear"
+    },
+    "174": {
+        "name": "Cap (Backwards)",
+        "imgname": "cap_(backwards).png",
+        "category": "headwear"
+    },
+    "81": {
+        "name": "Cardboard Box",
+        "imgname": "cardboard_box.png",
+        "category": "headwear"
+    },
+    "147": {
+        "name": "Ceramic Pot",
+        "imgname": "ceramic_pot.png",
+        "category": "headwear"
+    },
+    "30": {
+        "name": "Chef's Hat",
+        "imgname": "chefs_hat.png",
+        "category": "headwear"
+    },
+    "120": {
+        "name": "Christmas Hat",
+        "imgname": "christmas_hat.png",
+        "category": "headwear"
+    },
+    "129": {
+        "name": "Cone of Shame",
+        "imgname": "cone_of_shame.png",
+        "category": "headwear"
+    },
+    "16": {
+        "name": "Cowboy Hat",
+        "imgname": "cowboy_hat.png",
+        "category": "headwear"
+    },
+    "130": {
+        "name": "Crockett Cap",
+        "imgname": "crockett_cap.png",
+        "category": "headwear"
+    },
+    "160": {
+        "name": "Cute Ears",
+        "imgname": "cute_ears.png",
+        "category": "headwear"
+    },
+    "207": {
+        "name": "Cyguin Helmet",
+        "imgname": "cyguin_helmet.png",
+        "category": "headwear"
+    },
+    "4": {
+        "name": "Devil Horns",
+        "imgname": "devil_horns.png",
+        "category": "headwear"
+    },
+    "34": {
+        "name": "DUM Crown",
+        "imgname": "dum_crown.png",
+        "category": "headwear"
+    },
+    "131": {
+        "name": "Earmuffs",
+        "imgname": "earmuffs.png",
+        "category": "headwear"
+    },
+    "127": {
+        "name": "Eggshell Head",
+        "imgname": "eggshell_head.png",
+        "category": "headwear"
+    },
+    "75": {
+        "name": "Fedora",
+        "imgname": "fedora.png",
+        "category": "headwear"
+    },
+    "200": {
+        "name": "Fez",
+        "imgname": "fez.png",
+        "category": "headwear"
+    },
+    "211": {
+        "name": "Fire Helmet",
+        "imgname": "fire_helmet.png",
+        "category": "headwear"
+    },
+    "113": {
+        "name": "Fishing Hat",
+        "imgname": "fishing_hat.png",
+        "category": "headwear"
+    },
+    "214": {
+        "name": "Flower",
+        "imgname": "flower.png",
+        "category": "headwear"
+    },
+    "28": {
+        "name": "Frog Hat",
+        "imgname": "frog_hat.png",
+        "category": "headwear"
+    },
+    "74": {
+        "name": "Fur Hat",
+        "imgname": "fur_hat.png",
+        "category": "headwear"
+    },
+    "6": {
+        "name": "Hachimaki",
+        "imgname": "hachimaki.png",
+        "category": "headwear"
+    },
+    "134": {
+        "name": "Halo",
+        "imgname": "halo.png",
+        "category": "headwear"
+    },
+    "55": {
+        "name": "Hardhat",
+        "imgname": "hardhat.png",
+        "category": "headwear"
+    },
+    "95": {
+        "name": "Hat Hat",
+        "imgname": "hat_hat.png",
+        "category": "headwear"
+    },
+    "108": {
+        "name": "Head Bandana",
+        "imgname": "head_bandana.png",
+        "category": "headwear"
+    },
+    "65": {
+        "name": "Headphones",
+        "imgname": "headphones.png",
+        "category": "headwear"
+    },
+    "209": {
+        "name": "Headset",
+        "imgname": "headset.png",
+        "category": "headwear"
+    },
+    "121": {
+        "name": "Holly Headband",
+        "imgname": "holly_headband.png",
+        "category": "headwear"
+    },
+    "173": {
+        "name": "Horn",
+        "imgname": "horn.png",
+        "category": "headwear"
+    },
+    "88": {
+        "name": "Ice Cream",
+        "imgname": "ice_cream.png",
+        "category": "headwear"
+    },
+    "123": {
+        "name": "Monkeyguin Ears",
+        "imgname": "monkeyguin_ears.png",
+        "category": "headwear"
+    },
+    "217": {
+        "name": "Mushroom Hat",
+        "imgname": "mushroom_hat.png",
+        "category": "headwear"
+    },
+    "53": {
+        "name": "Neko Ears",
+        "imgname": "neko_ears.png",
+        "category": "headwear"
+    },
+    "104": {
+        "name": "Newsboy Cap",
+        "imgname": "newsboy_cap.png",
+        "category": "headwear"
+    },
+    "32": {
+        "name": "Ni Helmet",
+        "imgname": "ni_helmet.png",
+        "category": "headwear"
+    },
+    "23": {
+        "name": "Occam's Space Helmet",
+        "imgname": "occams_space_helmet.png",
+        "category": "headwear"
+    },
+    "144": {
+        "name": "Officer Cap",
+        "imgname": "officer_cap.png",
+        "category": "headwear"
+    },
+    "98": {
+        "name": "P Hat",
+        "imgname": "p_hat.png",
+        "category": "headwear"
+    },
+    "202": {
+        "name": "Paper Hat",
+        "imgname": "paper_hat.png",
+        "category": "headwear"
+    },
+    "84": {
+        "name": "Party Hat",
+        "imgname": "party_hat.png",
+        "category": "headwear"
+    },
+    "8": {
+        "name": "Pirate Hat",
+        "imgname": "pirate_hat.png",
+        "category": "headwear"
+    },
+    "33": {
+        "name": "Plastic Glove",
+        "imgname": "plastic_glove.png",
+        "category": "headwear"
+    },
+    "199": {
+        "name": "Ponytail",
+        "imgname": "ponytail.png",
+        "category": "headwear"
+    },
+    "52": {
+        "name": "Pumpkin",
+        "imgname": "pumpkin.png",
+        "category": "headwear"
+    },
+    "118": {
+        "name": "Reindeer Headband",
+        "imgname": "reindeer_headband.png",
+        "category": "headwear"
+    },
+    "165": {
+        "name": "Ridiculously Tall Hat",
+        "imgname": "ridiculously_tall_hat.png",
+        "category": "headwear"
+    },
+    "135": {
+        "name": "Sailor's Hat",
+        "imgname": "sailors_hat.png",
+        "category": "headwear"
+    },
+    "70": {
+        "name": "Snorkel",
+        "imgname": "snorkel.png",
+        "category": "headwear"
+    },
+    "119": {
+        "name": "Snowguin Head",
+        "imgname": "snowguin_head.png",
+        "category": "headwear"
+    },
+    "180": {
+        "name": "Soft Serve",
+        "imgname": "soft_serve.png",
+        "category": "headwear"
+    },
+    "25": {
+        "name": "Soldier's Helmet",
+        "imgname": "soldiers_helmet.png",
+        "category": "headwear"
+    },
+    "107": {
+        "name": "Sombrero",
+        "imgname": "sombrero.png",
+        "category": "headwear"
+    },
+    "26": {
+        "name": "Spiked Mohawk",
+        "imgname": "spiked_mohawk.png",
+        "category": "headwear"
+    },
+    "83": {
+        "name": "Spiky Hair",
+        "imgname": "spiky_hair.png",
+        "category": "headwear"
+    },
+    "191": {
+        "name": "Sprout",
+        "imgname": "sprout.png",
+        "category": "headwear"
+    },
+    "103": {
+        "name": "Straw Hat",
+        "imgname": "straw_hat.png",
+        "category": "headwear"
+    },
+    "172": {
+        "name": "Sun Hat",
+        "imgname": "sun_hat.png",
+        "category": "headwear"
+    },
+    "142": {
+        "name": "Sweatband",
+        "imgname": "sweatband.png",
+        "category": "headwear"
+    },
+    "109": {
+        "name": "Tiara",
+        "imgname": "tiara.png",
+        "category": "headwear"
+    },
+    "12": {
+        "name": "Tophat",
+        "imgname": "tophat.png",
+        "category": "headwear"
+    },
+    "206": {
+        "name": "Toque",
+        "imgname": "toque.png",
+        "category": "headwear"
+    },
+    "133": {
+        "name": "Traffic Cone",
+        "imgname": "traffic_cone.png",
+        "category": "headwear"
+    },
+    "187": {
+        "name": "Turban",
+        "imgname": "turban.png",
+        "category": "headwear"
+    },
+    "18": {
+        "name": "Underwear",
+        "imgname": "underwear.png",
+        "category": "headwear"
+    },
+    "101": {
+        "name": "Viking Helmet",
+        "imgname": "viking_helmet.png",
+        "category": "headwear"
+    },
+    "143": {
+        "name": "Visor Cap",
+        "imgname": "visor_cap.png",
+        "category": "headwear"
+    },
+    "17": {
+        "name": "Wig",
+        "imgname": "wig.png",
+        "category": "headwear"
+    },
+    "90": {
+        "name": "Wizard's Hat",
+        "imgname": "wizards_hat.png",
+        "category": "headwear"
+    },
+    "198": {
+        "name": "Angry Brows",
+        "imgname": "angry_brows.png",
+        "category": "facewear"
+    },
+    "168": {
+        "name": "Anime Eyes",
+        "imgname": "anime_eyes.png",
+        "category": "facewear"
+    },
+    "77": {
+        "name": "Beard",
+        "imgname": "beard.png",
+        "category": "facewear"
+    },
+    "106": {
+        "name": "Blindfold",
+        "imgname": "blindfold.png",
+        "category": "facewear"
+    },
+    "85": {
+        "name": "Cigar",
+        "imgname": "cigar.png",
+        "category": "facewear"
+    },
+    "24": {
+        "name": "Clown Nose",
+        "imgname": "clown_nose.png",
+        "category": "facewear"
+    },
+    "215": {
+        "name": "Demon Eyes",
+        "imgname": "demon_eyes.png",
+        "category": "facewear"
+    },
+    "128": {
+        "name": "Diamond Glasses",
+        "imgname": "diamond_glasses.png",
+        "category": "facewear"
+    },
+    "5": {
+        "name": "Eyepatch",
+        "imgname": "eyepatch.png",
+        "category": "facewear"
+    },
+    "69": {
+        "name": "Floaties",
+        "imgname": "floaties.png",
+        "category": "facewear"
+    },
+    "188": {
+        "name": "Futuristic Visor",
+        "imgname": "futuristic_visor.png",
+        "category": "facewear"
+    },
+    "58": {
+        "name": "Gas Mask",
+        "imgname": "gas_mask.png",
+        "category": "facewear"
+    },
+    "189": {
+        "name": "Goatee",
+        "imgname": "goatee.png",
+        "category": "facewear"
+    },
+    "36": {
+        "name": "Goggles",
+        "imgname": "goggles.png",
+        "category": "facewear"
+    },
+    "193": {
+        "name": "Long Beak",
+        "imgname": "long_beak.png",
+        "category": "facewear"
+    },
+    "184": {
+        "name": "Medical Visor",
+        "imgname": "medical_visor.png",
+        "category": "facewear"
+    },
+    "56": {
+        "name": "Monocle",
+        "imgname": "monocle.png",
+        "category": "facewear"
+    },
+    "7": {
+        "name": "Moustache",
+        "imgname": "moustache.png",
+        "category": "facewear"
+    },
+    "152": {
+        "name": "Night Vision Goggles",
+        "imgname": "night_vision_goggles.png",
+        "category": "facewear"
+    },
+    "62": {
+        "name": "Pacifier",
+        "imgname": "pacifier.png",
+        "category": "facewear"
+    },
+    "91": {
+        "name": "Pipe",
+        "imgname": "pipe.png",
+        "category": "facewear"
+    },
+    "49": {
+        "name": "Plague Doctor Mask",
+        "imgname": "plague_doctor_mask.png",
+        "category": "facewear"
+    },
+    "203": {
+        "name": "Pointy Ears",
+        "imgname": "pointy_ears.png",
+        "category": "facewear"
+    },
+    "114": {
+        "name": "Rectangular Glasses",
+        "imgname": "rectangular_glasses.png",
+        "category": "facewear"
+    },
+    "89": {
+        "name": "Safety Goggles",
+        "imgname": "safety_goggles.png",
+        "category": "facewear"
+    },
+    "54": {
+        "name": "Scary Mask",
+        "imgname": "scary_mask.png",
+        "category": "facewear"
+    },
+    "82": {
+        "name": "Sensei's Beard",
+        "imgname": "sensei's_beard.png",
+        "category": "facewear"
+    },
+    "171": {
+        "name": "Shutter Glasses",
+        "imgname": "shutter_glasses.png",
+        "category": "facewear"
+    },
+    "212": {
+        "name": "Silly Glasses",
+        "imgname": "silly_glasses.png",
+        "category": "facewear"
+    },
+    "161": {
+        "name": "Snout",
+        "imgname": "snout.png",
+        "category": "facewear"
+    },
+    "105": {
+        "name": "Straw",
+        "imgname": "straw.png",
+        "category": "facewear"
+    },
+    "13": {
+        "name": "Sunglasses",
+        "imgname": "sunglasses.png",
+        "category": "facewear"
+    },
+    "154": {
+        "name": "Surgical Mask",
+        "imgname": "surgical_mask.png",
+        "category": "facewear"
+    },
+    "110": {
+        "name": "Tusks",
+        "imgname": "tusks.png",
+        "category": "facewear"
+    },
+    "60": {
+        "name": "Twirly Moustache",
+        "imgname": "twirly_moustache.png",
+        "category": "facewear"
+    },
+    "186": {
+        "name": "Walrus Tusks",
+        "imgname": "walrus_tusks.png",
+        "category": "facewear"
+    },
+    "183": {
+        "name": "War Paint",
+        "imgname": "war_paint.png",
+        "category": "facewear"
+    },
+    "194": {
+        "name": "Wireless Earpiece",
+        "imgname": "wireless_earpiece.png",
+        "category": "facewear"
     }
 };

@@ -37,6 +37,7 @@ const CATEGORY_INFO = {
     },
     "unknown": {
         "name": "Unknown Properties",
-        "expanded": true
+        "expanded": true,
+        "alwaysshow": true
     }
 };

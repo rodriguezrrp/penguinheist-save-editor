@@ -111,7 +111,8 @@ const PROP_INFO = {
         "name": "Graphics",
         "type": "int-dropdown",
         "dropdown": "dropdown-graphics",
-        "note": "Level of quality"
+        "note": "Level of quality",
+        "sort": false
     },
     "vSync": {
         "category": "graphics",
@@ -146,7 +147,8 @@ const PROP_INFO = {
             "1": "Medium",
             "2": "Hard",
             "3": "Hardcore"
-        }
+        },
+        "sort": false
     },
     "invertY": {
         "category": "controls",
@@ -158,7 +160,7 @@ const PROP_INFO = {
         "name": "Mouse Sensitivity",
         "type": "float-range",
         "range": [
-            0,
+            0.5,
             2
         ]
     },
@@ -252,7 +254,8 @@ const PROP_INFO = {
         "category": "controls",
         "name": "Zoom",
         "type": "int-dropdown",
-        "dropdown": "dropdown-keybinds"
+        "dropdown": "dropdown-keybinds",
+        "note": "Use Scope"
     },
     "pngsns": {
         "category": "controls",
@@ -305,7 +308,8 @@ const PROP_INFO = {
         "category": "settings",
         "name": "Server Region",
         "type": "int-dropdown",
-        "dropdown": "dropdown-region"
+        "dropdown": "dropdown-region",
+        "sort": false
     },
     "timerEnabled": {
         "category": "misc",
@@ -321,7 +325,8 @@ const PROP_INFO = {
     "hasNewShopItem": {
         "category": "misc",
         "name": "Has New Shop Item",
-        "type": "bool"
+        "type": "bool",
+        "note": "Display of the &quot;New&quot; text on the Shop button"
     },
     "seenTutorial": {
         "category": "misc",

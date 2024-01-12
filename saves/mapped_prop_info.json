@@ -94,7 +94,8 @@
         "name":"Graphics",
         "type":"int-dropdown",
         "dropdown":"dropdown-graphics",
-        "note":"Level of quality"
+        "note":"Level of quality",
+        "sort":false
     },
     "vSync": {
         "category":"graphics",
@@ -121,7 +122,8 @@
         "category":"misc",
         "name":"Difficulty",
         "type":"int-dropdown",
-        "dropdown":{"0":"Easy","1":"Medium","2":"Hard","3":"Hardcore"}
+        "dropdown":{"0":"Easy","1":"Medium","2":"Hard","3":"Hardcore"},
+        "sort":false
     },
     "invertY": {
         "category":"controls",
@@ -269,7 +271,8 @@
         "category":"settings",
         "name":"Server Region",
         "type":"int-dropdown",
-        "dropdown":"dropdown-region"
+        "dropdown":"dropdown-region",
+        "sort":false
     },
     "timerEnabled": {
         "category":"misc",

@@ -239,6 +239,10 @@ input[type=checkbox].switch-lg {
 .accordion-button {
     padding-left: 0.5rem;
 }
+// hide empty parameter dropdowns
+.accordion-item-hideable:has(> .accordion-collapse:empty) {
+    display: none;
+}
 
 .save-data-raw {
     padding-top: 0.5rem;

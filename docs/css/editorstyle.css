@@ -24,10 +24,10 @@
   width: max-content;
 }
 
+/* color: lightblue; */
+/* background-image: url(./imgs/heistpic.png); */
 body {
-  /* color: lightblue; */
   background-color: #d1e8f0;
-  /* background-image: url(./imgs/heistpic.png); */
   background-image: url(./imgs/ThatOtherFish-scrots/NI-7.png);
   background-size: cover;
   background-repeat: no-repeat;
@@ -213,6 +213,10 @@ input[type=checkbox].switch-lg {
 
 .accordion-button {
   padding-left: 0.5rem;
+}
+
+.accordion-item-hideable:has(> .accordion-collapse:empty) {
+  display: none;
 }
 
 .save-data-raw {
