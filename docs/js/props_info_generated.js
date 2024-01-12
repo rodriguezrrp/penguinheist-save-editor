@@ -90,6 +90,28 @@ const PROP_INFO = {
         "name_map": "_self",
         "type": "bool"
     },
+    "challenge": {
+        "category": "challenges",
+        "name": "Challenge Statistic {name}",
+        "name_map": "_self",
+        "type": "int"
+    },
+    "challengeFinished": {
+        "category": "challenges",
+        "name": "Challenge #{name} Finished",
+        "name_map": {
+            "0": 1,
+            "1": 2,
+            "2": 3
+        },
+        "type": "bool"
+    },
+    "finishedHeist": {
+        "category": "heists",
+        "name": "Finished Heist {name}",
+        "name_map": "_self",
+        "type": "bool"
+    },
     "money": {
         "category": "money",
         "name": "Money",
@@ -269,6 +291,12 @@ const PROP_INFO = {
         "type": "int-dropdown",
         "dropdown": "dropdown-keybinds"
     },
+    "int": {
+        "category": "controls",
+        "name": "Interact",
+        "type": "int-dropdown",
+        "dropdown": "dropdown-keybinds"
+    },
     "cam": {
         "category": "controls",
         "name": "Camera",
@@ -320,7 +348,8 @@ const PROP_INFO = {
         "category": "misc",
         "name": "Speech Index for {name}",
         "name_map": "_self",
-        "type": "int"
+        "type": "int",
+        "note": "Increments when a speech dialog plays"
     },
     "hasNewShopItem": {
         "category": "misc",

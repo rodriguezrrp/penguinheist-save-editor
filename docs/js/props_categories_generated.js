@@ -31,6 +31,9 @@ const CATEGORY_INFO = {
     "challenges": {
         "name": "Challenges"
     },
+    "heists": {
+        "name": "Heists"
+    },
     "misc": {
         "name": "Miscellaneous",
         "expanded": true

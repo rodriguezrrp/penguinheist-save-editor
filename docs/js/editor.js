@@ -437,7 +437,7 @@ function resolveDropdown(dropdownRefName, saveType1, saveType2) {
         }
     }
     console.log('vals2', vals2);
-    return {...vals2, ...vals1}; // save's version overrides any duplicates from comparison's version
+    return {...vals2, ...vals1}; // primary save's version overrides any duplicates from comparison's version
 }
 
 function cleanupTooltipsAndTomSelects() {
@@ -1230,6 +1230,11 @@ function getPropInfo(fullKey) {
     return propInfo;
 }
 
+function selectorSafeFullKey(fullKey) {
+    // return fullKey.replaceAll(' ','_');
+    return fullKey.replaceAll(/[^a-zA-Z0-9\-_]/g,'_');
+}
+
 /*
 <div class="row">
     <div class="col --d-sm-none --d-md-block save-data-descr" prop-used-in-v1="true" prop-used-in-v2="false" prop-in-file="false">
@@ -1300,15 +1305,21 @@ function toggleUseIndicators(fullKeyNoSpaces, saveType1, saveType2, usedInSaveV1
     }
 }
 
-function updateWarningIndicator(fullKeyNoSpaces, show, isSaveType1, warning) {
+function updateWarningIndicator(fullKeyNoSpaces, showWarning, isSaveType1, hideEntireIndicator, warning, isUsedInSaveVersion) {
     let usageIndDiv = $(`#useIn${!isSaveType1 || isSaveType1===2 ? '2' : '1'}-${fullKeyNoSpaces}`);
     let usageIndTooltip = bootstrap.Tooltip.getInstance(usageIndDiv.find('i.yes-warning')[0]);
     if(!usageIndDiv) {
         console.error(`showWarningIndicator: No usage div for "${fullKeyNoSpaces}", isSaveType1=${isSaveType1}`);
         return;
     }
-    if(show) {
-        // show the warning indicator
+    if(hideEntireIndicator) {
+        usageIndDiv.addClass('d-none');
+        showWarning = false;  // artificially display no warning
+    } else {
+        usageIndDiv.removeClass('d-none');
+    }
+    if(showWarning) {
+        // show the warning indicator,  hide both normal yes and no
         usageIndDiv.addClass('warning');
         usageIndDiv.find('i.not-warning').addClass('d-none');
         usageIndDiv.find('i.yes-warning').removeClass('d-none');
@@ -1316,9 +1327,28 @@ function updateWarningIndicator(fullKeyNoSpaces, show, isSaveType1, warning) {
         usageIndDiv.find('i.yes-warning').attr('aria-label', warning);
         usageIndTooltip.enable();
     } else {
-        // hide the warning indicator
+        // hide the warning indicator,  show _either_ the normal yes or no
         usageIndDiv.removeClass('warning');
-        usageIndDiv.find('i.not-warning').removeClass('d-none');
+        let attrIsUsed = usageIndDiv.attr('is-used');
+        if(attrIsUsed === undefined) {
+            console.error(`updateWarningIndicator: usage div for ${fullKeyNoSpaces} is missing expected "is-used" attribute`)
+        }
+        let isUsed = !(attrIsUsed === 'false' || !attrIsUsed);
+        if(isUsedInSaveVersion !== undefined && isUsed != isUsedInSaveVersion) {
+            // sync the attribute
+            usageIndDiv.attr('is-used', isUsedInSaveVersion);
+            isUsed = isUsedInSaveVersion;
+        }
+        // console.log('updateWarningIndicator: isUsed:', isUsed, `fullKeyNoSpaces=${fullKeyNoSpaces} isSaveType1=${isSaveType1}`);
+        if(isUsed) {
+            usageIndDiv.removeClass('unused');
+            usageIndDiv.find('i.not-warning.not-used').addClass('d-none');
+            usageIndDiv.find('i.not-warning.yes-used').removeClass('d-none');
+        } else {
+            usageIndDiv.addClass('unused');
+            usageIndDiv.find('i.not-warning.not-used').removeClass('d-none');
+            usageIndDiv.find('i.not-warning.yes-used').addClass('d-none');
+        }
         usageIndDiv.find('i.yes-warning').addClass('d-none');
         usageIndTooltip.disable();
     }
@@ -1328,6 +1358,10 @@ console.error('TODO: toggle icons based on value verification results');
 
 
 function getValidationInfo(fullKey, propInfo, newValue) {
+    // if(newValue === undefined) {
+    //     console.error(`getValidationInfo: undefined value for "${fullKey}"`);
+    //     return;
+    // }
     let validationResult = {};
     switch(propInfo.type) {
         case 'bool':
@@ -1339,7 +1373,7 @@ function getValidationInfo(fullKey, propInfo, newValue) {
             }
             break;
         case 'color':
-            if(!newValue.match(SAVE_COL_PATTERN) && !newValue.match(HEX_COL_PATTERN)) {
+            if(!newValue?.match(SAVE_COL_PATTERN) && !newValue?.match(HEX_COL_PATTERN)) {
                 validationResult['warningV1'] = 'Expects the value to be a valid color! (R;G;B;A and each value is 0-1)'
                 validationResult['warningV2'] = 'Expects the value to be a valid color! (R;G;B;A and each value is 0-1)'
             }
@@ -1429,7 +1463,7 @@ function addEditorRow(fullKeyNoSpaces, fullKey,
                     data-bs-toggle="tooltip" data-bs-placement="top" title="${propNote}"
                     ><i class="bi-question-circle"></i></a>`
                 : ''}
-            <div class="col">`+/*col to place it below the name span*/+`
+            <div class="col">`+/*col to place it below the name span*/`
                 ${usedInSaveV1
                     ? `<span class="form-text d-parent-hover-inline">Key name: @${fullKey}@</span>`
                     : ''}
@@ -1443,16 +1477,16 @@ function addEditorRow(fullKeyNoSpaces, fullKey,
     /* add version usage indicators
      * div contains the icons and should be as follows:
      *   div is: `#useIn1-${fullKeyNoSpaces}` or `#useIn2-${fullKeyNoSpaces}`
-     *      if useIn1 and !usedInSaveV1, should have class .unused
+     *      if useIn1 and !usedInSaveV1, should have class .unused    and attr is-used="false"
      *      if useIn2 and !saveType2,    should have class .d-none
-     *      if useIn2 and !usedInSaveV2, should have class .unused
+     *      if useIn2 and !usedInSaveV2, should have class .unused    and attr is-used="false"
      *   icons are children:
      *      if problem,   .yes-warning           (.bi-exclamation-triangle)
      *      if used,      .not-warning.yes-used  (.bi-check-lg)
      *      if not used,  .not-warning.not-used  (.bi-x-lg)
      * */
     row.append(
-        $(`<div id="useIn1-${fullKeyNoSpaces}" class="col --col-1 col-md-auto fs-5 save-data-val">
+        $(`<div id="useIn1-${fullKeyNoSpaces}" class="col --col-1 col-md-auto fs-5 save-data-val" is-used="true">
             <i class="not-warning yes-used bi-check-lg"
                 title="used by selected save version" aria-label="used by selected save version"></i>
             <i class="not-warning not-used bi-x-lg"
@@ -1460,7 +1494,7 @@ function addEditorRow(fullKeyNoSpaces, fullKey,
             <i class="yes-warning d-none bi-exclamation-triangle" aria-label="selected save version may not accept the value"
                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="selected save version may not accept the value"></i>
         </div>
-        <div id="useIn2-${fullKeyNoSpaces}" class="col --col-1 col-md-auto fs-5 save-data-val d-none unused">
+        <div id="useIn2-${fullKeyNoSpaces}" class="col --col-1 col-md-auto fs-5 save-data-val d-none unused" is-used="false">
             <i class="not-warning yes-used bi-check-lg"
                 title="used by selected comparison version" aria-label="used by selected comparison version"></i>
             <i class="not-warning not-used bi-x-lg"
@@ -1606,11 +1640,14 @@ function addEditorRow(fullKeyNoSpaces, fullKey,
         // let tomselect = new TomSelect("#select-beast",{
         let tomselect = new TomSelect(selectElem, {
             create: false,
-            sortField: {
+            sortField: 
+                    propInfo.sort === 'false' || propInfo.sort === false
+                        ? undefined
+                        : {
                 field: "text"
                 // direction: "asc"
-            }
-            , maxOptions: null  // default was 50; this will allow ALL <option> s to show
+            },
+            maxOptions: null  // default was 50; this will allow ALL <option> s to show
         });
         paramsFormTomSelectList.push(tomselect);
     }
@@ -1621,7 +1658,7 @@ function addEditorRow(fullKeyNoSpaces, fullKey,
     // setup input recorder
     let inputRecordElem = document.getElementById(`inputRecord-${fullKeyNoSpaces}`);
     if(inputRecordElem) {
-        setupInputRecorder(inputRecordElem, (ucode) => updateEditorRow(fullKey, fullKeyNoSpaces, ucode));
+        setupInputRecorder(inputRecordElem, (ucode) => updateEditorRow(fullKeyNoSpaces, ucode));
     }
 
     // setup intlist element editors
@@ -1631,30 +1668,30 @@ function addEditorRow(fullKeyNoSpaces, fullKey,
 
     // setup raw editor
     let rawEditor = $(`#inputRaw-${fullKeyNoSpaces}`);
-    rawEditor.change((e) => updateEditorRow(fullKey, fullKeyNoSpaces, rawEditor.val()));
+    rawEditor.change((e) => updateEditorRow(fullKeyNoSpaces, rawEditor.val()));
 
     // setup neat editor(s)
     let neatEditor = $(`#inputNeat-${fullKeyNoSpaces}`);
     switch (type) {
         case 'float-range':
-            neatEditor.on('input', (e) => updateEditorRow(fullKey, fullKeyNoSpaces, neatEditor.val()));
+            neatEditor.on('input', (e) => updateEditorRow(fullKeyNoSpaces, neatEditor.val()));
             break;
         case 'bool':
-            neatEditor.change((e) => updateEditorRow(fullKey, fullKeyNoSpaces, neatEditor[0].checked));
+            neatEditor.change((e) => updateEditorRow(fullKeyNoSpaces, neatEditor[0].checked));
             break;
         case 'color':
             let textHexEditor = document.getElementById(`inputHex-${fullKeyNoSpaces}`);
-            textHexEditor.addEventListener('change', e => updateEditorRow(fullKey, fullKeyNoSpaces, textHexEditor.value));
-            neatEditor.change((e) => updateEditorRow(fullKey, fullKeyNoSpaces, neatEditor.val()));
+            textHexEditor.addEventListener('change', e => updateEditorRow(fullKeyNoSpaces, textHexEditor.value));
+            neatEditor.change((e) => updateEditorRow(fullKeyNoSpaces, neatEditor.val()));
             break;
         default:
-            neatEditor.change((e) => updateEditorRow(fullKey, fullKeyNoSpaces, neatEditor.val()));
+            neatEditor.change((e) => updateEditorRow(fullKeyNoSpaces, neatEditor.val()));
             break;
     }
 
     // setup erase button
     let eraseBtn = document.getElementById(`btnErase-${fullKeyNoSpaces}`);
-    eraseBtn.onclick = (e) => updateEditorRow(fullKey, fullKeyNoSpaces, '');
+    eraseBtn.onclick = (e) => updateEditorRow(fullKeyNoSpaces, '');
 
     // return the created row
     return row;
@@ -1693,31 +1730,57 @@ function removeEditorRow(fullKeyNoSpaces) {
     editorRow.remove();
 }
 
-function updateEditorRow(fullKey, fullKeyNoSpaces, newValue) {
+function updateEditorRow(fullKeyAmbiguous, newValue, usedInSaveVs) {
+    // fullKeyAmbiguous may be either the fullKey or the selector safe converted fullKey.
+    // disambiguate the two.
+    const fullKeyNoSpaces = selectorSafeFullKey(fullKeyAmbiguous);
     let editorRow = tryGetEditorRow(fullKeyNoSpaces);
     if(editorRow === null) {
         console.error(`updateEditorRow: row for "${fullKeyNoSpaces}" did not exist!`);
         return;
     }
-    // let fullKey = editorRow.getAttribute('full-key');
+    const fullKey = editorRow.getAttribute('full-key');
+    if(fullKeyAmbiguous !== fullKeyNoSpaces && fullKeyAmbiguous !== fullKey) {
+        console.error(`disambiguating and extracting fullKey mismatch: ${fullKeyAmbiguous} !== ${fullKey}`);
+        return;
+    }
 
     let propInfo = getPropInfo(fullKey);
     const type = propInfo.type;
     editorRow.querySelector(`#editorRow-${fullKeyNoSpaces}`);
 
+    let saveType2 = $('#saveType2').val();
+
     // update warning indicators if value is deemed invalid or not
     let validationInfo = getValidationInfo(fullKey, propInfo, newValue);
     let msg1 = validationInfo.warningV1, msg2 = validationInfo.warningV2;
-    updateWarningIndicator(fullKeyNoSpaces, Boolean(msg1), true, msg1);
-    updateWarningIndicator(fullKeyNoSpaces, Boolean(msg2), false, msg2);
-    
+    updateWarningIndicator(fullKeyNoSpaces, Boolean(msg1), true, false, msg1, usedInSaveVs?.usedInSaveV1);
+    updateWarningIndicator(fullKeyNoSpaces, Boolean(msg2), false, !saveType2, msg2, usedInSaveVs?.usedInSaveV2);
+
     // let validNewValue = validationInfo.newValue;
+
+    // save value to the current save properties-values map
+
+    // "stringify" according to save file expectations!
+    // Note: if/when becomes applicable, could do version specific handling here possibly?
+    if(newValue === false) newValue = '0';
+    else if(newValue === true) newValue = '1';
+    if(typeof(newValue) === 'number') newValue = ''+newValue; // convert numbers (such as 0) to string
+
+    // update underlying current save data map with value
+    if(newValue === '' && type !== 'intlist') {
+        // remove an empty value only if
+        currentSaveData.delete(fullKey);
+    } else {
+        currentSaveData.set(fullKey, newValue);
+    }
 
     // update editors with value
 
     // update raw editor and neat editor(s)
     switch(type) {
         case 'bool':
+            console.log('newValue:',newValue);
             $(`#inputRaw-${fullKeyNoSpaces}`).val(newValue);
             document.getElementById(`inputNeat-${fullKeyNoSpaces}`).checked = (newValue === '0' ? false : !!newValue); // truthy
             break;
@@ -1818,7 +1881,7 @@ function refreshParamsInForm() {
             // check if should it be removed
             if (!(save1RelevantPropsSet.has(editorRowFullKey) || save2RelevantPropsSet.has(editorRowFullKey))) {
                 console.log(`removing editor ${editorRowFullKey}`);
-                removeEditorRow(editorRowFullKey.replaceAll(' ','_'));
+                removeEditorRow(selectorSafeFullKey(editorRowFullKey));
             }
         }
     }
@@ -1827,7 +1890,7 @@ function refreshParamsInForm() {
     //   add if needed, and update them
     
     for (const [propFullKey, propValue] of Object.entries(propsData)) {
-        let fullKeyNoSpaces = propFullKey.replaceAll(' ','_');
+        let fullKeyNoSpaces = selectorSafeFullKey(propFullKey);
         let usedInSaveV1 = save1RelevantPropsSet.has(propFullKey);
         let usedInSaveV2 = save2RelevantPropsSet.has(propFullKey);
         let inSaveFile = currentSaveData.has(propFullKey);
@@ -1844,8 +1907,16 @@ function refreshParamsInForm() {
             );
         }
         // update property value
-        updateEditorRow(propFullKey, fullKeyNoSpaces, propValue);
+        updateEditorRow(propFullKey, propValue, {usedInSaveV1:usedInSaveV1, usedInSaveV2:usedInSaveV2});
     }
+}
+
+function doCollapseAll(e) {
+    document.querySelectorAll('button.accordion-button').forEach((collBtn) => {
+        if(!collBtn.classList.contains('collapsed')) {
+            collBtn.click();
+        }
+    })
 }
 
 
@@ -1857,7 +1928,7 @@ $(document).ready(function() {
     //-----------------------------------------
     // setup listeners
 
-    document.getElementById('btnManualDoFileFormData').onclick = doFileFormData;
+    // document.getElementById('btnManualDoFileFormData').onclick = doFileFormData;
 
     $('#saveType1').change((e) => updateGameVersionInfoOnPage(e, $('#saveType1').val()));
     // $('#saveType1').change((e) => updateGameVersionInfoOnPage(e, e.target.value));

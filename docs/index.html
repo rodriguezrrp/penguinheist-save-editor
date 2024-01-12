@@ -175,7 +175,8 @@
                 
             </div>
             
-            <button id="btnManualDoFileFormData" type="button" class="btn btn-outline-secondary" onclick="doFileFormData">doFileFormData</button>
+            <!-- <button id="btnManualDoFileFormData" type="button" class="btn btn-outline-secondary" onclick="doFileFormData">doFileFormData</button> -->
+            <button id="btnManualRefreshParamsInForm" type="button" class="btn btn-outline-secondary" onclick="refreshParamsInForm()">refreshParamsInForm</button>
             
         </form>
 
@@ -343,16 +344,16 @@
                                         <span class="listicons"><i class="bi-apple" aria-label="On Mac OS"></i></span>
                                         <p class="mono-text fw-500" style="line-height: normal; font-size: 0.8rem;">
                                             &lt;download folder&gt;
-                                            <br>&nbsp;&nbsp;&nbsp;└── Penguin Heist.app
-                                            <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── Contents
-                                            <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── _CodeSignature
-                                            <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── Frameworks
-                                            <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── MacOS
-                                            <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;└── Penguin Heist
-                                            <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── MonoBleedingEdge
-                                            <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── Plugins
-                                            <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── Resources
-                                            <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── Info.plist
+                                            <br>└── Penguin Heist.app
+                                            <br>&nbsp;&nbsp;&nbsp;└── Contents
+                                            <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── _CodeSignature
+                                            <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── Frameworks
+                                            <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── MacOS
+                                            <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;└── Penguin Heist
+                                            <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── MonoBleedingEdge
+                                            <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── Plugins
+                                            <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── Resources
+                                            <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── Info.plist
                                         </p>
                                     </li>
                                     <li class="listicons inst-linux">
@@ -639,51 +640,57 @@
                 <div class="col-10">
                     <div class="row">
                         <div class="col-md-3 col-sm-6 my-1">
-                            <button id="quickActMoney" onclick="doQuickActMoney" class="btn btn-secondary w-100">1 Million Money</button>
+                            <button id="quickActMoney" onclick="doQuickActMoney()" class="btn btn-secondary w-100">1 Million Money</button>
                             <script> function doQuickActMoney() {
-                                // $('').val(1000000);
+                                updateEditorRow('money', 1000000);
                             } </script>
                         </div>
                         <div class="col-md-3 col-sm-6 my-1">
-                            <button id="quickActStamps" onclick="doQuickActStamps" class="btn btn-secondary w-100">1000 Stamps</button>
+                            <button id="quickActStamps" onclick="doQuickActStamps()" class="btn btn-secondary w-100">1000 Stamps</button>
                             <script> function doQuickActStamps() {
-                                // $('').val(1000000);
+                                console.error('Implement doQuickActStamps');
                             } </script>
                         </div>
                         <div class="col-md-3 col-sm-6 my-1">
-                            <button id="quickActItems" onclick="doQuickActItems" class="btn btn-secondary w-100">Get All Items</button>
+                            <button id="quickActItems" onclick="doQuickActItems()" class="btn btn-secondary w-100">Get All Items</button>
                             <script> function doQuickActItems() {
-                                // $('').val(1000000);
+                                console.error('Implement doQuickActItems');
                             } </script>
                         </div>
                         <div class="col-md-3 col-sm-6 my-1">
-                            <button id="quickActBlueprints" onclick="doQuickActBlueprints" class="btn btn-secondary w-100">Get All Blueprints</button>
+                            <button id="quickActBlueprints" onclick="doQuickActBlueprints()" class="btn btn-secondary w-100">Get All Blueprints</button>
                             <script> function doQuickActBlueprints() {
-                                // $('').val(1000000);
+                                console.error('Implement doQuickActBlueprints');
                             } </script>
                         </div>
-                        <div class="col-md-3 col-sm-6 my-1">
-                            <button id="quickActHints" onclick="doQuickActHints" class="btn btn-secondary w-100">Get All Hints</button>
+                        <!-- <div class="col-md-3 col-sm-6 my-1">
+                            <button id="quickActHints" onclick="doQuickActHints()" class="btn btn-secondary w-100">Get All Hints</button>
                             <script> function doQuickActHints() {
-                                // $('').val(1000000);
+                                console.error('Implement doQuickActHints');
                             } </script>
-                        </div>
+                        </div> -->
                         <div class="col-md-3 col-sm-6 my-1">
-                            <button id="quickActClothing" onclick="doQuickActClothing" class="btn btn-secondary w-100">Get All Clothing</button>
+                            <button id="quickActClothing" onclick="doQuickActClothing()" class="btn btn-secondary w-100">Get All Clothing</button>
                             <script> function doQuickActClothing() {
-                                // $('').val(1000000);
+                                console.error('Implement doQuickActClothing');
                             } </script>
                         </div>
                         <div class="col-md-3 col-sm-6 my-1">
-                            <button id="quickActConstructions" onclick="doQuickActConstructions" class="btn btn-secondary w-100">All Constructions</button>
+                            <button id="quickActConstructions" onclick="doQuickActConstructions()" class="btn btn-secondary w-100" disabled>All Constructions</button>
                             <script> function doQuickActConstructions() {
-                                // $('').val(1000000);
+                                console.error('Implement doQuickActConstructions');
                             } </script>
                         </div>
                         <div class="col-md-3 col-sm-6 my-1">
-                            <button id="quickActDefault" onclick="doQuickActDefault" class="btn btn-secondary w-100">Reset to Default</button>
+                            <button id="quickActHeists" onclick="doQuickActHeists()" class="btn btn-secondary w-100">Unlock All Heists</button>
+                            <script> function doQuickActHeists() {
+                                console.error('Implement doQuickActHeists');
+                            } </script>
+                        </div>
+                        <div class="col-md-3 col-sm-6 my-1">
+                            <button id="quickActDefault" onclick="doQuickActDefault()" class="btn btn-secondary w-100">Reset to Default</button>
                             <script> function doQuickActDefault() {
-                                // $('').val(1000000);
+                                console.error('Implement doQuickActDefault');
                             } </script>
                         </div>
                     </div>
@@ -710,7 +717,7 @@
                     <span>
                         Parameters
                     </span>
-                    <button id="btnCollapseAll" onclick="doCollapseAll" title="Collapse all parameter accordions" class="btn btn-secondary w-auto btn-close py-0 h-auto"
+                    <button id="btnCollapseAll" onclick="doCollapseAll()" type="button" title="Collapse all parameter accordions" class="btn btn-secondary w-auto btn-close py-0 h-auto"
                         style="background:transparent;">
                         <i class="bi-arrows-collapse"></i> Collapse All
                     </button>
