@@ -14,7 +14,7 @@ const PROP_INFO = {
     },
     "newBlueprint": {
         "category": "items",
-        "name": "Blueprint for Item {name} Available",
+        "name": "Blueprint for Item {name} Uncollected",
         "name_map": "item",
         "type": "bool"
     },
