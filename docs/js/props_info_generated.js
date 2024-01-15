@@ -28,7 +28,8 @@ const PROP_INFO = {
         "category": "loadout",
         "name": "Loadout",
         "type": "intlist",
-        "dropdown": "dropdown-items"
+        "dropdown": "dropdown-items",
+        "default": 2
     },
     "clothingOwned": {
         "category": "clothing",

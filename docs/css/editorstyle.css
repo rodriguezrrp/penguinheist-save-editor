@@ -102,6 +102,10 @@ input[type=checkbox].switch-lg {
   width: 2.5em;
 }
 
+input[type=checkbox].switch-unset {
+  background-position: center center;
+}
+
 .mono-text {
   font-family: Monaco, Consolas, "Andale  Mono", "DejaVu Sans Mono", monospace;
   color: black;
@@ -156,7 +160,7 @@ input[type=checkbox].switch-lg {
   display: block;
 }
 .save-data-descr:hover .d-parent-hover-inline {
-  display: block;
+  display: inline;
 }
 
 /* override accordion header button (and its arrow) styling */

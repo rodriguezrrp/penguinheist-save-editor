@@ -130,6 +130,10 @@ input[type=checkbox].switch-lg {
 // select.w-adjust {
 //     width: 100%;
 // }
+// add a .switch-unset class for the toggle switch checkbox
+input[type=checkbox].switch-unset {
+    background-position: center center;
+}
 
 .mono-text {
     font-family: Monaco,Consolas,"Andale  Mono","DejaVu Sans Mono",monospace;
@@ -187,7 +191,7 @@ input[type=checkbox].switch-lg {
         display: block;
     }
     & .d-parent-hover-inline {
-        display: block;
+        display: inline;
     }
 }
 

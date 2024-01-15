@@ -147,7 +147,7 @@
                 </div>
                 <div class="col-12 mb-3">
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="showRelevantOptions" id="showRelevantOptions" checked>
+                        <input class="form-check-input" type="checkbox" name="showRelevantOptions" id="showRelevantOptions" disabled><!--checked disabled-->
                         <label class="form-check-label" for="showRelevantOptions">
                         Show relevant save file parameters only (always true for Unknown category)
                         </label>
@@ -176,7 +176,7 @@
             </div>
             
             <!-- <button id="btnManualDoFileFormData" type="button" class="btn btn-outline-secondary" onclick="doFileFormData">doFileFormData</button> -->
-            <button id="btnManualRefreshParamsInForm" type="button" class="btn btn-outline-secondary" onclick="refreshParamsInForm()">refreshParamsInForm</button>
+            <!-- <button id="btnManualRefreshParamsInForm" type="button" class="btn btn-outline-secondary" onclick="refreshParamsInForm()">refreshParamsInForm</button> -->
             
         </form>
 
@@ -648,19 +648,34 @@
                         <div class="col-md-3 col-sm-6 my-1">
                             <button id="quickActStamps" onclick="doQuickActStamps()" class="btn btn-secondary w-100">1000 Stamps</button>
                             <script> function doQuickActStamps() {
-                                console.error('Implement doQuickActStamps');
+                                updateEditorRow('stamps', 1000);
                             } </script>
                         </div>
                         <div class="col-md-3 col-sm-6 my-1">
                             <button id="quickActItems" onclick="doQuickActItems()" class="btn btn-secondary w-100">Get All Items</button>
                             <script> function doQuickActItems() {
-                                console.error('Implement doQuickActItems');
+                                Array.from(document.getElementsByClassName('editor-row'))
+                                .map((e)=>e.getAttribute('id'))
+                                .filter((k)=>(
+                                    k.startsWith('editorRow-itemOwned')
+                                    // || k.startsWith('editorRow-itemAvailable')
+                                ))
+                                .forEach((k)=>{
+                                    updateEditorRow(k.slice(k.indexOf('-')+1), 1);
+                                });
                             } </script>
                         </div>
                         <div class="col-md-3 col-sm-6 my-1">
                             <button id="quickActBlueprints" onclick="doQuickActBlueprints()" class="btn btn-secondary w-100">Get All Blueprints</button>
                             <script> function doQuickActBlueprints() {
-                                console.error('Implement doQuickActBlueprints');
+                                Array.from(document.getElementsByClassName('editor-row'))
+                                .map((e)=>e.getAttribute('id'))
+                                .filter((k)=>(
+                                    k.startsWith('editorRow-newBlueprint')
+                                ))
+                                .forEach((k)=>{
+                                    updateEditorRow(k.slice(k.indexOf('-')+1), 0);
+                                });
                             } </script>
                         </div>
                         <!-- <div class="col-md-3 col-sm-6 my-1">
@@ -672,26 +687,46 @@
                         <div class="col-md-3 col-sm-6 my-1">
                             <button id="quickActClothing" onclick="doQuickActClothing()" class="btn btn-secondary w-100">Get All Clothing</button>
                             <script> function doQuickActClothing() {
-                                console.error('Implement doQuickActClothing');
+                                Array.from(document.getElementsByClassName('editor-row'))
+                                .map((e)=>e.getAttribute('id'))
+                                .filter((k)=>(
+                                    k.startsWith('editorRow-clothingOwned')
+                                ))
+                                .forEach((k)=>{
+                                    updateEditorRow(k.slice(k.indexOf('-')+1), 1);
+                                });
                             } </script>
                         </div>
                         <div class="col-md-3 col-sm-6 my-1">
-                            <button id="quickActConstructions" onclick="doQuickActConstructions()" class="btn btn-secondary w-100" disabled>All Constructions</button>
-                            <script> function doQuickActConstructions() {
-                                console.error('Implement doQuickActConstructions');
+                            <button id="quickActStructures" onclick="doQuickActStructures()" class="btn btn-secondary w-100">Get All Structures</button>
+                            <script> function doQuickActStructures() {
+                                console.error('Implement doQuickActStructures');
                             } </script>
                         </div>
                         <div class="col-md-3 col-sm-6 my-1">
                             <button id="quickActHeists" onclick="doQuickActHeists()" class="btn btn-secondary w-100">Unlock All Heists</button>
                             <script> function doQuickActHeists() {
-                                console.error('Implement doQuickActHeists');
+                                Array.from(document.getElementsByClassName('editor-row'))
+                                .map((e)=>e.getAttribute('id'))
+                                .filter((k)=>(
+                                    k.startsWith('editorRow-finishedHeist')
+                                ))
+                                .forEach((k)=>{
+                                    updateEditorRow(k.slice(k.indexOf('-')+1), 1);
+                                });
                             } </script>
                         </div>
                         <div class="col-md-3 col-sm-6 my-1">
-                            <button id="quickActDefault" onclick="doQuickActDefault()" class="btn btn-secondary w-100">Reset to Default</button>
-                            <script> function doQuickActDefault() {
-                                console.error('Implement doQuickActDefault');
-                            } </script>
+                            <button id="quickActDefault" onclick="doResetToDefault()" class="btn btn-secondary w-100">Reset to Default</button>
+                            <!-- <script> function doResetToDefault() {
+                                // console.error('Implement doQuickActDefault');
+                                // empty file input
+                                document.getElementById('fileSelect').value = null;
+                                // empty all current data
+                                currentSaveData = new Map();
+                                // refresh form; it will draw upon defaults
+                                refreshParamsInForm();
+                            } </script> -->
                         </div>
                     </div>
                 </div>
@@ -727,190 +762,13 @@
         <div class="row"></div>
         <form id="saveForm" class="mx-2 mb-3">
 
-            <!--  -->
-            <div class="row mb-1">
-                <div class="col-4 save-data-descr">
-                    <span>Parameter description</span>
-                    <br><span class="form-text">@parameterNameInFile@</span>
-                </div>
-                <!-- <div class="col save-data-val"> -->
-                <div style="overflow:hidden" class="col save-data-val">
-                    <span>Value editor for selected save version</span>
-                    <!-- <br><span style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis">(Version selected here lorem ipsum)</span> -->
-                    <br><div style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis">(Version selected here lorem ipsum)</div>
-                    <!-- <br><span class="form-text">valueInFile</span> -->
-                    <span class="form-text">valueInFile</span>
-                </div>
-                <!-- <div class="col save-data-val editor-comp"> -->
-                <div style="overflow:hidden" class="col save-data-val editor-comp">
-                    <span>Value editor for selected comparison version</span>
-                    <!-- <br><span style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis">(Version selected here lorem ipsum)</span> -->
-                    <br><div style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis">(Version selected here lorem ipsum)</div>
-                    <!-- <br><span class="form-text">@convertedName@</span> -->
-                    <span class="form-text">@convertedName@</span>
-                </div>
-                <div class="col-2 save-data-raw editor-raw">
-                    <span>Raw value editor</span>
-                    <br><span class="form-text">valueInFile</span>
-                </div>
-            </div>
-
-            <!--  -->
-            <div class="row">
-                <div class="col save-data-val">
-                    Lorem ipsum
-                </div>
-                <div class="col save-data-val unused">
-                    Lorem ipsum
-                </div>
-            </div>
-            <div class="row">
-                <div class="col save-data-val">
-                    Lorem ipsum
-                </div>
-            </div>
+            <!-- scripts will put the generated property editors here -->
             
-            <div class="row">
-                <div class="col-4 save-data-descr">
-                    <span>Property descriptor lorem ipsum</span> Lorem ipsum dolor
-                </div>
-                <div class="col save-data-val unused">
-                    Lorem ipsum
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-4 save-data-descr">
-                    <span>Property descriptor lorem ipsum</span>
-                </div>
-                <div class="col save-data-val">
-                    Lorem ipsum
-                </div>
-                <div class="col save-data-val">
-                    Lorem ipsum 2
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-4 save-data-descr">
-                    <span>Property desc</span>
-                    <br><span class="form-text">@property@</span>
-                </div>
-                <div class="col save-data-val">
-                    Lorem ipsum
-                    <label class="form-check-label" for="testPropCheck1">
-                    Check Label
-                    </label>
-                    <input class="form-check-input" type="checkbox" name="testPropCheck1" id="testPropCheck1" checked>
-                    <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="option2">
-                </div>
-                <div class="col save-data-val">
-                    <div class="form-check form-check-inline">
-                        <label class="form-check-label" for="inlineCheckbox1">1</label>
-                        <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
-                    </div>
-                        <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="option2">
-                        <label class="form-check-label" for="inlineCheckbox2">2</label>
-                    </div>
-                        <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" id="inlineCheckbox3" value="option3" disabled>
-                        <label class="form-check-label" for="inlineCheckbox3">3 (disabled)</label>
-                    </div>
-                </div>
+            <div class="d-flex align-items-center">
+                <strong role="status">Loading...</strong>
+                <div class="spinner-border text-body m-auto" aria-hidden="true"></div>
             </div>
 
-            <!-- collapse test -->
-            <!-- <a class="btn btn-primary" data-bs-toggle="collapse" href="#collapseTest" role="button" aria-expanded="false" aria-controls="collapseTest"> -->
-            <!-- <a class="btn btn-primary col-12 save-data-collapse-bar" data-bs-toggle="collapse" href="#collapseTest" role="button" aria-expanded="false" aria-controls="collapseTest"> -->
-                <!-- Link with href
-            </a> -->
-            <!-- <script>
-                // // handle icon toggling
-                // function toggleIcon(event) {
-                //     $(event.target)
-                //         .prev('.save-data-collapse-bar')
-                //         .find('i')
-                //         .toggleClass('bi-caret-right-fill bi-caret-down-fill');
-                // }
-                // $(document).ready(function() {
-                //     $('.collapse').on('hidden.bs.collapse',toggleIcon);
-                //     $('.collapse').on('shown.bs.collapse',toggleIcon);
-                // });
-            </script> -->
-            
-            <!-- collapse header -->
-            <div class="row save-data-collapse-bar" data-bs-toggle="collapse" href="#collapseTest" role="button" aria-expanded="false" aria-controls="collapseTest">
-                <span><i class="bi-caret-right-fill"></i> CollapseDivText</span>
-            </div>
-            <!-- collapse -->
-            <div id="collapseTest" class="col-12 collapse"> <!-- <<<<--- DOES THIS NEED TO BE a ROW? -->
-                <div class="row">
-                    <div class="col save-data-val">
-                        Lorem ipsum collapse
-                    </div>
-                    <div class="col save-data-val">
-                        Lorem ipsum collapse
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col save-data-val">
-                        Lorem ipsum collapse
-                    </div>
-                </div>
-            </div>
-
-            <!-- collapse header -->
-            <div class="row save-data-collapse-bar" data-bs-toggle="collapse" href="#collapseTestOpen" role="button" aria-expanded="true" aria-controls="collapseTestOpen">
-                <span><i class="bi-caret-down-fill"></i> CollapseDivText2</span>
-            </div>
-            <!-- collapse -->
-            <div id="collapseTestOpen" class="col-12 collapse show"> <!-- <<<<--- DOES THIS NEED TO BE a ROW? -->
-                <div class="row">
-                    <div class="col save-data-val">
-                        Lorem ipsum not collapse
-                    </div>
-                    <div class="col save-data-val">
-                        Lorem ipsum not collapse
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col save-data-val">
-                        Lorem ipsum not collapse
-                    </div>
-                </div>
-            </div>
-
-
-            <div class="--col-12 accordion accordion-flush" id="accordionExample">
-
-                <!-- accordion item (header button + collapsible content) -->
-                <div class="row accordion-item">
-                
-                    <div class="px-0 accordion-header">
-                        <button class="accordion-button save-data-collapse-bar" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                            Accordion Item #1
-                        </button>
-                    </div>
-                    <div id="collapseOne" class="accordion-collapse collapse show">
-                        <!-- <div class="accordion-body"> -->
-                            <strong>This is the first item's accordion body.</strong> It is shown by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
-                            <div class="row">
-                                <div class="col save-data-val">
-                                    Lorem ipsum not collapse
-                                </div>
-                                <div class="col save-data-val">
-                                    Lorem ipsum not collapse
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col save-data-val">
-                                    Lorem ipsum not collapse
-                                </div>
-                            </div>
-                        <!-- </div> -->
-                    </div>
-                </div>
-            </div>
-            
         </form>
         
         
@@ -918,10 +776,10 @@
         <h2 class="h5 mt-3">Download Save</h2>
         <div class="row mb-3 justify-content-center">
             <div class="col-4">
-                <button class="btn btn-primary w-100"><i class="bi-file-earmark-arrow-down"></i> Download Edited File</button>
+                <button type="button" class="btn btn-primary w-100" onclick="doDownloadPrimary()"><i class="bi-file-earmark-arrow-down"></i> Download Edited File</button>
             </div>
             <div class="col-4 editor-comp">
-                <button class="btn btn-secondary w-100"><i class="bi-pen"></i> <i class="bi-file-earmark-arrow-down"></i> Download Converted File</button>
+                <button type="button" class="btn btn-secondary w-100" onclick="doDownloadConverted()"><i class="bi-pen"></i> <i class="bi-file-earmark-arrow-down"></i> Download Converted File</button>
             </div>
         </div>
 
@@ -931,9 +789,7 @@
         
     </div>
 
-    <!-- abc -->
-
-    <div class="container-lg background-container pt-2 mb-5">
+    <!-- <div class="container-lg background-container pt-2 mb-5">
         <p>
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent iaculis posuere quam et rutrum. Etiam elementum dapibus nibh, ac aliquam ex commodo sed. Nulla volutpat auctor consectetur. Nullam vulputate luctus est, ac malesuada risus vestibulum nec. Cras quis pharetra urna. Sed consectetur sodales dictum. In aliquam ante metus, sed luctus libero efficitur dignissim. Aliquam non sem orci. Nullam ut ex at diam ultricies aliquet. Aenean maximus pellentesque lacus id sodales. Pellentesque vitae feugiat diam. Quisque ultricies tempus neque, non malesuada ligula euismod id. Ut gravida ipsum in nibh dictum, quis sodales sapien tempus.
         </p>
@@ -965,7 +821,7 @@
     </p>
     <p>
         Aliquam congue metus purus, sit amet sodales tellus finibus id. Nulla facilisi. Aliquam volutpat aliquet leo, vel euismod quam varius nec. Ut porta consectetur hendrerit. Aenean imperdiet euismod diam et porttitor. Duis elit augue, dignissim sed pellentesque sit amet, volutpat vitae libero. Proin et commodo lectus, sollicitudin auctor tellus. Nulla eget dolor porttitor, mattis ligula vel, interdum dolor. Praesent bibendum varius ex, sed volutpat nisi vehicula non. Proin sollicitudin euismod sapien, gravida consequat magna pulvinar at.
-    </p>
+    </p> -->
     
 </body>
 </html>

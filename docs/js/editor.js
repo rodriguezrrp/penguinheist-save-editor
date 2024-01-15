@@ -1,12 +1,12 @@
 
-function readFile(fileSelectVal, version) {
+function readFile(fileSelectVal, version, onFileLoadCallback) {
     console.log('readFile: fileSelectVal:', fileSelectVal);
     if(!fileSelectVal) return new Map();
     // check if the file is a save file
     const filetype = fileSelectVal.type;
     const filename = fileSelectVal.name;
     if(filetype !== '' || !filename.endsWith('.sav'))
-        console.warn(`readFile(): file "${filename}" of type "${filetype}" might not be a save file. Will still attempt to read it as such.`)
+        console.warn(`readFile: file "${filename}" of type "${filetype}" might not be a save file. Will still attempt to read it as such.`)
 
     // could try to determine version here...
     // if(!version) { ... }
@@ -21,15 +21,17 @@ function readFile(fileSelectVal, version) {
         // if(version)
             // currently not version-specific!
             parseSaveInto(contents, newSaveDataMap, version);
+        // calling an updater in here because the reader.onload does not appear to be synchronous/blocking
+        onFileLoadCallback(newSaveDataMap);
     };
     reader.onerror = (e) => {
-        alert(`readFile(): error encountered reading file: ${e.target.error.name}`);
+        alert(`readFile: error encountered reading file: ${e.target.error.name}`);
     }
     reader.readAsText(fileSelectVal);
     
     console.log('readFile: newSaveDataMap:', newSaveDataMap);
 
-    return newSaveDataMap;
+    // return newSaveDataMap;
 }
 
 function parseSaveInto(contents, newSaveDataMap, version) {
@@ -47,9 +49,26 @@ function parseSaveInto(contents, newSaveDataMap, version) {
     });
 }
 
-function provideFileDL(savePropsData, filename) {
+function encodeSavePropsDataToBlob(savePropsMap, version) {
+    // currently all versions use the same plaintext format!
+    data = '';
+    for(const [fullKey, value] of Array.from(savePropsMap)) {
+        if(typeof(value) === "undefined" || value === null) {
+            continue;
+        }
+        data += `@${fullKey}@${value}\n`;
+    }
+    return new Blob([data], {type: 'text/*'});
+}
+
+function provideFileDL(saveBlob, filename) {
     // const blob = new Blob([data], {type: 'text/csv'});
-    const blob = new Blob([data], {type: ''});
+    const blob = saveBlob;
+    if(blob.constructor.name !== 'Blob') {
+        console.error('provideFileDL: save blob was not an instance of Blob? Aborting download setup.');
+        alert('Problem with saving to file. See console for more.');
+        return false;
+    }
     if(window.navigator.msSaveOrOpenBlob) {
         window.navigator.msSaveBlob(blob, filename);
     }
@@ -64,6 +83,34 @@ function provideFileDL(savePropsData, filename) {
         document.body.removeChild(elem);
         window.URL.revokeObjectURL(url);
     }
+}
+
+function doDownloadPrimary() {
+    // version saveType1.
+    let version = $('#saveType1').val();
+    // use filename of save file imported, or default to normal save name.
+    let filename = document.getElementById('fileSelect').files[0]?.name ?? 'PHSaveMain.sav';
+    provideFileDL(encodeSavePropsDataToBlob(currentSaveData, version), filename);
+}
+function doDownloadConverted() {
+    // version saveType2.
+    let version = $('#saveType2').val();
+    if(!version) {
+        alert('No comparison/conversion version selected!');
+        return;
+    }
+    // use filename of save file imported, or default to normal save name.
+    let filename = document.getElementById('fileSelect').files[0]?.name ?? 'PHSaveMain.sav';
+    provideFileDL(encodeSavePropsDataToBlob(currentSaveData, version), filename);
+}
+
+function doResetToDefault() {
+    // empty file input
+    document.getElementById('fileSelect').value = null;
+    // empty all current data
+    currentSaveData = new Map();
+    // refresh form; it will draw upon defaults
+    refreshParamsInForm();
 }
 
 
@@ -221,6 +268,94 @@ function removeItemAll(arr, value) {
         }
     }
     return arr;
+}
+
+// TODO: do test cases on this function!
+console.error('TODO: do test cases on _isValidVersion!');
+function _isValidVersion(v) {
+    return VERSION_INFO.hasOwnProperty(v);
+}
+
+// TODO: do test cases on this function!
+console.error('TODO: do test cases on compareVersion!');
+function compareVersion(v1, v2) {
+    // if([v1, v2].some(v=>!_isValidVersion(v))) {
+    //     let _failedVs = (_isValidVersion(v1)?[]:['v1']).concat(_isValidVersion(v2)?[]:['v2']);
+    //     throw new TypeError(`compareVersion: ${_failedVs.join(', ')} must be valid version ids!`);
+    // }
+    if(!_isValidVersion(v1)) {
+        console.info(`compareVersion: v1 "${v1}" was not a valid version id!`);
+        return null;
+    }
+    if(!_isValidVersion(v2)) {
+        console.info(`compareVersion: v2 "${v2}" was not a valid version id!`);
+        return null;
+    }
+    let diff = VERSION_INFO[v1].steamdb_buildid - VERSION_INFO[v2].steamdb_buildid;
+    if(isNaN(diff)) {
+        // let _missingBID = (VERSION_INFO[v1].steamdb_buildid?[]:['v1']).concat(VERSION_INFO[v2].steamdb_buildid?[]:['v2']);
+        // throw new Error(`compareVersion: ${_missingBID.join(', ')} must have a valid steamdb_buildid property in VERSION_INFO!`);
+        if(!(VERSION_INFO[v1].steamdb_buildid))
+            console.info(`compareVersion: v1 "${v1}" did not have a valid steamdb_buildid property in VERSION_INFO!`);
+        if(!(VERSION_INFO[v2].steamdb_buildid))
+            console.info(`compareVersion: v2 "${v2}" did not have a valid steamdb_buildid property in VERSION_INFO!`);
+        return null;
+    }
+    return diff;
+}
+
+function getMaxLoadoutSize(version) {
+    if(typeof(version) === "undefined" || version === null) {
+        return null;
+    }
+    // compareVersion returns positive when the first version is later than the second version.
+    // therefore, when version is Post Office or later, the loadout size is 8. That's when it was upgraded.
+    return compareVersion(version, 'vP') >= 0 ? 8 : 6;
+}
+
+function versionHasStamps(version) {
+    if(typeof(version) === "undefined" || version === null) {
+        return null;
+    }
+    // stamps were introduced in Post Office update
+    return compareVersion(version, 'vP') >= 0;
+}
+
+function versionHasStructures(version) {
+    if(typeof(version) === "undefined" || version === null) {
+        return null;
+    }
+    // structures were replaced with blueprints in Blueprint update
+    return compareVersion(version, 'vBP') < 0;
+}
+
+function versionHasLockableHeists(version) {
+    if(typeof(version) === "undefined" || version === null) {
+        return null;
+    }
+    // heists became progression-locked in the Heist Planner patch update
+    return compareVersion(version, 'vCHP_initial') >= 0;
+}
+
+function refreshQuickActionAvailabilities(version1, version2) {
+    let hasStamps1 = versionHasStamps(version1);
+    let hasStamps2 = versionHasStamps(version2);
+    if(hasStamps1 === true || hasStamps2 === true)
+        document.getElementById('quickActStamps').removeAttribute('disabled');
+    else
+        document.getElementById('quickActStamps').setAttribute('disabled', 'true');
+    let hasStructures1 = versionHasStructures(version1);
+    let hasStructures2 = versionHasStructures(version2);
+    if(hasStructures1 === true || hasStructures2 === true)
+        document.getElementById('quickActStructures').removeAttribute('disabled');
+    else
+        document.getElementById('quickActStructures').setAttribute('disabled', 'true');
+    let hasLockableHeists1 = versionHasLockableHeists(version1);
+    let hasLockableHeists2 = versionHasLockableHeists(version2);
+    if(hasLockableHeists1 === true || hasLockableHeists2 === true)
+        document.getElementById('quickActHeists').removeAttribute('disabled');
+    else
+        document.getElementById('quickActHeists').setAttribute('disabled', 'true');
 }
 
 const SAVE_COL_PATTERN = /^((0(\.\d+)?|1);){3}(0(\.\d+)?|1)$/g;
@@ -1235,6 +1370,25 @@ function selectorSafeFullKey(fullKey) {
     return fullKey.replaceAll(/[^a-zA-Z0-9\-_]/g,'_');
 }
 
+function resolveDropdownFromPropInfo(propInfo, saveType1, saveType2) {
+    const type = propInfo.type;
+    let propDropdownValues;
+    if(type == 'int-dropdown' || type == 'intlist') {
+        // get the dropdown's values
+        if(typeof(propInfo.dropdown) === "string") {
+            // resolve a possibly version-specific result
+            propDropdownValues = resolveDropdown(propInfo.dropdown, saveType1, saveType2);
+            console.log('propDropdownValues:', propDropdownValues);
+        } else if(typeof(propInfo.dropdown) === "object") {
+            propDropdownValues = propInfo.dropdown;
+        }
+        // add any extra values for this property
+        if(typeof(propInfo.dropdown_extra) === "object")
+            propDropdownValues = {...propDropdownValues, ...propInfo.dropdown_extra};
+    }
+    return propDropdownValues;
+}
+
 /*
 <div class="row">
     <div class="col --d-sm-none --d-md-block save-data-descr" prop-used-in-v1="true" prop-used-in-v2="false" prop-in-file="false">
@@ -1357,16 +1511,24 @@ function updateWarningIndicator(fullKeyNoSpaces, showWarning, isSaveType1, hideE
 console.error('TODO: toggle icons based on value verification results');
 
 
-function getValidationInfo(fullKey, propInfo, newValue) {
+function getValidationInfo(fullKey, propInfo, newValue, saveType1, saveType2) {
     // if(newValue === undefined) {
-    //     console.error(`getValidationInfo: undefined value for "${fullKey}"`);
-    //     return;
-    // }
+        //     console.error(`getValidationInfo: undefined value for "${fullKey}"`);
+        //     return;
+        // }
     let validationResult = {};
+    if(!propInfo.required && (newValue === '' || typeof(newValue) === "undefined" || newValue === null)) {
+        // unless required, pass values that are empty or undefined
+        return validationResult;
+    }
+    // let saveType1 = $('#saveType1').val(), saveType2 = $('#saveType2').val();
     switch(propInfo.type) {
         case 'bool':
+            // convert non-string true/false-like values to strings '0' or '1'
             if(newValue === true) newValue = '1';
             else if(newValue === false) newValue = '0';
+            else if(isInt(newValue)) newValue = newValue.toString();
+            // only allow true/false-like values, here converted to '0' or '1'.
             if(newValue !== '1' && newValue !== '0') {
                 validationResult['warningV1'] = 'Expects the value to be 1 or 0 (true or false)!'
                 validationResult['warningV2'] = 'Expects the value to be 1 or 0 (true or false)!'
@@ -1396,13 +1558,173 @@ function getValidationInfo(fullKey, propInfo, newValue) {
             break;
         // case 'int-dropdown':
         //     break;
-        // case 'intlist':
-        //     break;
+        case 'intlist':
+            // allow empty list '', and consider undefined as an empty list also
+            if((newValue!=='' && typeof(newValue)!=="undefined")) {
+                if (newValue.split(' ').some(v=>!isInt(v))) {
+                    validationResult['warningV1'] = 'Expects whole numbers in every position in the list (space-separated)!'
+                    validationResult['warningV2'] = 'Expects whole numbers in every position in the list (space-separated)!'
+                } else {
+                    // check if loadout size is valid
+                    if(fullKey == 'previousLoadout') {
+                        let lsizeV1 = getMaxLoadoutSize(saveType1), lsizeV2 = getMaxLoadoutSize(saveType2);
+                        if(lsizeV1 && newValue.split(' ').length > lsizeV1) {
+                            validationResult['warningV1'] = `Loadout list cannot hold more than ${lsizeV1} items, in selected version!`
+                        }
+                        if(lsizeV2 && newValue.split(' ').length > lsizeV2) {
+                            validationResult['warningV2'] = `Loadout list cannot hold more than ${lsizeV2} items, in selected comparison version!`
+                        }
+                    }
+                }
+            }
+            break;
         case 'string':
         default:
             break;
     }
     return validationResult;
+}
+
+// function refreshIntlistElems(fullKeyNoSpaces, /) {
+//     //
+// }
+
+function addIntlistElem2(intlistColElem, fullKeyNoSpaces, initVal, dropdownValues) {
+    const lindex = intlistColElem.children.length-1;
+    // add new value to column's intlist property,  before creating new element editor inside the column
+    // initVal = (initVal===null || typeof(initVal)==="undefined")
+    //             ? '' : initVal;
+    if(typeof(initVal)==="undefined" || initVal===null || initVal==='') {
+        console.error('initVal needs to be a value!')
+    }
+    intlistColElem.intlist.push(initVal.toString());
+
+    // create containing row div
+    // Note: the list index for this item is stored as a property of this .intlist-item-row element.
+    const newItemRowElem = Object.assign(
+        document.createElement('div'),
+        // { className: 'row mb-2 intlist-item-row' });
+        { className: 'row mb-2 intlist-item-row', listindex: lindex });
+    // create children elements
+    if(typeof(dropdownValues)==="undefined") {
+        // no dropdowns, make just regular number inputs
+        const _itemInput = Object.assign(
+            document.createElement('input'),
+            { className: 'form-control', type: 'number',
+            // listindex: lindex, value: initVal }
+            value: initVal }
+        );
+        _itemInput.addEventListener('change', (e) => {
+            console.log('before updating intlist:', intlistColElem.intlist);
+            // intlistColElem.intlist[e.target.listindex] = e.target.value;
+            intlistColElem.intlist[e.target.closest('.intlist-item-row').listindex] = e.target.value;
+            console.log('after updating intlist:', intlistColElem.intlist);
+            // intlistChangeCallback(e);
+            updateEditorRow(fullKeyNoSpaces, intlistColElem.intlist.filter(v=>v!==''&&typeof(v)!=="undefined").join(' '));
+        });
+        const _itemInputCol = Object.assign(
+            document.createElement('div'), { className: 'col' }
+        );
+        _itemInputCol.append(_itemInput);
+        newItemRowElem.append(_itemInputCol);
+    } else {
+        // make int dropdowns
+        const _itemSelect = Object.assign(
+            document.createElement('select'),
+            { className: 'mw-100', placeholder: 'Type to search value...',
+            autocomplete: 'off', value: initVal }
+        );
+        // add <option> s
+        for (const [optionValue, optionContents] of Object.entries(dropdownValues)) {
+            const _optionElem = Object.assign(
+                document.createElement('option'),
+                { value: optionValue, innerHTML: optionContents }
+            );
+            _itemSelect.append(_optionElem);
+        }
+        const _itemInputCol = Object.assign(
+            document.createElement('div'), { className: 'col' }
+        );
+        _itemInputCol.append(_itemSelect);
+        newItemRowElem.append(_itemInputCol);
+
+        // setup TomSelect for searching options
+        let tomselect = new TomSelect(_itemSelect, {
+            create: false,
+            sortField: {
+                field: "text"
+                // direction: "asc"
+            }
+            , maxOptions: null  // default was 50; this will allow ALL <option> s to show
+        });
+        paramsFormTomSelectList.push(tomselect);
+        _itemSelect.addEventListener('change', (e) => {
+            console.log('before updating intlist:', intlistColElem.intlist);
+            // intlistColElem.intlist[e.target.listindex] = e.target.value;
+            intlistColElem.intlist[e.target.closest('.intlist-item-row').listindex] = e.target.value;
+            console.log('after updating intlist:', intlistColElem.intlist);
+            // intlistChangeCallback(e);
+            updateEditorRow(fullKeyNoSpaces, intlistColElem.intlist.filter(v=>v!==''&&typeof(v)!=="undefined").join(' '));
+        });
+    }
+    const _delBtn = Object.assign(
+        document.createElement('button'),
+        { className: "btn btn-outline-secondary h-100 py-0 px-2 border-0",
+        type: 'button', title: "Erase item from list parameter",
+        listindex: lindex }
+    )
+    _delBtn.setAttribute('aria-label', "Erase item from list parameter");
+    _delBtn.append(Object.assign(
+        document.createElement('i'), { className: 'fs-5 bi-trash-fill' }
+    ));
+    const _delBtnCol = Object.assign(
+        document.createElement('div'), { className: 'col col-auto' }
+    );
+    _delBtnCol.append(_delBtn);
+    newItemRowElem.append(_delBtnCol);
+
+    // add row into column
+    intlistColElem.insertBefore(newItemRowElem, intlistColElem.lastChild);
+    // handle removal of this item's editor
+    _delBtn.onclick = (e) => {
+        let enclosingIntlistItemRow = e.target.closest('.intlist-item-row');
+        let enclosingIntlistColElem = e.target.closest('.editor-surrounding-col');
+        enclosingIntlistColElem.intlist.splice(
+            // get input of the same row
+            // enclosingIntlistItemRow.querySelector('input').listindex,
+            enclosingIntlistItemRow.listindex,
+            1);
+        // decrement listindex of all other inputs following this one, to fit with the splice above.
+        let _rowelem = enclosingIntlistItemRow.nextSibling;
+        while(_rowelem.classList.contains('intlist-item-row')) {
+            // get input of the row
+            // _rowelem.querySelector('input').listindex--;
+            _rowelem.listindex--;
+            // move to the next row
+            _rowelem = _rowelem.nextSibling;
+        }
+        // now remove this element
+        // remove TomSelect if it exists
+        let tomselect = enclosingIntlistItemRow.querySelector('select').tomselect;
+        if(tomselect) {
+            tomselect.destroy();
+            let i = paramsFormTomSelectList.indexOf(tomselect);
+            if(i > -1)
+                paramsFormTomSelectList.splice(i, 1);
+        }
+        // fully remove the element from the DOM
+        enclosingIntlistItemRow.remove();
+        // let the callback know it was removed, to handle other stuff (such as updating the value in currentSaveData)
+        // intlistDeleteCallback(e);
+        updateEditorRow(fullKeyNoSpaces, enclosingIntlistColElem.intlist.filter(v=>v!==''&&typeof(v)!=="undefined").join(' '));
+    }
+
+    // fire change listener to apply any initVal it may have immediately to the intlist (as if it was manually selected)
+    if(typeof(dropdownValues)==="undefined") {
+        newItemRowElem.querySelector('input').dispatchEvent(new Event('change', { bubbles: true }))
+    } else {
+        newItemRowElem.querySelector('select').dispatchEvent(new Event('change', { bubbles: true }))
+    }
 }
 
 
@@ -1418,19 +1740,20 @@ function addEditorRow(fullKeyNoSpaces, fullKey,
     const propNote = propInfo.note;
 
     let propDropdownValues;
-    if(type == 'int-dropdown' || type == 'intlist') {
-        // get the dropdown's values
-        if(typeof(propInfo.dropdown) === "string") {
-            // resolve a possibly version-specific result
-            propDropdownValues = resolveDropdown(propInfo.dropdown, saveType1, saveType2);
-            console.log('propDropdownValues:', propDropdownValues);
-        } else if(typeof(propInfo.dropdown) === "object") {
-            propDropdownValues = propInfo.dropdown;
-        }
-        // add any extra values for this property
-        if(typeof(propInfo.dropdown_extra) === "object")
-            propDropdownValues = {...propDropdownValues, ...propInfo.dropdown_extra};
-    }
+    // if(type == 'int-dropdown' || type == 'intlist') {
+    //     // get the dropdown's values
+    //     if(typeof(propInfo.dropdown) === "string") {
+    //         // resolve a possibly version-specific result
+    //         propDropdownValues = resolveDropdown(propInfo.dropdown, saveType1, saveType2);
+    //         console.log('propDropdownValues:', propDropdownValues);
+    //     } else if(typeof(propInfo.dropdown) === "object") {
+    //         propDropdownValues = propInfo.dropdown;
+    //     }
+    //     // add any extra values for this property
+    //     if(typeof(propInfo.dropdown_extra) === "object")
+    //         propDropdownValues = {...propDropdownValues, ...propInfo.dropdown_extra};
+    // }
+    propDropdownValues = resolveDropdownFromPropInfo(propInfo, saveType1, saveType2);
 
     const doInputRecord = (type == 'int-dropdown' && propInfo.dropdown == 'dropdown-keybinds');
 
@@ -1463,8 +1786,8 @@ function addEditorRow(fullKeyNoSpaces, fullKey,
                     data-bs-toggle="tooltip" data-bs-placement="top" title="${propNote}"
                     ><i class="bi-question-circle"></i></a>`
                 : ''}
-            <div class="col">`+/*col to place it below the name span*/`
-                ${usedInSaveV1
+            <div class="col">`+/*col to place key span below the name span*/`
+                ${usedInSaveV1 || inSaveFile
                     ? `<span class="form-text d-parent-hover-inline">Key name: @${fullKey}@</span>`
                     : ''}
                 ${usedInSaveV2 && fullKey != fullKey // Note: can change this if/when the game edits the actual save key in a version (may be never)
@@ -1505,7 +1828,7 @@ function addEditorRow(fullKeyNoSpaces, fullKey,
     );
 
     // add property editor
-    let editorSurroundingElem = $(`<div class="col-12 col-md-6 save-data-val"></div>`);
+    let editorSurroundingElem = $(`<div class="col-12 col-md-6 save-data-val editor-surrounding-col"></div>`);
     let editorDivText = `<div class="row input-editors-row">`; // inner row for layout
     let rawInputColClass = 'col-3', rawInputMinWidth = '15ch';
     switch (type) {
@@ -1575,7 +1898,8 @@ function addEditorRow(fullKeyNoSpaces, fullKey,
             editorDivText += `<div class="col">
                     <button id="btnIntlistAdd-${fullKeyNoSpaces}" type="button"
                     class="btn btn-secondary" title="Erase parameter value" aria-label="Erase parameter value">
-                    <i class="bi-plus-lg"></i>Add</button>
+                        <i class="bi-plus-lg"></i>Add
+                    </button>
                 </div>`;
             break;
         case 'string':
@@ -1608,7 +1932,7 @@ function addEditorRow(fullKeyNoSpaces, fullKey,
 
     // add entire property editor row into its category collapse
     //  putting it into the DOM
-    propCollapseElem.append(row[0]);  // [0] because it's a jQuery elem at first
+    propCollapseElem.append(row[0]);  // [0] because it's a jQuery object at first
 
     //----------------------------------------
     // setup tooltips
@@ -1653,17 +1977,31 @@ function addEditorRow(fullKeyNoSpaces, fullKey,
     }
 
     //----------------------------------------
+    // setup intlist editor
+    let btnIntlistAddElem = document.getElementById(`btnIntlistAdd-${fullKeyNoSpaces}`);
+    if(btnIntlistAddElem) {
+        // let intlistColElem = btnAddElem.parentElement.parentElement.parentElement;
+        let intlistColElem = btnIntlistAddElem.closest('.editor-surrounding-col');
+        intlistColElem.intlist = []; // initialize the list of values (currently empty)
+        // add btn listener
+        btnIntlistAddElem.onclick = (e) => {
+            // value + the space char will essentially add an element to the end of the list, as it splits by single spaces.
+            // if not specified, default element is a 0.
+            let newValue = (currentSaveData.get(fullKey)
+                        ? currentSaveData.get(fullKey)+' '
+                        : ''
+                    )+(propInfo.default ?? 0);
+            updateEditorRow(fullKeyNoSpaces, newValue);
+        }
+    }
+
+    //----------------------------------------
     // setup updating listeners where applicable
 
     // setup input recorder
     let inputRecordElem = document.getElementById(`inputRecord-${fullKeyNoSpaces}`);
     if(inputRecordElem) {
         setupInputRecorder(inputRecordElem, (ucode) => updateEditorRow(fullKeyNoSpaces, ucode));
-    }
-
-    // setup intlist element editors
-    if(type === 'intlist') {
-        console.error(`intlist element editors not setup! for "${fullKey}"`)
     }
 
     // setup raw editor
@@ -1749,14 +2087,16 @@ function updateEditorRow(fullKeyAmbiguous, newValue, usedInSaveVs) {
     const type = propInfo.type;
     editorRow.querySelector(`#editorRow-${fullKeyNoSpaces}`);
 
-    let saveType2 = $('#saveType2').val();
+    // let saveType2 = $('#saveType2').val();
+    let saveType1 = $('#saveType1').val(), saveType2 = $('#saveType2').val();
+
+    // NOTICE that warning indicator update happens before currentSaveData gets modified!
 
     // update warning indicators if value is deemed invalid or not
-    let validationInfo = getValidationInfo(fullKey, propInfo, newValue);
+    let validationInfo = getValidationInfo(fullKey, propInfo, newValue, saveType1, saveType2);
     let msg1 = validationInfo.warningV1, msg2 = validationInfo.warningV2;
     updateWarningIndicator(fullKeyNoSpaces, Boolean(msg1), true, false, msg1, usedInSaveVs?.usedInSaveV1);
     updateWarningIndicator(fullKeyNoSpaces, Boolean(msg2), false, !saveType2, msg2, usedInSaveVs?.usedInSaveV2);
-
     // let validNewValue = validationInfo.newValue;
 
     // save value to the current save properties-values map
@@ -1766,10 +2106,11 @@ function updateEditorRow(fullKeyAmbiguous, newValue, usedInSaveVs) {
     if(newValue === false) newValue = '0';
     else if(newValue === true) newValue = '1';
     if(typeof(newValue) === 'number') newValue = ''+newValue; // convert numbers (such as 0) to string
+    if(Array.isArray(newValue)) newValue = newValue.join(' '); // convert arrays to a space-separated string
 
     // update underlying current save data map with value
-    if(newValue === '' && type !== 'intlist') {
-        // remove an empty value only if
+    if(newValue === '' && !propInfo.required && type !== 'intlist') {
+        // remove an empty value only if it isn't strictly needed or isn't an intlist (e.g. the loadout, which is okay with empty string values)
         currentSaveData.delete(fullKey);
     } else {
         currentSaveData.set(fullKey, newValue);
@@ -1783,6 +2124,12 @@ function updateEditorRow(fullKeyAmbiguous, newValue, usedInSaveVs) {
             console.log('newValue:',newValue);
             $(`#inputRaw-${fullKeyNoSpaces}`).val(newValue);
             document.getElementById(`inputNeat-${fullKeyNoSpaces}`).checked = (newValue === '0' ? false : !!newValue); // truthy
+            // apply a class for styling when it is unset (i.e. value erased)
+            if(newValue===''||newValue===null||typeof(newValue)==="undefined") {
+                document.getElementById(`inputNeat-${fullKeyNoSpaces}`).classList.add('switch-unset');
+            } else {
+                document.getElementById(`inputNeat-${fullKeyNoSpaces}`).classList.remove('switch-unset');
+            }
             break;
         case 'int-dropdown':
             $(`#inputRaw-${fullKeyNoSpaces}`).val(newValue);
@@ -1796,7 +2143,120 @@ function updateEditorRow(fullKeyAmbiguous, newValue, usedInSaveVs) {
             break;
         case 'intlist':
             $(`#inputRaw-${fullKeyNoSpaces}`).val(newValue);
-            console.error('TODO implement intlist update!');
+            // console.error('TODO implement intlist update!');
+            let btnAdd = document.getElementById(`btnIntlistAdd-${fullKeyNoSpaces}`);
+            // back it out to the entire col which contains the row which contains the col that this is in
+            let intlistColElem = btnAdd.closest('.editor-surrounding-col');
+            const intlistToSet = Array.isArray(newValue) ? newValue
+                                : newValue ? newValue.split(' ').filter(v=>v!==''&&typeof(v)!=="undefined")
+                                : [];
+            console.log('intlistToSet:', intlistToSet);
+
+            let i;
+            for (i = intlistColElem.children.length - 1; i >= 0; i--) {
+                const rowElem = intlistColElem.children[i];
+                if(!rowElem.classList.contains('intlist-item-row')) {
+                    // not an editor
+                    continue;
+                }
+                console.log('i:',i,'rowElem:',rowElem);
+                let editor, tomselect;
+                editor = rowElem.querySelector('input');
+                tomselect = rowElem.querySelector('select')?.tomselect;
+                if(i >= intlistToSet.length) {
+
+                    // remove extra editor
+                    if(tomselect) {
+                        tomselect.destroy();
+                        let i = paramsFormTomSelectList.indexOf(tomselect);
+                        if(i > -1)
+                            paramsFormTomSelectList.splice(i, 1);
+                    }
+                    // remove the extra int from the column's intlist
+                    intlistColElem.intlist.splice(
+                        rowElem.listindex,
+                        1);
+                    console.log('intlistColElem.intlist after splice:', intlistColElem.intlist);
+                    rowElem.remove();
+
+                } else {
+
+                    // edit editor
+                    if(tomselect) {
+                        tomselect.setValue(intlistToSet[i], true); // set silent to true
+                    } else {
+                        editor.value = intlistToSet[i];
+                    }
+                    intlistColElem.intlist[i] = intlistToSet[i];
+
+                }
+            }
+            // console.log('i after going through rowElems:', i);
+            // make more if needed
+            // i = intlistColElem.children.length;
+            i = intlistColElem.querySelectorAll('.intlist-item-row').length;
+            // i = intlistColElem.children.length - 1;  // -1 because the last one is the add btn and raw value and etc.
+            while (i < intlistToSet.length) {
+                // addIntlistElem(intlistColElem, fullKeyNoSpaces,
+                //     intlistChangeCallback, intlistChangeCallback,
+                //     undefined, propDropdownValues);
+                let propDropdownValues = resolveDropdownFromPropInfo(propInfo, saveType1, saveType2);
+                console.log('updateEditorRow: propDropdownValues:', propDropdownValues);
+                addIntlistElem2(intlistColElem, fullKeyNoSpaces, propInfo.default, propDropdownValues);
+                i++;
+            }
+
+            // $(`#inputRaw-${fullKeyNoSpaces}`).val(saveDataValue);
+            // const intlistToSet = Array.isArray(saveDataValue) ? saveDataValue
+            //                     : saveDataValue ? saveDataValue.split(' ').filter(v=>v!==''&&typeof(v)!=="undefined")
+            //                     : [];
+            // console.log('intlistToSet:', intlistToSet);
+            // const intlistColElem = document.getElementById(`btnIntlistAdd-${fullKeyNoSpaces}`).closest('.save-data-val');
+            // let i;
+            // for (i = intlistColElem.children.length - 1; i >= 0; i--) {
+            //     const rowElem = intlistColElem.children[i];
+            //     if(!rowElem.classList.contains('intlist-item-row')) {
+            //         // not an editor
+            //         continue;
+            //     }
+            //     console.log('i:',i,'rowElem:',rowElem);
+            //     let editor, tomselect;
+            //     editor = rowElem.querySelector('input');
+            //     tomselect = rowElem.querySelector('select')?.tomselect;
+            //     if(i >= intlistToSet.length) {
+            //         // remove extra editor
+            //         if(tomselect) {
+            //             tomselect.destroy();
+            //             let i = paramsFormTomSelectList.indexOf(tomselect);
+            //             if(i > -1)
+            //                 paramsFormTomSelectList.splice(i, 1);
+            //         }
+            //         // remove the extra int from the column's intlist
+            //         intlistColElem.intlist.splice(
+            //             rowElem.listindex,
+            //             1);
+            //         console.log('intlistColElem.intlist after splice:', intlistColElem.intlist);
+            //         rowElem.remove();
+            //     } else {
+            //         // edit editor
+            //         if(tomselect) {
+            //             tomselect.setValue(intlistToSet[i], true); // set silent to true
+            //         } else {
+            //             editor.value = intlistToSet[i];
+            //         }
+            //         intlistColElem.intlist[i] = intlistToSet[i];
+            //     }
+            // }
+            // // console.log('i after going through rowElems:', i);
+            // // make more if needed
+            // i = intlistColElem.children.length;
+            // while (i < intlistToSet.length) {
+            //     addIntlistElem(intlistColElem, fullKeyNoSpaces,
+            //         intlistChangeCallback, intlistChangeCallback,
+            //         undefined, propDropdownValues);
+            //     i++;
+            // }
+
             break;
         case 'color':
             let hexmatch = newValue?.match(HEX_COL_PATTERN), savematch = newValue?.match(SAVE_COL_PATTERN);
@@ -1909,6 +2369,8 @@ function refreshParamsInForm() {
         // update property value
         updateEditorRow(propFullKey, propValue, {usedInSaveV1:usedInSaveV1, usedInSaveV2:usedInSaveV2});
     }
+
+    refreshQuickActionAvailabilities(saveType1, saveType2);
 }
 
 function doCollapseAll(e) {
@@ -1942,12 +2404,16 @@ $(document).ready(function() {
         //   (A new file was likely uploaded.)
         if(e.target.id === 'fileSelect') {
             console.log('fileSelect change. updating currentSaveData.');
-            let newFileValuesMap = readFile(document.getElementById('fileSelect').files[0], $('#saveType1').val());
-            // if(currentSaveData && currentSaveData.size > 0) {
-            //     alert('The upload of this file will overwrite currently edited values. Are you sure?')
-            // }
-            currentSaveData = newFileValuesMap;
-            console.log('size:',currentSaveData.size);
+            readFile(document.getElementById('fileSelect').files[0], $('#saveType1').val(),
+                (newSaveDataMap) => {
+                    // if(currentSaveData && currentSaveData.size > 0) {
+                    //     alert('The upload of this file will overwrite currently edited values. Are you sure?')
+                    // }
+                    currentSaveData = newSaveDataMap;
+                    console.log('size:',currentSaveData.size);
+                    refreshParamsInForm();
+                }
+            );
         }
 
         // return;

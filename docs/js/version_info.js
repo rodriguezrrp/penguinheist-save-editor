@@ -127,6 +127,7 @@ const VERSION_INFO = {
     'vP': {
         'name': 'Post Office Update',
         'supported': false,
+        'steamdb_buildid': '10259897',
         'manifest_windows': undefined,
         'manifest_macos': undefined,
         'manifest_linux': undefined,
