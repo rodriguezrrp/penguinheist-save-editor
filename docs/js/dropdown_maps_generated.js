@@ -228,6 +228,34 @@ const DROPDOWN_MAPS = {
             }
         }
     },
+    "dropdown-heists": {
+        "version_dependent": true,
+        "vCHP_latest": {
+            "inherit": "_earliest_supported_value_list"
+        },
+        "_earliest_supported_value_list": {
+            "inherit": false,
+            "values": {
+                "0": "Research Station",
+                "1": "Playa del Sol",
+                "2": "Pongo City",
+                "3": "Military Base",
+                "4": "Pumpkin Harvest",
+                "5": "Pongolantis",
+                "6": "Dark Castle",
+                "7": "The Nile",
+                "8": "On a Rail",
+                "9": "Et tu, Bingus",
+                "10": "Pongton",
+                "11": "King Pingnar Mines",
+                "12": "Panguino's Pizza Panic",
+                "15": "Penguin Village",
+                "16": "Blizzard Speedway",
+                "13": "Swamp Survival",
+                "14": "Graveyard Survival"
+            }
+        }
+    },
     "dropdown-items": {
         "version_dependent": true,
         "vHH": {

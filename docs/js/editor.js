@@ -146,7 +146,7 @@ function defaultSaveFor(version) {
 //     //
 // }
 
-const _unknown_manifest = '<span style="color:red">missing-manifest-info</span>';
+const _unknown_manifest = '<span style="color:red">info-not-gathered</span>';
 const _unknown_depot = '<span style="color:red">missing-depot-info</span>';
 
 var paramsFormTooltipList = [];
@@ -185,17 +185,17 @@ function populateVersionDropdowns() {
     var options2 = '<option value="" selected>None selected</option>';
     var foundSupported = false;
     var i = 0;
-    for(const pair of Object.entries(VERSION_INFO)) {
-        let key = pair[0]; let val = pair[1];
+    for(const [key, val] of Object.entries(VERSION_INFO)) {
+        if(val.hideindropdown) continue;
         let name = val.name;
         let long_name = val.long_name ?? name;
         let supported = val.supported;
         options1 += `<option ${!supported?'disabled ':''}value="${key}"${(!foundSupported&&supported)?' selected':''}>
             ${long_name}${i===0?' (latest)':''}${!supported?(' (format unsupported)'):''}
-            </options>`;
+            </option>`;
         options2 += `<option ${!supported?'disabled ':''}value="${key}">
             ${long_name}${i===0?' (latest)':''}${!supported?(' (format unsupported)'):''}
-            </options>`;
+            </option>`;
         foundSupported ||= supported;
         i++;
     }
@@ -1640,6 +1640,9 @@ function addIntlistElem2(intlistColElem, fullKeyNoSpaces, initVal, dropdownValue
                 document.createElement('option'),
                 { value: optionValue, innerHTML: optionContents }
             );
+            if(optionValue == initVal) {
+                _optionElem.selected = true;
+            }
             _itemSelect.append(_optionElem);
         }
         const _itemInputCol = Object.assign(
@@ -1658,6 +1661,7 @@ function addIntlistElem2(intlistColElem, fullKeyNoSpaces, initVal, dropdownValue
             , maxOptions: null  // default was 50; this will allow ALL <option> s to show
         });
         paramsFormTomSelectList.push(tomselect);
+        tomselect.setValue(initVal, true);  // just in case no <option> s were selected
         _itemSelect.addEventListener('change', (e) => {
             console.log('before updating intlist:', intlistColElem.intlist);
             // intlistColElem.intlist[e.target.listindex] = e.target.value;
@@ -2202,7 +2206,7 @@ function updateEditorRow(fullKeyAmbiguous, newValue, usedInSaveVs) {
                 //     undefined, propDropdownValues);
                 let propDropdownValues = resolveDropdownFromPropInfo(propInfo, saveType1, saveType2);
                 console.log('updateEditorRow: propDropdownValues:', propDropdownValues);
-                addIntlistElem2(intlistColElem, fullKeyNoSpaces, propInfo.default, propDropdownValues);
+                addIntlistElem2(intlistColElem, fullKeyNoSpaces, intlistToSet[i] ?? propInfo.default, propDropdownValues);
                 i++;
             }
 
@@ -2381,6 +2385,29 @@ function doCollapseAll(e) {
     })
 }
 
+function displayLoadingProgress(show, max) {
+    let loadingDiv = document.getElementById('paramsRefreshing');
+    if(!show) {
+        loadingDiv.classList.add('d-none');
+    } else {
+        loadingDiv.classList.remove('d-none');
+        max = max ?? 100;
+        let bar = document.getElementById('paramsProgressBar');
+        if(!bar) return;
+        bar.setAttribute('aria-valuemax', 100);
+        bar.setAttribute('aria-valuemin', 0);
+        bar.setAttribute('aria-valuenow', 0);
+        bar.firstElementChild.style["width"] = "0%";
+    }
+}
+function updateLoadingProgress(current, max) {
+    max = max ?? 100;
+    let bar = document.getElementById('paramsProgressBar');
+    if(!bar) return;
+    bar.setAttribute('aria-valuenow', current);
+    bar.firstElementChild.style["width"] = `${Math.round(current*100/max)}%`;
+}
+
 
 
 $(document).ready(function() {
@@ -2430,12 +2457,32 @@ $(document).ready(function() {
     populateManifestTable();
     updateGameVersionInfoOnPage(null, $('#saveType1').val());
 
-    let fileSelectElem = document.getElementById('fileSelect');
-    currentSaveData = fileSelectElem.files[0] ? readFile(fileSelectElem.files[0])
-                        : new Map(Object.entries(VERSION_DEFAULTS[$('#saveType1').val()]));
-
     createParamsFormCollapses();  // create them only once
+    
+    function _afterSaveDataLoaded() {
+        displayLoadingProgress(true, 100);
+        refreshParamsInForm();
+        displayLoadingProgress(false);
+    }
+
+    let saveType1 = $('#saveType1').val();
+    let fileSelectElem = document.getElementById('fileSelect');
+    if(fileSelectElem.files[0]) {
+        readFile(fileSelectElem.files[0], saveType1,
+            (newSaveDataMap) => {
+                currentSaveData = newSaveDataMap;
+                console.log('size:',currentSaveData.size);
+                // refreshParamsInForm();
+                _afterSaveDataLoaded();
+            }
+        );
+    } else {
+        currentSaveData = saveType1 ? new Map(Object.entries(VERSION_DEFAULTS[saveType1])) : {};
+        _afterSaveDataLoaded();
+    }
 
     // getFileFormData();
-    refreshParamsInForm();
+    // displayLoadingProgress(true, 100);
+    // refreshParamsInForm();
+    // displayLoadingProgress(false);
 });

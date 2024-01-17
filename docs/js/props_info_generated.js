@@ -14,7 +14,7 @@ const PROP_INFO = {
     },
     "newBlueprint": {
         "category": "items",
-        "name": "Blueprint for Item {name} Uncollected",
+        "name": "Blueprint for Item {name} Picked Up",
         "name_map": "item",
         "type": "bool"
     },
@@ -74,13 +74,13 @@ const PROP_INFO = {
         "dropdown": "dropdown-skins"
     },
     "hasStructure": {
-        "category": "constructions",
+        "category": "structures",
         "name": "Structure {name} Available",
         "name_map": "structure",
         "type": "bool"
     },
     "canConstruct": {
-        "category": "constructions",
+        "category": "structures",
         "name": "Constructed {name}",
         "name_map": "structure",
         "type": "bool"
@@ -161,6 +161,16 @@ const PROP_INFO = {
         "name": "Outlines",
         "type": "bool"
     },
+    "ambientOcclusionEnabled": {
+        "category": "graphics",
+        "name": "Ambient Occlusion",
+        "type": "bool"
+    },
+    "useFancySkyAndWeather": {
+        "category": "graphics",
+        "name": "Fancy Sky and Weather",
+        "type": "bool"
+    },
     "difficulty": {
         "category": "misc",
         "name": "Difficulty",
@@ -239,7 +249,7 @@ const PROP_INFO = {
     },
     "use": {
         "category": "controls",
-        "name": "Use Item",
+        "name": "Attack",
         "type": "int-dropdown",
         "dropdown": "dropdown-keybinds"
     },
@@ -306,7 +316,7 @@ const PROP_INFO = {
     },
     "view": {
         "category": "controls",
-        "name": "View",
+        "name": "View Penguin",
         "type": "int-dropdown",
         "dropdown": "dropdown-keybinds"
     },
@@ -371,6 +381,7 @@ const PROP_INFO = {
     "previousHeist": {
         "category": "misc",
         "name": "Previous Heist",
-        "type": "int"
+        "type": "int-dropdown",
+        "dropdown": "dropdown-heists"
     }
 };

@@ -48,7 +48,7 @@
                         <div class="col-md-6 pb-1">
                             <!-- <label for="fileSelect" class="form-label">Upload Save</label> -->
                             <input type="file" name="fileSelect" id="fileSelect"
-                                value="Upload Save" class="btn btn-outline-secondary --form-control w-100 h-100 file-select"
+                                value="Upload Save" class="btn btn-outline-secondary --form-control w-100 h-100 file-select fw-600"
                                 aria-describedby="fileSelectDesc"
                             >
                         </div>
@@ -61,6 +61,11 @@
                                 <br>"<span class="game-version-name">game-version-name</span>"
                             </button>
                         </div> -->
+                        <div class="col-md-6 pb-1">
+                            <button id="btnResetDefault" onclick="doResetToDefault()" type="button" class="btn btn-outline-secondary w-100 h-100 fw-600">
+                                <i class="bi-arrow-counterclockwise" aria-hidden="true"></i> Reset to Default
+                            </button>
+                        </div>
                     </div>
                     The default save file name is "<span class="mono-text">PHSaveMain.sav</span>".
                     Backups use the name "<span class="mono-text fw-500">PHSaveMainBackup.sav</span>",
@@ -640,19 +645,19 @@
                 <div class="col-10">
                     <div class="row">
                         <div class="col-md-3 col-sm-6 my-1">
-                            <button id="quickActMoney" onclick="doQuickActMoney()" class="btn btn-secondary w-100">1 Million Money</button>
+                            <button id="quickActMoney" onclick="doQuickActMoney()" type="button" class="btn btn-secondary w-100">1 Million Money</button>
                             <script> function doQuickActMoney() {
                                 updateEditorRow('money', 1000000);
                             } </script>
                         </div>
                         <div class="col-md-3 col-sm-6 my-1">
-                            <button id="quickActStamps" onclick="doQuickActStamps()" class="btn btn-secondary w-100">1000 Stamps</button>
+                            <button id="quickActStamps" onclick="doQuickActStamps()" type="button" class="btn btn-secondary w-100">1000 Stamps</button>
                             <script> function doQuickActStamps() {
                                 updateEditorRow('stamps', 1000);
                             } </script>
                         </div>
                         <div class="col-md-3 col-sm-6 my-1">
-                            <button id="quickActItems" onclick="doQuickActItems()" class="btn btn-secondary w-100">Get All Items</button>
+                            <button id="quickActItems" onclick="doQuickActItems()" type="button" class="btn btn-secondary w-100">Get All Items</button>
                             <script> function doQuickActItems() {
                                 Array.from(document.getElementsByClassName('editor-row'))
                                 .map((e)=>e.getAttribute('id'))
@@ -666,7 +671,7 @@
                             } </script>
                         </div>
                         <div class="col-md-3 col-sm-6 my-1">
-                            <button id="quickActBlueprints" onclick="doQuickActBlueprints()" class="btn btn-secondary w-100">Get All Blueprints</button>
+                            <button id="quickActBlueprints" onclick="doQuickActBlueprints()" type="button" class="btn btn-secondary w-100">Get All Blueprints</button>
                             <script> function doQuickActBlueprints() {
                                 Array.from(document.getElementsByClassName('editor-row'))
                                 .map((e)=>e.getAttribute('id'))
@@ -674,18 +679,18 @@
                                     k.startsWith('editorRow-newBlueprint')
                                 ))
                                 .forEach((k)=>{
-                                    updateEditorRow(k.slice(k.indexOf('-')+1), 0);
+                                    updateEditorRow(k.slice(k.indexOf('-')+1), 1);
                                 });
                             } </script>
                         </div>
                         <!-- <div class="col-md-3 col-sm-6 my-1">
-                            <button id="quickActHints" onclick="doQuickActHints()" class="btn btn-secondary w-100">Get All Hints</button>
+                            <button id="quickActHints" onclick="doQuickActHints()" type="button" class="btn btn-secondary w-100">Get All Hints</button>
                             <script> function doQuickActHints() {
                                 console.error('Implement doQuickActHints');
                             } </script>
                         </div> -->
                         <div class="col-md-3 col-sm-6 my-1">
-                            <button id="quickActClothing" onclick="doQuickActClothing()" class="btn btn-secondary w-100">Get All Clothing</button>
+                            <button id="quickActClothing" onclick="doQuickActClothing()" type="button" class="btn btn-secondary w-100">Get All Clothing</button>
                             <script> function doQuickActClothing() {
                                 Array.from(document.getElementsByClassName('editor-row'))
                                 .map((e)=>e.getAttribute('id'))
@@ -698,13 +703,13 @@
                             } </script>
                         </div>
                         <div class="col-md-3 col-sm-6 my-1">
-                            <button id="quickActStructures" onclick="doQuickActStructures()" class="btn btn-secondary w-100">Get All Structures</button>
+                            <button id="quickActStructures" onclick="doQuickActStructures()" type="button" class="btn btn-secondary w-100">Get All Structures</button>
                             <script> function doQuickActStructures() {
                                 console.error('Implement doQuickActStructures');
                             } </script>
                         </div>
                         <div class="col-md-3 col-sm-6 my-1">
-                            <button id="quickActHeists" onclick="doQuickActHeists()" class="btn btn-secondary w-100">Unlock All Heists</button>
+                            <button id="quickActHeists" onclick="doQuickActHeists()" type="button" class="btn btn-secondary w-100">Unlock All Heists</button>
                             <script> function doQuickActHeists() {
                                 Array.from(document.getElementsByClassName('editor-row'))
                                 .map((e)=>e.getAttribute('id'))
@@ -717,7 +722,9 @@
                             } </script>
                         </div>
                         <div class="col-md-3 col-sm-6 my-1">
-                            <button id="quickActDefault" onclick="doResetToDefault()" class="btn btn-secondary w-100">Reset to Default</button>
+                            <button id="quickActDefault" onclick="doResetToDefault()" type="button" class="btn btn-warning w-100">
+                                <i class="bi-arrow-counterclockwise" aria-hidden="true"></i> Reset to Default
+                            </button>
                             <!-- <script> function doResetToDefault() {
                                 // console.error('Implement doQuickActDefault');
                                 // empty file input
@@ -752,22 +759,33 @@
                     <span>
                         Parameters
                     </span>
-                    <button id="btnCollapseAll" onclick="doCollapseAll()" type="button" title="Collapse all parameter accordions" class="btn btn-secondary w-auto btn-close py-0 h-auto"
-                        style="background:transparent;">
+                    <button id="btnCollapseAll" onclick="doCollapseAll()" type="button" title="Collapse all parameter accordions"
+                        class="btn btn-outline-secondary w-auto --btn-close py-0 h-auto"
+                        >
                         <i class="bi-arrows-collapse"></i> Collapse All
                     </button>
                 </div>
             </h2>
         </div>
-        <div class="row"></div>
+        <!-- <div class="row"></div> -->
+        
+        <div id="paramsRefreshing" class="d-flex align-items-center mx-2">
+            <strong role="status">Refreshing...</strong>
+            <div>
+                <div class="spinner-border text-body --m-auto mx-3" aria-hidden="true"
+                style="height: 1.5rem; width: 1.5rem;"></div>
+            </div>
+            <!-- <div id="paramsProgressBar" class="progress w-100" role="progressbar"
+            aria-label="Parameter refreshing progress"
+            aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"
+            >
+                <div class="progress-bar" style="width: 0%"></div>
+            </div> -->
+        </div>
+
         <form id="saveForm" class="mx-2 mb-3">
 
             <!-- scripts will put the generated property editors here -->
-            
-            <div class="d-flex align-items-center">
-                <strong role="status">Loading...</strong>
-                <div class="spinner-border text-body m-auto" aria-hidden="true"></div>
-            </div>
 
         </form>
         

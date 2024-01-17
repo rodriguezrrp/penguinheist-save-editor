@@ -54,6 +54,8 @@ body {
     background-size: cover;
     background-repeat: no-repeat;
     background-attachment: fixed;
+    // a setup for automatic styling editor collapse button colors later
+    --phbe-warning-aware-color: #{$bg_collapse};
 }
 
 .filtertogray {
@@ -202,7 +204,8 @@ input[type=checkbox].switch-unset {
     /* box-shadow: 0 0 0 .25rem rgba(13,110,253,.25); */
     border: 1px solid $bordercolor;
     /*important beats bootstrap accordion button styling*/
-    background-color: color-mix(in srgb, $bg_collapse 90%, black) !important;
+    // background-color: color-mix(in srgb, $bg_collapse 90%, black) !important;
+    background-color: color-mix(in srgb, var(--phbe-warning-aware-color) 90%, black) !important;
 }
 .accordion-button:not(.collapsed) {
     color: inherit;
@@ -218,6 +221,7 @@ input[type=checkbox].switch-unset {
     --bs-accordion-btn-icon: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='white'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
     --bs-accordion-btn-active-icon: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='white'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
 } */
+
 .accordion-item {
     background-color: transparent;
     border: unset;
@@ -243,9 +247,22 @@ input[type=checkbox].switch-unset {
 .accordion-button {
     padding-left: 0.5rem;
 }
-// hide empty parameter dropdowns
+// hide empty collapses automatically
 .accordion-item-hideable:has(> .accordion-collapse:empty) {
     display: none;
+}
+// automatic color control for overall collapse's button warning
+.accordion-item:has(> .accordion-collapse > .editor-row > .save-data-val.warning) {
+    --phbe-warning-aware-color: #{$bg_warningprop};
+}
+// highlight editor rows on hover, for ease of seeing the whole row
+.editor-row:hover {
+    // border-color: #86b7fe;
+    // outline: 0;
+    box-shadow: 0 0 0 .25rem var(--bs-focus-ring-color); //rgba(13, 110, 253, 0.25)
+    // let box-shadow show over other neighboring elements (other editor rows' children)
+    position: relative;
+    z-index: auto;
 }
 
 .save-data-raw {
@@ -259,7 +276,8 @@ input[type=checkbox].switch-unset {
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
     /*important beats bootstrap accordion button styling*/
-    background-color: $bg_collapse !important;
+    // background-color: $bg_collapse !important;
+    background-color: var(--phbe-warning-aware-color) !important;
     color: $defaultblack;
     border: 1px solid $bordercolor;
     font-weight: 500;

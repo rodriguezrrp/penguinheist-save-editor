@@ -12,9 +12,9 @@ The main page itself is `docs/index.html`. The `docs/` folder will become the Gi
 Most data about versions, their properties, the types of values the properties can hold, the allowed ranges of those values, etc. are in `.json` files throughout `saves/`.
 
 Next steps:
-- Utilize generated `.js` files (from the python script and data in `saves/`) to populate custom-tailored property editors into the `docs/index.html` form
-- Download button generate an end-result save file for the user
-- 🛠️✔️ Consider bringing out of beta at this point! it should be minimally up-to-date functional
+- ✔️ Utilize generated `.js` files (from the python script and data in `saves/`) to populate custom-tailored property editors into the `docs/index.html` form
+- ✔️ Download button generate an end-result save file for the user
+- 🛠️ Consider bringing out of beta at this point! it should be minimally up-to-date functional
 - Gather manifest IDs for all missing versions, and default saves, to support those formats :)
 - GitHub action to run the `.js`-generating python script upon push/etc. into the `docs/` folder. (Note to self: refer to my other repository where I tested this exact capability already)
 - Fix icons and background breaking upon right-click downloading:

@@ -24,14 +24,17 @@
     "settings": {
         "name":"Game Settings"
     },
-    "constructions": {
-        "name":"Constructions"
+    "structures": {
+        "name":"Structures"
     },
     "challenges": {
         "name":"Challenges"
     },
     "heists": {
         "name":"Heists"
+    },
+    "housing": {
+        "name":"Housing"
     },
     "misc": {
         "name":"Miscellaneous",

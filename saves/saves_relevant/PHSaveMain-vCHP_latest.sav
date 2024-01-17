@@ -26,6 +26,10 @@
 @resolutionIndex@0
 @vSync@1
 @previousDay@0
+@difficulty@0
+@timerEnabled@0
+@speechIndex Jerry@0
+@speechIndex Speedboat@0
 @challenge kills@0
 @challenge stealth@0
 @challenge knockouts@0
@@ -40,6 +44,8 @@
 @hasNewShopItem@0
 @objectRetrieved Timmy the Penguin Chick@0
 @objectRetrieved Soul Jar@0
+@objectRetrieved Peculiar Penguin Doll@0
+@previousHeist@0
 @invertY@0
 @mouseSensitivity@1.5
 @mouseSmoothing@0.5

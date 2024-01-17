@@ -32,6 +32,7 @@ body {
   background-size: cover;
   background-repeat: no-repeat;
   background-attachment: fixed;
+  --phbe-warning-aware-color: hsl(203, 90%, 76%);
 }
 
 .filtertogray {
@@ -170,7 +171,7 @@ input[type=checkbox].switch-unset {
   /* box-shadow: 0 0 0 .25rem rgba(13,110,253,.25); */
   border: 1px solid steelblue;
   /*important beats bootstrap accordion button styling*/
-  background-color: color-mix(in srgb, hsl(203, 90%, 76%) 90%, black) !important;
+  background-color: color-mix(in srgb, var(--phbe-warning-aware-color) 90%, black) !important;
 }
 
 .accordion-button:not(.collapsed) {
@@ -223,6 +224,16 @@ input[type=checkbox].switch-unset {
   display: none;
 }
 
+.accordion-item:has(> .accordion-collapse > .editor-row > .save-data-val.warning) {
+  --phbe-warning-aware-color: thistle;
+}
+
+.editor-row:hover {
+  box-shadow: 0 0 0 0.25rem var(--bs-focus-ring-color);
+  position: relative;
+  z-index: auto;
+}
+
 .save-data-raw {
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
@@ -234,7 +245,7 @@ input[type=checkbox].switch-unset {
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
   /*important beats bootstrap accordion button styling*/
-  background-color: hsl(203, 90%, 76%) !important;
+  background-color: var(--phbe-warning-aware-color) !important;
   color: rgb(33, 37, 41);
   border: 1px solid steelblue;
   font-weight: 500;

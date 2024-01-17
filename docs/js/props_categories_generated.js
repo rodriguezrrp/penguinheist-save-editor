@@ -25,8 +25,8 @@ const CATEGORY_INFO = {
     "settings": {
         "name": "Game Settings"
     },
-    "constructions": {
-        "name": "Constructions"
+    "structures": {
+        "name": "Structures"
     },
     "challenges": {
         "name": "Challenges"

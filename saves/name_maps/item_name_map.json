@@ -633,5 +633,60 @@
         "name": "Strapped-On Explosive",
         "imgname": "strapped-on_explosive.png",
         "post_office": false
+    },
+    "133": {
+        "name": "Guandao",
+        "imgname": "Guandao.png",
+        "post_office": false
+    },
+    "134": {
+        "name": "Plasma Cutter",
+        "imgname": "Plasma Cutter.png",
+        "post_office": false
+    },
+    "135": {
+        "name": "Neuro Stunner",
+        "imgname": "Neuro Stunner.png",
+        "post_office": false
+    },
+    "136": {
+        "name": "Compact Explosive",
+        "imgname": "Compact Explosive.png",
+        "post_office": false
+    },
+    "137": {
+        "name": "Tactical Drone",
+        "imgname": "Tactical Drone.png",
+        "post_office": false
+    },
+    "138": {
+        "name": "Claymore Mine",
+        "imgname": "Claymore Mine.png",
+        "post_office": false
+    },
+    "139": {
+        "name": "Kunai",
+        "imgname": "Kunai.png",
+        "post_office": false
+    },
+    "140": {
+        "name": "Tanegashima",
+        "imgname": "Tanegashima.png",
+        "post_office": false
+    },
+    "141": {
+        "name": "Ostuchi",
+        "imgname": "Ostuchi.png",
+        "post_office": false
+    },
+    "142": {
+        "name": "Pengu-no-Uchiwa",
+        "imgname": "Pengu-no-Uchiwa.png",
+        "post_office": false
+    },
+    "143": {
+        "name": "Ranged Drone",
+        "imgname": "Ranged Drone.png",
+        "post_office": false
     }
 }
