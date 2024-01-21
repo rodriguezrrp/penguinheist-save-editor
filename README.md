@@ -1,25 +1,70 @@
-# 🐧 Penguin Heist save file editor
-Custom tool to inspect and edit save files of the Penguin Heist game.
+# Getting Started with Create React App
 
-Minimal: Built into one webpage with local dependencies so you can download the page and use it offline at your convenience!
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-⭐🎮⚙️ Additionally comes with a whole guide on how to _downgrade_ your Penguin Heist game to an _older version!_  
-Table of common Steam build & manifest info for Windows, Apple OS, and Linux is included.
+## Available Scripts
 
-# **🛠️ CURRENTLY in BETA! 🛠️ Prototyping, fixing dynamic form generation based on scraped and gathered game version data.**
-The main page itself is `docs/index.html`. The `docs/` folder will become the GitHub pages source once out of this Beta prototyping phase.
+In the project directory, you can run:
 
-Most data about versions, their properties, the types of values the properties can hold, the allowed ranges of those values, etc. are in `.json` files throughout `saves/`.
+### `npm start`
 
-Next steps:
-- ✔️ Utilize generated `.js` files (from the python script and data in `saves/`) to populate custom-tailored property editors into the `docs/index.html` form
-- ✔️ Download button generate an end-result save file for the user
-- 🛠️ Consider bringing out of beta at this point! it should be minimally up-to-date functional
-- Gather manifest IDs for all missing versions, and default saves, to support those formats :)
-- GitHub action to run the `.js`-generating python script upon push/etc. into the `docs/` folder. (Note to self: refer to my other repository where I tested this exact capability already)
-- Fix icons and background breaking upon right-click downloading:
-  - Convert all icons to inlined SVGs to prevent dependencies on svg files?
-  - Convert the default background
-- Dark theme? ;)
+Runs the app in the development mode.\
+Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
-Eventually rewrite in React. Ensure a minimalistic and fully downloadable webpage can still be built
+The page will reload when you make changes.\
+You may also see any lint errors in the console.
+
+### `npm test`
+
+Launches the test runner in the interactive watch mode.\
+See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+
+### `npm run build`
+
+Builds the app for production to the `build` folder.\
+It correctly bundles React in production mode and optimizes the build for the best performance.
+
+The build is minified and the filenames include the hashes.\
+Your app is ready to be deployed!
+
+See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+
+### `npm run eject`
+
+**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+
+If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+
+Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+
+You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+
+## Learn More
+
+You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+
+To learn React, check out the [React documentation](https://reactjs.org/).
+
+### Code Splitting
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+
+### Analyzing the Bundle Size
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+
+### Making a Progressive Web App
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+
+### Advanced Configuration
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+
+### Deployment
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+
+### `npm run build` fails to minify
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
