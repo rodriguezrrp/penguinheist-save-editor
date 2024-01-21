@@ -53,6 +53,7 @@ function encodeSavePropsDataToBlob(savePropsMap, version) {
     // currently all versions use the same plaintext format!
     data = '';
     for(const [fullKey, value] of Array.from(savePropsMap)) {
+        // Note: ALLOWING empty string '', for lists such as previousLoadout
         if(typeof(value) === "undefined" || value === null) {
             continue;
         }
@@ -539,6 +540,8 @@ function resolveDropdown_nameMapIfNeeded(dropdownMapResult) {
     }
 }
 
+console.error('TODO: memoize the resolveDropdown results?')
+
 function resolveDropdown(dropdownRefName, saveType1, saveType2) {
     console.log('resolveDropdown');
     let dropdownMap = DROPDOWN_MAPS[dropdownRefName];
@@ -561,7 +564,7 @@ function resolveDropdown(dropdownRefName, saveType1, saveType2) {
         }
     }
     console.log('vals1', vals1);
-    if(saveType2) {
+    if(saveType2 && (saveType2 !== saveType1)) {  // optimization shortcut to avoid performing the same calculations for the same saveType
         let version = saveType2;
         vals2 = resolveDropdown_nameMapIfNeeded(dropdownMap[version]) ?? {};
         // add in values from the chain of inheritance
@@ -1556,8 +1559,21 @@ function getValidationInfo(fullKey, propInfo, newValue, saveType1, saveType2) {
                 validationResult['warningV2'] = 'Expects the value to be a number!'
             }
             break;
-        // case 'int-dropdown':
-        //     break;
+        case 'int-dropdown':
+            // verify the new value is within the expected dropdown values (ex., cannot expect new items in an old version of the game)
+            if(saveType1) {
+                let dropdownValuesForOnlySaveType1 = resolveDropdownFromPropInfo(propInfo, saveType1, undefined);
+                if(!dropdownValuesForOnlySaveType1[newValue]) {
+                    validationResult['warningV1'] = `Selected save version does not expect the value "${newValue}"`;
+                }
+            }
+            if(saveType2) {
+                let dropdownValuesForOnlySaveType2 = resolveDropdownFromPropInfo(propInfo, saveType2, undefined);
+                if(!dropdownValuesForOnlySaveType2[newValue]) {
+                    validationResult['warningV2'] = `Comparison save version does not expect the value "${newValue}"`;
+                }
+            }
+            break;
         case 'intlist':
             // allow empty list '', and consider undefined as an empty list also
             if((newValue!=='' && typeof(newValue)!=="undefined")) {
@@ -1565,7 +1581,7 @@ function getValidationInfo(fullKey, propInfo, newValue, saveType1, saveType2) {
                     validationResult['warningV1'] = 'Expects whole numbers in every position in the list (space-separated)!'
                     validationResult['warningV2'] = 'Expects whole numbers in every position in the list (space-separated)!'
                 } else {
-                    // check if loadout size is valid
+                    // check if loadout size is valid (this is a key-specific check)
                     if(fullKey == 'previousLoadout') {
                         let lsizeV1 = getMaxLoadoutSize(saveType1), lsizeV2 = getMaxLoadoutSize(saveType2);
                         if(lsizeV1 && newValue.split(' ').length > lsizeV1) {
@@ -1574,6 +1590,10 @@ function getValidationInfo(fullKey, propInfo, newValue, saveType1, saveType2) {
                         if(lsizeV2 && newValue.split(' ').length > lsizeV2) {
                             validationResult['warningV2'] = `Loadout list cannot hold more than ${lsizeV2} items, in selected comparison version!`
                         }
+                    }
+                    // check if all values in the list are allowed
+                    if(propInfo.dropdown) {
+                        console.error('TODO: check if all values from dropdowns in intlist are allowed');
                     }
                 }
             }

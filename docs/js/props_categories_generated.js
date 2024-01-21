@@ -34,6 +34,9 @@ const CATEGORY_INFO = {
     "heists": {
         "name": "Heists"
     },
+    "housing": {
+        "name": "Housing"
+    },
     "misc": {
         "name": "Miscellaneous",
         "expanded": true

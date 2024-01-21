@@ -171,6 +171,20 @@ const PROP_INFO = {
         "name": "Fancy Sky and Weather",
         "type": "bool"
     },
+    "bloodEnabled": {
+        "category": "graphics",
+        "name": "Blood Enabled",
+        "type": "bool"
+    },
+    "drawDistance": {
+        "category": "graphics",
+        "name": "Draw Distance",
+        "type": "float-range",
+        "range": [
+            0.025,
+            1
+        ]
+    },
     "difficulty": {
         "category": "misc",
         "name": "Difficulty",

@@ -1,6 +1,6 @@
 {
     "version_dependent": true,
-    "vHH": {
+    "vHH_initial": {
         "inherit": "vCHP_latest",
         "name_map": "clothing",
         "values": [

@@ -1,5 +1,8 @@
 {
     "version_dependent": true,
+    "vHH_initial": {
+        "inherit": "_earliest_supported_value_list"
+    },
     "vCHP_latest": {
         "inherit": "_earliest_supported_value_list"
     },

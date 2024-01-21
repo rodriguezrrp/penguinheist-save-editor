@@ -2,7 +2,7 @@
 const DROPDOWN_MAPS = {
     "dropdown-clothing": {
         "version_dependent": true,
-        "vHH": {
+        "vHH_initial": {
             "inherit": "vCHP_latest",
             "name_map": "clothing",
             "values": []
@@ -204,15 +204,8 @@ const DROPDOWN_MAPS = {
     },
     "dropdown-graphics": {
         "version_dependent": true,
-        "vHH": {
-            "inherit": false,
-            "values": {
-                "0": "TODO: Graphics [0] Name [for Heist & Housing update]",
-                "1": "TODO: Graphics [1] Name [for Heist & Housing update]",
-                "2": "TODO: Graphics [2] Name [for Heist & Housing update]",
-                "3": "TODO: Graphics [3] Name [for Heist & Housing update]",
-                "4": "TODO: Graphics [4] Name [for Heist & Housing update]"
-            }
+        "vHH_initial": {
+            "inherit": "_earliest_supported_value_list"
         },
         "vCHP_latest": {
             "inherit": "_earliest_supported_value_list"
@@ -230,6 +223,17 @@ const DROPDOWN_MAPS = {
     },
     "dropdown-heists": {
         "version_dependent": true,
+        "vHH_initial": {
+            "inherit": "vCHP_latest",
+            "values": {
+                "17": "Goldflipper Hideout",
+                "19": "Cherry Blossom Islands",
+                "18": "Survival Research",
+                "20": "Forest Cabin",
+                "21": "Private Island",
+                "22": "Old Castle"
+            }
+        },
         "vCHP_latest": {
             "inherit": "_earliest_supported_value_list"
         },
@@ -258,10 +262,22 @@ const DROPDOWN_MAPS = {
     },
     "dropdown-items": {
         "version_dependent": true,
-        "vHH": {
+        "vHH_initial": {
             "inherit": "vCHP_latest",
             "name_map": "item",
-            "values": []
+            "values": [
+                "133",
+                "134",
+                "135",
+                "136",
+                "137",
+                "138",
+                "139",
+                "140",
+                "141",
+                "142",
+                "143"
+            ]
         },
         "vCHP_latest": {
             "inherit": "_earliest_supported_value_list"
@@ -731,6 +747,9 @@ const DROPDOWN_MAPS = {
     },
     "dropdown-region": {
         "version_dependent": true,
+        "vHH_initial": {
+            "inherit": "_earliest_supported_value_list"
+        },
         "vCHP_latest": {
             "inherit": "_earliest_supported_value_list"
         },
@@ -751,6 +770,9 @@ const DROPDOWN_MAPS = {
     },
     "dropdown-skins": {
         "version_dependent": true,
+        "vHH_initial": {
+            "inherit": "vCHP_latest"
+        },
         "vCHP_latest": {
             "inherit": false,
             "values": {
