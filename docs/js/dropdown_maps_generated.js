@@ -776,7 +776,7 @@ const DROPDOWN_MAPS = {
         "vCHP_latest": {
             "inherit": false,
             "values": {
-                "0": "Default",
+                "19": "Default",
                 "66": "Adelie Penguin",
                 "157": "African Penguin",
                 "37": "Chicken",

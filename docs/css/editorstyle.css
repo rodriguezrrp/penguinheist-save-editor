@@ -1,110 +1,18 @@
+body {
+  background-color: #E1F0F5;
+  background-image: url(./imgs/ThatOtherFish-scrots/NI-7.png);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  --phse-warning-aware-color: #8bcff9;
+}
+
 .defaultblack {
   color: rgb(33, 37, 41);
 }
 
 .textgray {
   color: #6c757d;
-}
-
-.w-1 {
-  width: 1% !important;
-}
-
-.record-input {
-  max-width: 14ch;
-}
-
-.hex-color-input {
-  min-width: 10.4ch !important;
-}
-
-.ts-dropdown {
-  min-width: 100%;
-  width: -moz-max-content;
-  width: max-content;
-}
-
-/* color: lightblue; */
-/* background-image: url(./imgs/heistpic.png); */
-body {
-  background-color: #d1e8f0;
-  background-image: url(./imgs/ThatOtherFish-scrots/NI-7.png);
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  --phbe-warning-aware-color: hsl(203, 90%, 76%);
-}
-
-.filtertogray {
-  /* specifically, #6c757d */
-  /* https://isotropic.co/tool/hex-color-to-css-filter/ */
-  filter: invert(47%) sepia(6%) saturate(636%) hue-rotate(167deg) brightness(94%) contrast(87%);
-}
-
-div.background-container {
-  background-color: #d1e8f0;
-  border-color: steelblue;
-  border-radius: 0.2rem;
-  border-width: 2px;
-  border-style: solid;
-  /* margin-left: max(1rem, 3.5vw);
-  margin-right: max(1rem, 3.5vw); */
-  /* max-width: fit-content; */
-  /* max-width: 1140px; */
-  /* width: min(1000px, 90vw); */
-  width: min(1100px, 92vw);
-}
-
-div.header-link-justify {
-  display: flex;
-  justify-content: space-between;
-}
-
-input.file-select {
-  cursor: pointer;
-  border-style: dashed;
-  border-width: 2px;
-}
-
-svg.icon {
-  width: 1em;
-  height: 1em;
-  vertical-align: -0.125em;
-}
-
-ul.listicons {
-  list-style-type: none;
-  margin-left: 2.5em;
-  padding-left: 0;
-}
-
-ul.listicons > li {
-  position: relative;
-}
-
-span.listicons {
-  left: -2em;
-  position: absolute;
-  text-align: center;
-  width: 2em;
-  line-height: inherit;
-}
-
-.form-range::-moz-range-thumb, .form-range::-webkit-slider-thumb {
-  cursor: pointer;
-}
-
-.form-check-input {
-  cursor: pointer;
-}
-
-input[type=checkbox].switch-lg {
-  height: 1.5em;
-  width: 2.5em;
-}
-
-input[type=checkbox].switch-unset {
-  background-position: center center;
 }
 
 .mono-text {
@@ -123,12 +31,39 @@ input[type=checkbox].switch-unset {
   font: 12px Monaco, Consolas, "Andale  Mono", "DejaVu Sans Mono", monospace;
 }
 
+.fw-500 {
+  font-weight: 500;
+}
+
+.fw-600 {
+  font-weight: 600;
+}
+
+.fw-700 {
+  font-weight: 700;
+}
+
 .h6 {
   font-weight: 600;
 }
 
+.filtertogray {
+  /* specifically, #6c757d */
+  /* https://isotropic.co/tool/hex-color-to-css-filter/ */
+  filter: invert(47%) sepia(6%) saturate(636%) hue-rotate(167deg) brightness(94%) contrast(87%);
+}
+
+div.background-container {
+  background-color: #E1F0F5;
+  border-color: steelblue;
+  border-radius: 0.2rem;
+  border-width: 2px;
+  border-style: solid;
+  width: min(1100px, 92vw);
+}
+
 .save-data-val.unused {
-  background-color: rgb(200, 212, 223);
+  background-color: #e0e9ef;
   /* background-color: rgb(179, 205, 230); */
 }
 
@@ -164,44 +99,36 @@ input[type=checkbox].switch-unset {
   display: inline;
 }
 
-/* override accordion header button (and its arrow) styling */
-.accordion-button:focus {
-  /* box-shadow: none; */
-  outline: 0;
-  /* box-shadow: 0 0 0 .25rem rgba(13,110,253,.25); */
+.save-data-raw {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  background-color: transparent;
   border: 1px solid steelblue;
-  /*important beats bootstrap accordion button styling*/
-  background-color: color-mix(in srgb, var(--phbe-warning-aware-color) 90%, black) !important;
 }
 
-.accordion-button:not(.collapsed) {
-  color: inherit;
-  background-color: inherit;
-  /* box-shadow: inherit; */
+.save-data-accordion-button {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  /* !important beats bootstrap accordion button styling */
+  background-color: var(--phse-warning-aware-color) !important;
+  color: rgb(33, 37, 41);
+  border: 1px solid steelblue;
+  font-weight: 500;
 }
 
-.accordion-button.collapsed {
-  color: inherit;
-  background-color: inherit;
-  /* box-shadow: inherit; */
-}
-
-/* .accordion {
-    --bs-accordion-btn-icon: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='white'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
-    --bs-accordion-btn-active-icon: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='white'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
-} */
 .accordion-item {
   background-color: transparent;
   border: unset;
 }
 
-/* image taken from font awesome 4.x caret-right */
 .accordion-button.collapsed::after {
+  /* image from font awesome 4.x caret-right */
   background-image: url(./imgs/caret-right-solid.png);
   transform: rotate(0deg);
 }
 
 .accordion-button:not(.collapsed)::after {
+  /* image from font awesome 4.x caret-right */
   background-image: url(./imgs/caret-right-solid.png);
   transform: rotate(90deg);
 }
@@ -225,7 +152,75 @@ input[type=checkbox].switch-unset {
 }
 
 .accordion-item:has(> .accordion-collapse > .editor-row > .save-data-val.warning) {
-  --phbe-warning-aware-color: thistle;
+  --phse-warning-aware-color: thistle;
+}
+
+/* override accordion header button (and its arrow) styling */
+.accordion-button:focus {
+  /* box-shadow: none; */
+  outline: 0;
+  /* box-shadow: 0 0 0 .25rem rgba(13,110,253,.25); */
+  border: 1px solid steelblue;
+  /*important beats bootstrap accordion button styling*/
+  background-color: color-mix(in srgb, var(--phse-warning-aware-color) 90%, black) !important;
+}
+
+.accordion-button:not(.collapsed) {
+  color: inherit;
+  background-color: inherit;
+  /* box-shadow: inherit; */
+}
+
+.accordion-button.collapsed {
+  color: inherit;
+  background-color: inherit;
+  /* box-shadow: inherit; */
+}
+
+/* .accordion {
+    --bs-accordion-btn-icon: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='white'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+    --bs-accordion-btn-active-icon: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='white'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+} */
+.form-range::-moz-range-thumb, .form-range::-webkit-slider-thumb {
+  cursor: pointer;
+}
+
+.form-check-input {
+  cursor: pointer;
+}
+
+input[type=checkbox].switch-lg {
+  height: 1.5em;
+  width: 2.5em;
+}
+input[type=checkbox].switch-unset {
+  background-position: center center;
+}
+
+.record-input {
+  max-width: 14ch;
+}
+
+.hex-color-input {
+  /* !important to beat css specificity from bootstrap */
+  min-width: 10.4ch !important;
+}
+
+.ts-dropdown {
+  min-width: 100%;
+  width: -moz-max-content;
+  width: max-content;
+}
+
+div.header-link-justify {
+  display: flex;
+  justify-content: space-between;
+}
+
+input.file-select {
+  cursor: pointer;
+  border-style: dashed;
+  border-width: 2px;
 }
 
 .editor-row:hover {
@@ -234,31 +229,30 @@ input[type=checkbox].switch-unset {
   z-index: auto;
 }
 
-.save-data-raw {
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
-  background-color: transparent;
-  border: 1px solid steelblue;
+.w-1 {
+  width: 1% !important;
 }
 
-.save-data-collapse-bar {
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
-  /*important beats bootstrap accordion button styling*/
-  background-color: var(--phbe-warning-aware-color) !important;
-  color: rgb(33, 37, 41);
-  border: 1px solid steelblue;
-  font-weight: 500;
+svg.icon {
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.125em;
 }
 
-.fw-500 {
-  font-weight: 500;
+ul.listicons {
+  list-style-type: none;
+  margin-left: 2.5em;
+  padding-left: 0;
 }
 
-.fw-600 {
-  font-weight: 600;
+ul.listicons > li {
+  position: relative;
 }
 
-.fw-700 {
-  font-weight: 700;
+span.listicons {
+  left: -2em;
+  position: absolute;
+  text-align: center;
+  width: 2em;
+  line-height: inherit;
 }/*# sourceMappingURL=editorstyle.css.map */

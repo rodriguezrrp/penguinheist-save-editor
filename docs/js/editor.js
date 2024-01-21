@@ -119,7 +119,7 @@ function doResetToDefault() {
 // for toggling collapsible divs
 // function toggleIcon(event) {
 //     $(event.target)
-//         .prev('.save-data-collapse-bar')
+//         .prev('.save-data-accordion-button')
 //         .find('i')
 //         .toggleClass('bi-caret-right-fill bi-caret-down-fill');
 // }
@@ -601,7 +601,7 @@ function createParamsFormCollapses() {
         <div class="--col-12 accordion accordion-flush">
             <div class="row accordion-item">
                 <div class="px-0 accordion-header">
-                    <button class="accordion-button save-data-collapse-bar ${expanded ? '' : 'collapsed'}" aria-expanded="${expanded ? 'true' : 'false'}"
+                    <button class="accordion-button save-data-accordion-button ${expanded ? '' : 'collapsed'}" aria-expanded="${expanded ? 'true' : 'false'}"
                     type="button" data-bs-toggle="collapse" data-bs-target="#propCollapse-${categoryKey}" aria-controls="propCollapse-${categoryKey}"
                     >
                     <span class="visually-hidden">Properties category for</span><span>${name}</span>
@@ -1462,19 +1462,22 @@ function toggleUseIndicators(fullKeyNoSpaces, saveType1, saveType2, usedInSaveV1
     }
 }
 
-function updateWarningIndicator(fullKeyNoSpaces, showWarning, isSaveType1, hideEntireIndicator, warning, isUsedInSaveVersion) {
-    let usageIndDiv = $(`#useIn${!isSaveType1 || isSaveType1===2 ? '2' : '1'}-${fullKeyNoSpaces}`);
-    let usageIndTooltip = bootstrap.Tooltip.getInstance(usageIndDiv.find('i.yes-warning')[0]);
+function updateWarningIndicator(fullKeyNoSpaces, showWarning, saveTypeNumber, hideEntireIndicator, warning, isUsedInSaveVersion) {
+    // let usageIndDiv = $(`#useIn${!isSaveType1 || isSaveType1===2 ? '2' : '1'}-${fullKeyNoSpaces}`);
+    let usageIndDiv = $(`#useIn${saveTypeNumber}-${fullKeyNoSpaces}`);
     if(!usageIndDiv) {
-        console.error(`showWarningIndicator: No usage div for "${fullKeyNoSpaces}", isSaveType1=${isSaveType1}`);
+        console.error(`showWarningIndicator: No usage div for "${fullKeyNoSpaces}", saveTypeNumber=${saveTypeNumber}`);
         return;
     }
+    let usageIndTooltip = bootstrap.Tooltip.getInstance(usageIndDiv.find('i.yes-warning')[0]);
+
     if(hideEntireIndicator) {
         usageIndDiv.addClass('d-none');
-        showWarning = false;  // artificially display no warning
+        showWarning = false;  // ensure warning is hidden, if hiding entire div
     } else {
         usageIndDiv.removeClass('d-none');
     }
+
     if(showWarning) {
         // show the warning indicator,  hide both normal yes and no
         usageIndDiv.addClass('warning');
@@ -1594,6 +1597,33 @@ function getValidationInfo(fullKey, propInfo, newValue, saveType1, saveType2) {
                     // check if all values in the list are allowed
                     if(propInfo.dropdown) {
                         console.error('TODO: check if all values from dropdowns in intlist are allowed');
+                        console.log('newValue:', newValue);
+                        let dropdownValuesForOnlySaveType1 = saveType1 ? resolveDropdownFromPropInfo(propInfo, saveType1, undefined) : undefined;
+                        let dropdownValuesForOnlySaveType2 = saveType2 ? resolveDropdownFromPropInfo(propInfo, saveType2, undefined) : undefined;
+                        // combine into two arrays, one array for each saveType, reduced by concatenating missing elems elementwise.
+                        // each saveType's array contains all keys that were not in its accepted dropdown values.
+                        let [keysMissingFrom1, keysMissingFrom2] = newValue.split(' ').map((listitem) => [
+                            dropdownValuesForOnlySaveType1 && !dropdownValuesForOnlySaveType1.hasOwnProperty(listitem)
+                                ? listitem : undefined,
+                            dropdownValuesForOnlySaveType2 && !dropdownValuesForOnlySaveType2.hasOwnProperty(listitem)
+                                ? listitem : undefined
+                        ]).reduce((accumValue, curValue) => [
+                            // // AND elementwise (side effect: turns undefined into false!)
+                            // accumValue[0] && curValue[0],
+                            // accumValue[1] && curValue[1]
+                            // include elements that were missing elementwise
+                            curValue[0] ? accumValue[0].concat(curValue[0]) : accumValue[0],
+                            curValue[1] ? accumValue[1].concat(curValue[1]) : accumValue[1]
+                        ], [[],[]]); // start reduce with two empty arrays
+                        // provide validation messages
+                        if(dropdownValuesForOnlySaveType1 && keysMissingFrom1.length > 0) {
+                            let pluralize = keysMissingFrom1.length !== 1;
+                            validationResult['warningV1'] = `Value${pluralize?'s':''} ${keysMissingFrom1.join(', ')} ${pluralize?'are':'is'} not expected for selected version!`
+                        }
+                        if(dropdownValuesForOnlySaveType2 && keysMissingFrom2.length > 0) {
+                            let pluralize = keysMissingFrom2.length !== 1;
+                            validationResult['warningV2'] = `Value${pluralize?'s':''} ${keysMissingFrom2.join(', ')} ${pluralize?'are':'is'} not expected for selected comparison version!`
+                        }
                     }
                 }
             }
@@ -1803,7 +1833,7 @@ function addEditorRow(fullKeyNoSpaces, fullKey,
 
     // add property name part
     row.append(
-        $(`<div class="col save-data-descr">
+        $(`<div class="col save-data-descr overflow-x-hidden">
             <span>${propName}</span>
             ${propNote
                 ? `<a class="form-text" id="propHelp-${fullKeyNoSpaces}" tabindex="0"
@@ -1812,10 +1842,10 @@ function addEditorRow(fullKeyNoSpaces, fullKey,
                 : ''}
             <div class="col">`+/*col to place key span below the name span*/`
                 ${usedInSaveV1 || inSaveFile
-                    ? `<span class="form-text d-parent-hover-inline">Key name: @${fullKey}@</span>`
+                    ? `<span class="form-text d-parent-hover-inline">Key name: <span class="user-select-all">@${fullKey}@</span></span>`
                     : ''}
                 ${usedInSaveV2 && fullKey != fullKey // Note: can change this if/when the game edits the actual save key in a version (may be never)
-                    ? `<span class="form-text d-parent-hover-inline">Key name in comparison version: @${fullKey}@</span>`
+                    ? `<span class="form-text d-parent-hover-inline">Key name in comparison version: <span class="user-select-all">@${''}@</span></span>`
                     : ''}
             </div>
         </div>`)
@@ -2119,8 +2149,8 @@ function updateEditorRow(fullKeyAmbiguous, newValue, usedInSaveVs) {
     // update warning indicators if value is deemed invalid or not
     let validationInfo = getValidationInfo(fullKey, propInfo, newValue, saveType1, saveType2);
     let msg1 = validationInfo.warningV1, msg2 = validationInfo.warningV2;
-    updateWarningIndicator(fullKeyNoSpaces, Boolean(msg1), true, false, msg1, usedInSaveVs?.usedInSaveV1);
-    updateWarningIndicator(fullKeyNoSpaces, Boolean(msg2), false, !saveType2, msg2, usedInSaveVs?.usedInSaveV2);
+    updateWarningIndicator(fullKeyNoSpaces, Boolean(msg1), 1, false, msg1, usedInSaveVs?.usedInSaveV1);
+    updateWarningIndicator(fullKeyNoSpaces, Boolean(msg2), 2, !saveType2, msg2, usedInSaveVs?.usedInSaveV2);
     // let validNewValue = validationInfo.newValue;
 
     // save value to the current save properties-values map
