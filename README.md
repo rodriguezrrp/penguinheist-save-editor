@@ -1,4 +1,9 @@
-# Getting Started with Create React App
+## Currently master branch is getting ported to React framework!
+Apologies for the mess -- I am porting as quick as I can, and I will continue new feature development and maintenance after the port is moved to master.
+
+### Bonus note: When porting is done, the editor should be in a functional beta state!
+
+<!--- # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
@@ -67,4 +72,4 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 
 ### `npm run build` fails to minify
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify) --->
