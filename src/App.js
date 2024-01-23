@@ -5,9 +5,15 @@ import FileAndSettingsForm from './components/FileAndSettingsForm';
 import DowngradingInfo from './components/DowngradingInfo';
 import PropsForm from './components/props/PropsForm';
 import { SaveDataProvider } from './context/SaveDataContext';
+import Card from './components/Card';
+import QuickActions from './components/QuickActions';
+import SaveDownloadButton from './components/SaveDownloadButton';
+
+import Counter from './components/Counter';
+import { VersionProvider } from './context/VersionContext';
 
 function App() {
-  const [ version, setVersion ] = useState('');
+  // const [ version, setVersion ] = useState('');
   return (
     // <div className="App">
     //   <header className="App-header">
@@ -25,11 +31,26 @@ function App() {
     //     </a>
     //   </header>
     // </div>
-    <SaveDataProvider version={version}>
-      <FileAndSettingsForm version={version} setVersion={setVersion}/>
-      <DowngradingInfo />
-      <PropsForm />
-    </SaveDataProvider>
+    <>
+      <Counter />
+      <VersionProvider>
+        {/* <SaveDataProvider version={version}> */}
+        <SaveDataProvider>
+          <Card>
+            {/* <FileAndSettingsForm version={version} setVersion={setVersion}/> */}
+            <FileAndSettingsForm />
+          </Card>
+          <Card>
+            <DowngradingInfo />
+          </Card>
+          <Card>
+            <QuickActions />
+            <PropsForm />
+            <SaveDownloadButton />
+          </Card>
+        </SaveDataProvider>
+      </VersionProvider>
+    </>
   );
 }
 

@@ -1,15 +1,15 @@
 
 
-function Category({ keyCategory, children }) {
-    console.log('Category created');
-    return (
-        <div>
-            <span>Category "{keyCategory}"</span>
-            <div>
-                {children}
-            </div>
-        </div>
-    );
+function Category({ categoryKey, children }) {
+  console.log('Category created categoryKey ' + categoryKey);
+  return (
+    <div>
+      <span>Category "{categoryKey}"</span>
+      <div>
+        {children}
+      </div>
+    </div>
+  );
 }
 
 export default Category;

@@ -1,69 +1,33 @@
-import { createContext, useContext, useRef, useCallback, useSyncExternalStore } from 'react';
-import { getInitialDefaults } from '../data/saveUtils';
-// import { VersionProvider } from './VersionContext';
+import { useState, createContext, useContext } from 'react';
+import { getInitialState } from '../data/saveUtils';
 
-// const SaveDataContext = createContext(null);
-// const SaveDataDispatchContext = createContext(null);
-const StoreContext = createContext(null);
+const VersionContext = createContext(null);
+const SetVersionContext = createContext(null);
 
-function useStoreData() {
-  const store = useRef(getInitialDefaults());
-
-  const get = useCallback(() => store.current, []);
-  const subscribers = useRef(new Set());
-  const set = useCallback((value) => {
-    store.current = { ...store.current, ...value };
-    return subscribers.current.forEach(callback => callback());
-  }, []);
-
-  const subscribe = useCallback((callback) => {
-    subscribers.current.add(callback);
-    return () => subscribers.current.delete(callback);
-  }, []);
-
-  return { get, set, subscribe }
-}
-
-export function useStore(selector) {
-  // store should be the { get, set, subscribe }
-  const store = useContext(StoreContext);
-  // console.log(store);
-  if(!store) throw new Error('store was not {get, set, subscribe}');
-  
-  const state = useSyncExternalStore(store.subscribe, () => selector(store.get()));
-  return [state, store.set];
-}
-
-export function SaveDataProvider({ children }) {
-  console.log('SaveDataProvider');
+export function VersionProvider({ children }) {
+  console.log('VersionProvider');
   // const [saveData, dispatch] = useReducer(
   //   saveDataReducer,
   //   initialSaveData
   // );
+  const [version, setVersion] = useState(getInitialState());
 
   return (
-    // <SaveDataContext.Provider value={saveData}>
-    //   <SaveDataDispatchContext.Provider value={dispatch}>
-    //     {children}
-    //   </SaveDataDispatchContext.Provider>
-    // </SaveDataContext.Provider>
-    <StoreContext.Provider value={useStoreData()}>
-      {children}
-    </StoreContext.Provider>
+    <VersionContext.Provider value={version}>
+      <SetVersionContext.Provider value={setVersion}>
+        {children}
+      </SetVersionContext.Provider>
+    </VersionContext.Provider>
   )
 }
 
-export function useStoreContext() {
-  return useContext(StoreContext);
+export function useVersion() {
+  return useContext(VersionContext);
 }
 
-// export function useSaveData() {
-//   return useContext(SaveDataContext);
-// }
-
-// export function useSaveDataDispatch() {
-//   return useContext(SaveDataDispatchContext);
-// }
+export function useSetVersion() {
+  return useContext(SetVersionContext);
+}
 
 // function saveDataReducer(data, action) {
 //   console.log('saveDataReducer: data:', data);
