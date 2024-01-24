@@ -28,10 +28,10 @@ export function Editor({ keyBase, keyExtra }) {
   const [saveDataValue, setSaveData] = useStore((store) => {console.log('key: '+spacedKey+' store:',store); return store[spacedKey]});
   console.log('here right after useStore');
   return (
-    <div id={htmlSafeKey}>
+    <div id={'editorRow-'+htmlSafeKey} className="editor-row">
       {/* <span>keyBase {keyBase} - keyExtra {keyExtra} - value {keyValue}</span> */}
-      <span>keyBase {keyBase} - keyExtra {keyExtra}</span>
-      <br/>
+      <span style={{display:'inline-block',width:'40vw'}}>keyBase {keyBase} - keyExtra {keyExtra}</span>
+      {/* <br/> */}
       <input
         type="text"
         value={saveDataValue || ''} /* the short-circuiting with '' is to keep the input "controlled" in React */

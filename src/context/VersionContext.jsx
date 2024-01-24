@@ -1,5 +1,5 @@
 import { useState, createContext, useContext } from 'react';
-import { getInitialState } from '../data/saveUtils';
+import { getInitialVersion } from '../data/saveUtils';
 
 const VersionContext = createContext(null);
 const SetVersionContext = createContext(null);
@@ -10,7 +10,7 @@ export function VersionProvider({ children }) {
   //   saveDataReducer,
   //   initialSaveData
   // );
-  const [version, setVersion] = useState(getInitialState());
+  const [version, setVersion] = useState(getInitialVersion());
 
   return (
     <VersionContext.Provider value={version}>

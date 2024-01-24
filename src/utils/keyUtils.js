@@ -13,10 +13,11 @@ function keyStrMakeHtmlSafe(ambiguousSafetyKeyString) {
     return ambiguousSafetyKeyString.replaceAll(DISALLOWED_CHARS_REGEX, '_');
 }
 
-function getKeyParts(unsafeKeyStr) {
+function getKeyParts(normalFullKeyStr) {
     return [
-        unsafeKeyStr.split(' ', 1),
-        unsafeKeyStr.substring(unsafeKeyStr.indexOf(' ') + 1)
+        normalFullKeyStr.split(' ', 1)[0],
+        // normalFullKeyStr.substring(normalFullKeyStr.indexOf(' ') + 1)
+        normalFullKeyStr.split(' ').slice(1).join(' ')
     ];
 }
 

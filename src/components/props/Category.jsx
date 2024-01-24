@@ -3,9 +3,9 @@
 function Category({ categoryKey, children }) {
   console.log('Category created categoryKey ' + categoryKey);
   return (
-    <div>
+    <div id={'category-'+categoryKey} className="category">
       <span>Category "{categoryKey}"</span>
-      <div>
+      <div className="col">
         {children}
       </div>
     </div>
