@@ -1,6 +1,7 @@
-import { useSaveDataDispatch } from "../../context/SaveDataContext";
 import { partsToHtmlSafeKey, partsToKey } from "../../utils/keyUtils";
 import { useStore } from "../../context/SaveDataContext";
+import { useVersion } from "../../context/VersionContext";
+import { saveDataValid } from "../../utils/validUtils";
 
 // export function Editor({ keyBase, keyExtra, keyValue }) {
 export function Editor({ keyBase, keyExtra }) {
@@ -27,11 +28,16 @@ export function Editor({ keyBase, keyExtra }) {
   // );
   const [saveDataValue, setSaveData] = useStore((store) => {console.log('key: '+spacedKey+' store:',store); return store[spacedKey]});
   console.log('here right after useStore');
+
+  const version = useVersion(); // note this is causing a dependency on the version Context; should not be an issue for rerendering
+  const isValid = saveDataValid(saveDataValue, keyBase, keyExtra, version);
+
   return (
     <div id={'editorRow-'+htmlSafeKey} className="editor-row">
       {/* <span>keyBase {keyBase} - keyExtra {keyExtra} - value {keyValue}</span> */}
       <span style={{display:'inline-block',width:'40vw'}}>keyBase {keyBase} - keyExtra {keyExtra}</span>
       {/* <br/> */}
+      <span style={{display:'inline-block',width:'2rem',color:(isValid?'green':'red')}}>{isValid?'✔':'✘'}</span>
       <input
         type="text"
         value={saveDataValue || ''} /* the short-circuiting with '' is to keep the input "controlled" in React */

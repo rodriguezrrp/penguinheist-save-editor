@@ -1,11 +1,11 @@
 
-// const DEPOTS_INFO = {
-//     'depot_windows': 1451481,
-//     'depot_macos': 1451482,
-//     'depot_linux': 1451483,
-// }
+const DEPOTS_INFO = {
+    'depot_windows': 1451481,
+    'depot_macos': 1451482,
+    'depot_linux': 1451483,
+}
 
-export const VERSION_INFO = {
+const VERSION_INFO = {
     'vHH_initial': {
         'name': 'Heist and Housing Update (initial build)',
         'supported': true,

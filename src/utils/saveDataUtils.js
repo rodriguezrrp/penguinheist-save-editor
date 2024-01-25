@@ -1,8 +1,11 @@
-import { getKeyParts } from '../utils/keyUtils';
-// import mappedPropInfo from './mapped_prop_info';
-const mappedPropInfo = require('./mapped_prop_info');
+import { mappedCategoryInfo, mappedPropInfo } from '../data';
+import { getKeyParts } from './keyUtils';
 
 export const defaultCategory = "unknown";
+
+if(!mappedCategoryInfo[defaultCategory]) {
+    throw new Error(`Expecting default category "${defaultCategory}" in mapped category info!`)
+}
 
 export function getInitialVersion() {
     return 'vHH_initial';
@@ -32,17 +35,22 @@ export function getRelevantsCategorizedFor(version) {
 }
 
 function categorizeRelevants(relevantsList) {
-    // put all categories and props into an object
-    const categorized = new Map();
+    // using Maps will keep insertion-order sorted nature of mappings
+    const categorized = new Map(Object.keys(mappedCategoryInfo).map(
+        (catId) => [catId, new Map()]
+    ));
+    console.log('categorize: categorized initially:', categorized);
     // Set keeps insertion-order sorted nature
     let deDupedRelevants = new Set(relevantsList);
     for(const fullKey of deDupedRelevants) {
         const [keyBase, keyExtra] = getKeyParts(fullKey);
+        // if property info doesn't exist, put in the default category
         const category = mappedPropInfo[keyBase]?.category || defaultCategory;
         // ensure categorized dict has the category in it, ready for mapping keys
         if(!categorized.has(category)) {
-            // using a Map will keep insertion-order sorted nature of mappings
-            categorized.set(category, new Map());
+            throw new Error(`categorized map did not have category of id "${category}"`)
+            // // using a Map will keep insertion-order sorted nature of mappings
+            // categorized.set(category, new Map());
         }
         const keysDataMap = categorized.get(category);
         console.log(keyBase)
@@ -85,35 +93,35 @@ const initialSaveRelevants = [
     'todo actuallygeneratethis'
 ]
 
-const initialSaveRelevantsCategorized = [
-    {
-      categoryId: "category1",
-      keysData: [
-        { 
-          keyBase: 'itemOwned',
-          extras: [
-            '0',
-            '29',
-            '18',
-          ]
-        },
-        { 
-          keyBase: 'money',
-          extras: [
-            '',
-          ]
-        }
-      ],
-    },
-    {
-      categoryId: "category2",
-      keysData: [
-        { 
-          keyBase: 'todo',
-          extras: [
-            'actuallygeneratethis'
-          ]
-        }
-      ]
-    },
-  ];
+// const initialSaveRelevantsCategorized = [
+//     {
+//       categoryId: "category1",
+//       keysData: [
+//         { 
+//           keyBase: 'itemOwned',
+//           extras: [
+//             '0',
+//             '29',
+//             '18',
+//           ]
+//         },
+//         { 
+//           keyBase: 'money',
+//           extras: [
+//             '',
+//           ]
+//         }
+//       ],
+//     },
+//     {
+//       categoryId: "category2",
+//       keysData: [
+//         { 
+//           keyBase: 'todo',
+//           extras: [
+//             'actuallygeneratethis'
+//           ]
+//         }
+//       ]
+//     },
+//   ];

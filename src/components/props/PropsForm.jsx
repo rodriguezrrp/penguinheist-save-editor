@@ -1,12 +1,10 @@
 import Category from "./Category";
 // import mappedPropCategories from './../../data/mapped_prop_categories.json';
-import mappedPropInfo from './../../data/mapped_prop_info.json';
+// import mappedPropInfo from './../../data/mapped_prop_info.json';
 // import { useSaveData } from "../../context/SaveDataContext";
-import { partsToHtmlSafeKey } from "../../utils/keyUtils";
+// import { partsToHtmlSafeKey } from "../../utils/keyUtils";
 import { Editor } from "./Editor";
-import { getInitialRelevantsCategorized, defaultCategory } from "../../data/saveUtils";
-
-// const defaultCategory = "unknown";
+import { getInitialRelevantsCategorized } from "../../utils/saveDataUtils";
 
 function PropsForm() {
   console.log('PropsForm created');
