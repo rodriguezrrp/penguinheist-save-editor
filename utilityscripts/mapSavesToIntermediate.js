@@ -1,6 +1,6 @@
 const path = require("node:path");
 const fs = require('node:fs');
-import("../src/utils/saveFileUtils.mjs").then(({ decodeSaveFile }) => {
+import("../src/utils/saveFileEncodingUtils.mjs").then(({ decodeSaveFile }) => {
 
     const saveRegex = /-([\w]+).sav$/gi;
 

@@ -1,4 +1,4 @@
-import { mappedCategoryInfo, mappedPropInfo } from '../data';
+import { mappedCategoryInfo, mappedPropInfo, versionRelevants } from '../data';
 import { getKeyParts } from './keyUtils';
 
 export const defaultCategory = "unknown";
@@ -7,17 +7,26 @@ if(!mappedCategoryInfo[defaultCategory]) {
     throw new Error(`Expecting default category "${defaultCategory}" in mapped category info!`)
 }
 
-export function getInitialVersion() {
-    return 'vHH_initial';
+export function getInitialVersion() {  // todo: could potentially read version from window.location.search get params (i.e. ?version=...)
+    // return 'vHH_initial';
+    return 'vCHP_latest';
 }
 
 export function getInitialDefaults() {
-    return initialSaveDefaults;
+    return initialSaveDefaults;  // fabricated testing data
+    // return getDefaultsFor(getInitialVersion());
+}
+
+export function getInitialRelevants() {
+    return initialSaveRelevants;  // fabricated testing data
+    // return versionRelevants[getInitialVersion()];
+    // return getRelevantsFor(getInitialVersion());
 }
 
 export function getInitialRelevantsCategorized() {
     // return initialSaveRelevantsCategorized;
-    return categorizeRelevants(initialSaveRelevants);
+    // return categorizeRelevants(initialSaveRelevants);
+    return categorizeRelevants(versionRelevants[getInitialVersion()]);
 }
 
 
@@ -26,7 +35,8 @@ export function getDefaultsFor(version) {
 }
 
 export function getRelevantsFor(version) {
-    throw new Error()
+    // throw new Error()
+    return versionRelevants[version];
 }
 
 export function getRelevantsCategorizedFor(version) {

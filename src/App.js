@@ -4,7 +4,7 @@ import { useState } from 'react';
 import FileAndSettingsForm from './components/FileAndSettingsForm';
 import DowngradingInfo from './components/DowngradingInfo';
 import PropsForm from './components/props/PropsForm';
-import { SaveDataProvider } from './context/SaveDataContext';
+import { PropListProvider, SaveDataProvider } from './context/SaveDataContext';
 import Card from './components/Card';
 import QuickActions from './components/QuickActions';
 import SaveDownloadButton from './components/SaveDownloadButton';
@@ -14,6 +14,7 @@ import { VersionProvider } from './context/VersionContext';
 
 function App() {
   // const [ version, setVersion ] = useState('');
+  // const version = useVersion();
   return (
     // <div className="App">
     //   <header className="App-header">
@@ -35,19 +36,24 @@ function App() {
       <Counter />
       <VersionProvider>
         {/* <SaveDataProvider version={version}> */}
+        {/* <span style={{'font-weight': 'bold'}}>Version: "{version}"</span> */}
         <SaveDataProvider>
-          <Card>
-            {/* <FileAndSettingsForm version={version} setVersion={setVersion}/> */}
-            <FileAndSettingsForm />
-          </Card>
-          <Card>
-            <DowngradingInfo />
-          </Card>
-          <Card>
-            <QuickActions />
-            <PropsForm />
-            <SaveDownloadButton />
-          </Card>
+          <PropListProvider>
+
+            <Card>
+              {/* <FileAndSettingsForm version={version} setVersion={setVersion}/> */}
+              <FileAndSettingsForm />
+            </Card>
+            <Card>
+              <DowngradingInfo />
+            </Card>
+            <Card>
+              <QuickActions />
+              <PropsForm />
+              <SaveDownloadButton />
+            </Card>
+            
+          </PropListProvider>
         </SaveDataProvider>
       </VersionProvider>
     </>

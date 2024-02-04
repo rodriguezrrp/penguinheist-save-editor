@@ -8,7 +8,7 @@
 export const VERSION_INFO = {
     'vHH_initial': {
         'name': 'Heist and Housing Update (initial build)',
-        'supported': true,
+        'supported': false,//true,
 		'steamdb_buildid': '12980251',
 		'crc32_windows': '62A657FB',
         'manifest_windows': '3897170993371959684',

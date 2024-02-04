@@ -1,6 +1,8 @@
-import { createContext, useContext, useRef, useCallback, useSyncExternalStore } from 'react';
-import { getInitialDefaults } from '../utils/saveDataUtils';
+import { createContext, useContext, useRef, useCallback, useSyncExternalStore, useState } from 'react';
+import { getInitialDefaults, getInitialRelevants } from '../utils/saveDataUtils';
 // import { VersionProvider } from './VersionContext';
+
+const PropListContext = createContext(null);
 
 // const SaveDataContext = createContext(null);
 // const SaveDataDispatchContext = createContext(null);
@@ -14,6 +16,10 @@ function useStoreData() {
   const set = useCallback((value) => {
     store.current = { ...store.current, ...value };
     return subscribers.current.forEach(callback => callback());
+  }, []); 
+  const setAll = useCallback((values) => {
+    store.current = values;
+    return subscribers.current.forEach(callback => callback());
   }, []);
 
   const subscribe = useCallback((callback) => {
@@ -21,17 +27,26 @@ function useStoreData() {
     return () => subscribers.current.delete(callback);
   }, []);
 
-  return { get, set, subscribe }
+  return { get, set, setAll, subscribe }
 }
 
 export function useStore(selector) {
-  // store should be the { get, set, subscribe }
+  // store should be the { get, set, setAll, subscribe }
   const store = useContext(StoreContext);
   // console.log(store);
-  if(!store) throw new Error('store was not {get, set, subscribe}');
+  if(!store) throw new Error('store was not existing. Should be like { get, set, setAll, subscribe }');
   
   const state = useSyncExternalStore(store.subscribe, () => selector(store.get()));
   return [state, store.set];
+}
+export function useStoreSetAll(selector) {
+  // store should be the { get, set, setAll, subscribe }
+  const store = useContext(StoreContext);
+  // console.log(store);
+  if(!store) throw new Error('store was not existing. Should be like { get, set, setAll, subscribe }');
+  
+  const state = useSyncExternalStore(store.subscribe, () => selector(store.get()));
+  return [state, store.setAll];
 }
 
 export function SaveDataProvider({ children }) {
@@ -50,6 +65,18 @@ export function SaveDataProvider({ children }) {
     <StoreContext.Provider value={useStoreData()}>
       {children}
     </StoreContext.Provider>
+  )
+}
+
+export function PropListProvider({ children }) {
+  console.log('PropListProvider');
+  const [propList, setPropList] = useState(getInitialRelevants());
+  return (
+    <PropListContext.Provider value={{get: propList, set: setPropList}}>
+      {/* <SetPropListContext.Provider value={setPropList}> */}
+        {children}
+      {/* </SetPropListContext.Provider> */}
+    </PropListContext.Provider>
   )
 }
 
