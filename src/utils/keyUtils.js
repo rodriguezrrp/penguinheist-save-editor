@@ -13,6 +13,10 @@ function keyStrMakeHtmlSafe(ambiguousSafetyKeyString) {
     return ambiguousSafetyKeyString.replaceAll(DISALLOWED_CHARS_REGEX, '_');
 }
 
+/** 
+ * @param {string} normalFullKeyStr
+ * @returns {string[]}
+*/
 function getKeyParts(normalFullKeyStr) {
     return [
         normalFullKeyStr.split(' ', 1)[0],

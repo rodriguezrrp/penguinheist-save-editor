@@ -1,10 +1,9 @@
 // import logo from './logo.svg';
 import './App.css';
-import { useState } from 'react';
 import FileAndSettingsForm from './components/FileAndSettingsForm';
 import DowngradingInfo from './components/DowngradingInfo';
 import PropsForm from './components/props/PropsForm';
-import { PropListProvider, SaveDataProvider } from './context/SaveDataContext';
+import { SaveDataProvider } from './context/SaveDataContext';
 import Card from './components/Card';
 import QuickActions from './components/QuickActions';
 import SaveDownloadButton from './components/SaveDownloadButton';
@@ -38,7 +37,7 @@ function App() {
         {/* <SaveDataProvider version={version}> */}
         {/* <span style={{'font-weight': 'bold'}}>Version: "{version}"</span> */}
         <SaveDataProvider>
-          <PropListProvider>
+          {/* <PropListProvider> */}
 
             <Card>
               {/* <FileAndSettingsForm version={version} setVersion={setVersion}/> */}
@@ -53,7 +52,7 @@ function App() {
               <SaveDownloadButton />
             </Card>
             
-          </PropListProvider>
+          {/* </PropListProvider> */}
         </SaveDataProvider>
       </VersionProvider>
     </>

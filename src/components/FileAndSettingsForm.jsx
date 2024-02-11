@@ -1,5 +1,6 @@
-import { useStoreSetAll } from "../context/SaveDataContext";
+import { useStoreGetAll, useStoreSetAll } from "../context/SaveDataContext";
 import { useSetVersion, useVersion } from "../context/VersionContext";
+import { categorizeSaveDataRecord } from "../utils/saveDataUtils";
 import { handleFileFormChange } from "../utils/saveFileEventUtils";
 
 
@@ -19,35 +20,48 @@ function FileAndSettingsForm({ version, setVersion }) {
 
       <br/>
       <UploadButton />
-      <br/>
-      <TestSetEditorKeysButton />
+      {/* <br/>
+      <TestSetEditorKeysButton /> */}
       <br/>
       <VersionSelect />
+      <br/>
+      <TestGetSaveDataButton />
     </form>
   );
 }
 
 function UploadButton() {
   // eslint-disable-next-line no-unused-vars
-  // const [allData, setAllData] = useStoreSetAll(v => v);
-  // eslint-disable-next-line no-unused-vars
   const [allData, setAllData] = useStoreSetAll(v => null);  // a constant return from the callback prevents React re-rendering
   console.log('UploadButton created');
   return (
     <button type="button" onClick={e => {
-      setAllData({money: 700, stamps: 30});
+      // setAllData({money: 700, stamps: 30});
+      console.log(categorizeSaveDataRecord({money: 700, stamps: 30}));
+      setAllData(categorizeSaveDataRecord({money: 700, stamps: 30}));
     }}>
       manual setAll
     </button>
   );
 }
 
-function TestSetEditorKeysButton() {
+// function TestSetEditorKeysButton() {
+//   return (
+//     <button type="button" onClick={e => {
+//       console.log('todo');
+//     }}>
+//       manual setEditorKeys
+//     </button>
+//   );
+// }
+function TestGetSaveDataButton() {
+  console.log('TestGetSaveDataButton created');
+  const getAllData = useStoreGetAll();
   return (
     <button type="button" onClick={e => {
-      ;
+      console.log(getAllData());
     }}>
-      manual setEditorKeys
+      manual getAll
     </button>
   );
 }

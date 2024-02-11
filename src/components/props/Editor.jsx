@@ -1,14 +1,19 @@
-import { partsToHtmlSafeKey, partsToKey } from "../../utils/keyUtils";
+import { getKeyParts, partsToHtmlSafeKey, partsToKey } from "../../utils/keyUtils";
 import { useStore } from "../../context/SaveDataContext";
 import { useVersion } from "../../context/VersionContext";
 import { saveDataValid } from "../../utils/validUtils";
+import { getPropInfo } from "../../data";
 
 // export function Editor({ keyBase, keyExtra, keyValue }) {
-export function Editor({ keyBase, keyExtra }) {
+// export function Editor({ keyBase, keyExtra }) {
+export function Editor({ categoryId, fullKey }) {
+  const [keyBase, keyExtra] = getKeyParts(fullKey);
   // console.log(`Editor created keyBase ${keyBase} keyExtra ${keyExtra}`);
   console.log(`Editor created "${keyBase}" "${keyExtra}"`);
+
   const htmlSafeKey = partsToHtmlSafeKey(keyBase, keyExtra);
   const spacedKey = partsToKey(keyBase, keyExtra);
+  
   // const dispatch = useSaveDataDispatch();
   // return (
   //   <div>
@@ -28,8 +33,11 @@ export function Editor({ keyBase, keyExtra }) {
   //   </div>
   // );
   const [saveDataValue, setSaveData] = useStore((store) => {//console.log('key: '+spacedKey+' store:',store);
-                                                            return store[spacedKey]});
-  console.log('here right after useStore');
+                                                            // return store[spacedKey]});
+                                                            return store[categoryId][fullKey]});
+  console.log('here right after useStore (Editor). value '+saveDataValue);
+
+  const propInfo = getPropInfo(keyBase);
 
   const version = useVersion(); // note this is causing a dependency on the version Context; should not be an issue for rerendering
   const isValid = saveDataValid(saveDataValue, keyBase, keyExtra, version);
@@ -45,19 +53,36 @@ export function Editor({ keyBase, keyExtra }) {
         type="text"
         value={saveDataValue ?? ''} /* the '' is to keep the input "controlled" in React incase saveDataValue isn't provided */
         onChange={e => {
-          setSaveData({[spacedKey]: e.target.value})
+          setSaveData(categoryId, fullKey, e.target.value)
         }}
       />
+
+      <button type="button"
+        disabled={saveDataValue === '' || saveDataValue === null || typeof(saveDataValue) === "undefined"}
+        onClick={e => {
+          setSaveData(categoryId, fullKey, undefined);
+        }}
+      >
+        X
+      </button>
 
       <input
         type="text"
         disabled
         value={saveDataValue ?? ''} /* the '' is to keep the input "controlled" in React incase saveDataValue isn't provided */
         onChange={e => {
-          setSaveData({[spacedKey]: e.target.value})
+          setSaveData(categoryId, fullKey, e.target.value)
         }}
+        placeholder="No value"
       />
+
+      <span> {propInfo.type}</span>
     </div>
   )
-
 }
+
+// function StringEditor() {
+//   return (
+//     //
+//   );
+// }

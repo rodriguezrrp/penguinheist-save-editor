@@ -1,24 +1,65 @@
-import { createContext, useContext, useRef, useCallback, useSyncExternalStore, useState } from 'react';
-import { getInitialDefaults, getInitialRelevants } from '../utils/saveDataUtils';
+import { createContext, useContext, useRef, useCallback, useSyncExternalStore } from 'react';
+import { getCompleteCategorizedSaveDataFor, getInitialVersion } from '../utils/saveDataUtils';
+import { useVersion } from './VersionContext';
 // import { VersionProvider } from './VersionContext';
 
-const PropListContext = createContext(null);
+// const PropListContext = createContext(null);
+
+/**
+ * @typedef {(categoryId: string, fullKey: string, newValue: string) => void} DataStoreSetFunction
+ * @typedef {(newCategorizedData: Record<string, Record<string, string>>) => void} DataStoreSetAllFunction
+ * @typedef {{ getAll: () => Record<string, Record<string, string>>,
+ *            set: DataStoreSetFunction,
+ *            setAll: DataStoreSetAllFunction,
+ *            subscribe: (callback: any) => () => boolean
+ *          }} DataStoreFunctions
+ */
 
 // const SaveDataContext = createContext(null);
 // const SaveDataDispatchContext = createContext(null);
-const StoreContext = createContext(null);
+/** @type {React.Context<DataStoreFunctions>} */
+const SaveDataContext = createContext(null);
 
-function useStoreData() {
-  const store = useRef(getInitialDefaults());
+/**
+ * @param {string?} version 
+ * @returns {DataStoreFunctions}
+ */
+function useStoreData(version) {
+  // const store = useRef(getInitialDefaults());
+  // const store = useRef(getDefaultsCategorizedFor(version ?? getInitialVersion()));
+  version = version ?? getInitialVersion();
+  const store = useRef(getCompleteCategorizedSaveDataFor(version));
 
-  const get = useCallback(() => store.current, []);
+  const getAll = useCallback(() => store.current, []);
   const subscribers = useRef(new Set());
-  const set = useCallback((value) => {
-    store.current = { ...store.current, ...value };
+  const set = useCallback((/**@type string*/ categoryId,
+                          /**@type string*/ fullKey,
+                          /**@type string*/ newValue) => {
+    // store.current = { ...store.current, ...value };
+    // if(typeof(newValue) === "undefined") {
+    //   // remove fullKey from the store entirely.
+    //   // separate the remainder via destructuring
+    //   const {[fullKey]: _, ...rest} = store.current[categoryId];
+    //   store.current = {
+    //     ...store.current,
+    //     // rest is the contents of store.current[categoryId] except for fullKey
+    //     [categoryId]: rest
+    //   };
+    // } else {
+      // newValue is a value.
+    store.current = {
+      ...store.current,
+      // replace value of fullKey (in category categoryId) with newValue
+      [categoryId]: {
+        ...store.current[categoryId],
+        [fullKey]: newValue
+      }
+    };
+    // }
     return subscribers.current.forEach(callback => callback());
   }, []); 
-  const setAll = useCallback((values) => {
-    store.current = values;
+  const setAll = useCallback((/**@type {Record<string, Record<string, string>>}*/ newCategorizedData) => {
+    store.current = newCategorizedData;
     return subscribers.current.forEach(callback => callback());
   }, []);
 
@@ -27,34 +68,62 @@ function useStoreData() {
     return () => subscribers.current.delete(callback);
   }, []);
 
-  return { get, set, setAll, subscribe }
+  return { getAll, set, setAll, subscribe }
 }
 
+/**
+ * @template T
+ * @param {(data: Record<string, Record<string, string>>) => T} selector 
+ * @returns {[T, DataStoreSetFunction]}
+ */
 export function useStore(selector) {
-  // store should be the { get, set, setAll, subscribe }
-  const store = useContext(StoreContext);
+  // store should be the { getAll, set, setAll, subscribe } functions
+  const store = useContext(SaveDataContext);
   // console.log(store);
-  if(!store) throw new Error('store was not existing. Should be like { get, set, setAll, subscribe }');
+  if(!store) throw new Error('store was not existing. Should be like { getAll, set, setAll, subscribe } functions');
   
-  const state = useSyncExternalStore(store.subscribe, () => selector(store.get()));
+  const state = useSyncExternalStore(store.subscribe, () => selector(store.getAll()));
   return [state, store.set];
 }
+
+/**
+ * @template T
+ * @param {(data: Record<string, Record<string, string>>) => T} selector 
+ * @returns {[T, DataStoreSetAllFunction]}
+ */
 export function useStoreSetAll(selector) {
-  // store should be the { get, set, setAll, subscribe }
-  const store = useContext(StoreContext);
+  // store should be the { getAll, set, setAll, subscribe } functions
+  const store = useContext(SaveDataContext);
   // console.log(store);
-  if(!store) throw new Error('store was not existing. Should be like { get, set, setAll, subscribe }');
+  if(!store) throw new Error('store was not existing. Should be like { getAll, set, setAll, subscribe } functions');
   
-  const state = useSyncExternalStore(store.subscribe, () => selector(store.get()));
+  const state = useSyncExternalStore(store.subscribe, () => selector(store.getAll()));
   return [state, store.setAll];
 }
 
+/**
+ * @returns {() => Record<string, Record<string, string>>}
+*/
+export function useStoreGetAll() {
+  // store should be the { getAll, set, setAll, subscribe } functions
+  const store = useContext(SaveDataContext);
+  // console.log(store);
+  if(!store) throw new Error('store was not existing. Should be like { getAll, set, setAll, subscribe } functions');
+  
+  return store.getAll;
+}
+
+
 export function SaveDataProvider({ children }) {
-  console.log('SaveDataProvider');
+  console.log('SaveDataProvider created');
   // const [saveData, dispatch] = useReducer(
   //   saveDataReducer,
   //   initialSaveData
   // );
+
+  // the save data context should re-calculate when version changes
+  //   (? TODO NOTE: can this be moved out as a parameter of SaveDataProvider function?)
+  const version = useVersion();
 
   return (
     // <SaveDataContext.Provider value={saveData}>
@@ -62,26 +131,26 @@ export function SaveDataProvider({ children }) {
     //     {children}
     //   </SaveDataDispatchContext.Provider>
     // </SaveDataContext.Provider>
-    <StoreContext.Provider value={useStoreData()}>
+    <SaveDataContext.Provider value={useStoreData(version)}>
       {children}
-    </StoreContext.Provider>
-  )
+    </SaveDataContext.Provider>
+  );
 }
 
-export function PropListProvider({ children }) {
-  console.log('PropListProvider');
-  const [propList, setPropList] = useState(getInitialRelevants());
-  return (
-    <PropListContext.Provider value={{get: propList, set: setPropList}}>
-      {/* <SetPropListContext.Provider value={setPropList}> */}
-        {children}
-      {/* </SetPropListContext.Provider> */}
-    </PropListContext.Provider>
-  )
-}
+// export function PropListProvider({ children }) {
+//   console.log('PropListProvider');
+//   const [propList, setPropList] = useState(getInitialRelevants());
+//   return (
+//     <PropListContext.Provider value={{get: propList, set: setPropList}}>
+//       {/* <SetPropListContext.Provider value={setPropList}> */}
+//         {children}
+//       {/* </SetPropListContext.Provider> */}
+//     </PropListContext.Provider>
+//   )
+// }
 
-export function useStoreContext() {
-  return useContext(StoreContext);
+export function useSaveDataContext() {
+  return useContext(SaveDataContext);
 }
 
 // export function useSaveData() {

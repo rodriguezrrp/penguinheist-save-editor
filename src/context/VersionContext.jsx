@@ -1,7 +1,9 @@
 import { useState, createContext, useContext } from 'react';
 import { getInitialVersion } from '../utils/saveDataUtils';
 
+/** @type {React.Context<string>} */
 const VersionContext = createContext(null);
+
 const SetVersionContext = createContext(null);
 
 export function VersionProvider({ children }) {

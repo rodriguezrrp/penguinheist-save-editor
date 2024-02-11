@@ -4,14 +4,18 @@ import Category from "./Category";
 // import { useSaveData } from "../../context/SaveDataContext";
 // import { partsToHtmlSafeKey } from "../../utils/keyUtils";
 import { Editor } from "./Editor";
-import { getInitialRelevantsCategorized } from "../../utils/saveDataUtils";
+// import { getDefaultsCategorizedFor, getInitialVersion } from "../../utils/saveDataUtils";
+import { useStoreGetAll } from "../../context/SaveDataContext";
 
 function PropsForm() {
   console.log('PropsForm created');
 
   // let categorizedSaveDataMapping = {};
   // const saveData = useSaveData();
-  const saveData = getInitialRelevantsCategorized();
+  // const saveData = getInitialRelevantsCategorized();
+  // const saveData = getDefaultsCategorizedFor(getInitialVersion());
+  const getAll = useStoreGetAll();
+  const saveData = getAll();
   console.log('PropsForm: saveData:', saveData);
 
   // for(const [keyBase, keyData] of Object.entries(saveData)) {
@@ -67,27 +71,45 @@ function PropsForm() {
   //     })}
   //   </form>
   // );
+  ;
+  // return (
+  //   <form id="saveForm">
+  //     {saveData.map((categoryEntry) => {
+  //       const categoryId = categoryEntry.categoryId;
+  //       const keysData = categoryEntry.keysData;
+  //       return (
+  //       <Category key={categoryId} categoryKey={categoryId}>
+  //         {keysData.map(keyData => {
+  //           const keyBase = keyData.keyBase;
+  //           return keyData.extras.map(extra => {
+  //             return (
+  //               <Editor
+  //                 key={extra}
+  //                 keyBase={keyBase} keyExtra={extra}
+  //                 // fullKey={fullKey}
+  //               />
+  //             );
+  //           })
+  //         })}
+  //       </Category>
+  //       )
+  //     })}
+  //   </form>
+  // );
   return (
     <form id="saveForm">
-      {saveData.map((categoryEntry) => {
-        const categoryId = categoryEntry.categoryId;
-        const keysData = categoryEntry.keysData;
-        return <>
+      {Object.entries(saveData).map(([categoryId, categoryKeysDataObj]) => (
         <Category key={categoryId} categoryKey={categoryId}>
-          {keysData.map(keyData => {
-            const keyBase = keyData.keyBase;
-            return keyData.extras.map(extra => {
-              return (
-                <Editor
-                  key={extra}
-                  keyBase={keyBase} keyExtra={extra}
-                />
-              );
-            })
-          })}
+          {Object.entries(categoryKeysDataObj).map(([fullKey, value]) => (
+            <Editor
+              key={fullKey}
+              // keyBase={keyBase} keyExtra={extra}
+              fullKey={fullKey}
+              categoryId={categoryId}
+            />
+          ))}
         </Category>
-        </>
-      })}
+      ))}
     </form>
   );
 }
