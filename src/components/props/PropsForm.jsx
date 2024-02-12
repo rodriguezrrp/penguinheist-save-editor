@@ -5,18 +5,46 @@ import Category from "./Category";
 // import { partsToHtmlSafeKey } from "../../utils/keyUtils";
 import { Editor } from "./Editor";
 // import { getDefaultsCategorizedFor, getInitialVersion } from "../../utils/saveDataUtils";
-import { useStoreGetAll } from "../../context/SaveDataContext";
+import { useStoreGetAll, useStoreSetAll } from "../../context/SaveDataContext";
+import { useRef } from "react";
+
 
 function PropsForm() {
   console.log('PropsForm created');
+
+  // https://react.dev/reference/react/useSyncExternalStore
+  //  memoizing/caching result, preventing re-renders from the getSnapshot callback having technically different objects
+  const cachedStrippedData = useRef(null);
+  function stripValsCached(/**@type Record<string,Record<string,string>>*/data) {
+    let strippedData = Object.fromEntries(
+      Object.entries(data)
+            .map(([cId, cData]) => [cId,
+              Object.fromEntries(Object.entries(cData).map(([key,_]) => [key,null]))
+            ]));
+    // object DEEP comparison; ORDER MATTERS too!
+    if (JSON.stringify(strippedData) !== JSON.stringify(cachedStrippedData.current)) {
+      console.log('changing cachedStrippedData to ', strippedData);
+      cachedStrippedData.current = strippedData;
+    }
+    return cachedStrippedData.current;
+  }
 
   // let categorizedSaveDataMapping = {};
   // const saveData = useSaveData();
   // const saveData = getInitialRelevantsCategorized();
   // const saveData = getDefaultsCategorizedFor(getInitialVersion());
-  const getAll = useStoreGetAll();
-  const saveData = getAll();
-  console.log('PropsForm: saveData:', saveData);
+  
+  // const getAll = useStoreGetAll();
+  // const [_saveData, setAll] = useStoreSetAll((data) => data);
+  // const [saveDataStrippedVals, setAll] = useStoreSetAll((data) => data);
+  // const [_saveData, setAll] = useStoreSetAll((data) => Object.entries(data).map(([catId, catData]) => Object.keys(catData)));
+  // const [_saveData, setAll] = useStoreSetAll((data) => Object.fromEntries(Object.entries(data)));
+  // const [saveDataStrippedVals, setAll] = useStoreSetAll((data) => Object.fromEntries(Object.entries(data)
+  //                                                       .map(([cId, cData]) => [cId, Object.fromEntries(Object.entries(cData).map(([key,_]) => [key,null]))])));
+  // const saveData = getAll();
+  const [saveDataStrippedVals, setAll] = useStoreSetAll((data) => stripValsCached(data));
+  console.log('PropsForm: saveDataStrippedVals:', saveDataStrippedVals);
+  // return <></>;
 
   // for(const [keyBase, keyData] of Object.entries(saveData)) {
   // for (const data of saveData) {
@@ -98,7 +126,8 @@ function PropsForm() {
   // );
   return (
     <form id="saveForm">
-      {Object.entries(saveData).map(([categoryId, categoryKeysDataObj]) => (
+      {/* {Object.entries(saveData).map(([categoryId, categoryKeysDataObj]) => ( */}
+      {Object.entries(saveDataStrippedVals).map(([categoryId, categoryKeysDataObj]) => (
         <Category key={categoryId} categoryKey={categoryId}>
           {Object.entries(categoryKeysDataObj).map(([fullKey, value]) => (
             <Editor

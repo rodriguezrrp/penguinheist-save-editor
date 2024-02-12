@@ -8,7 +8,6 @@ import Card from './components/Card';
 import QuickActions from './components/QuickActions';
 import SaveDownloadButton from './components/SaveDownloadButton';
 
-import Counter from './components/Counter';
 import { VersionProvider } from './context/VersionContext';
 
 function App() {
@@ -32,7 +31,6 @@ function App() {
     //   </header>
     // </div>
     <>
-      <Counter />
       <VersionProvider>
         {/* <SaveDataProvider version={version}> */}
         {/* <span style={{'font-weight': 'bold'}}>Version: "{version}"</span> */}

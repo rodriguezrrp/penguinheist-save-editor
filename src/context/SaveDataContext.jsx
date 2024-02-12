@@ -82,6 +82,7 @@ export function useStore(selector) {
   // console.log(store);
   if(!store) throw new Error('store was not existing. Should be like { getAll, set, setAll, subscribe } functions');
   
+  // the arg getSnapshot's result is determined via the passed-in selector function
   const state = useSyncExternalStore(store.subscribe, () => selector(store.getAll()));
   return [state, store.set];
 }
@@ -97,6 +98,7 @@ export function useStoreSetAll(selector) {
   // console.log(store);
   if(!store) throw new Error('store was not existing. Should be like { getAll, set, setAll, subscribe } functions');
   
+  // the arg getSnapshot's result is determined via the passed-in selector function
   const state = useSyncExternalStore(store.subscribe, () => selector(store.getAll()));
   return [state, store.setAll];
 }
