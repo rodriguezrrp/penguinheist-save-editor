@@ -1,4 +1,5 @@
 // imports from json
+import { getKeyParts } from '../utils/keyUtils.js';
 import { VERSION_INFO as versionInfo } from './version_info.js'; // change to json eventually?
 const depotsInfo = require('./depots_info.json');
 /**
@@ -55,8 +56,13 @@ if(!versionRelevants['all']) {
     versionRelevants['all'] = [...s];
 }
 
-function getPropInfo(/**@type string*/keyBase) {
-    return mappedPropInfo[keyBase];
+const defaultCategory = "unknown";
+
+function getPropInfo(/**@type string*/fullKey) {
+    const [keyBase, ] = getKeyParts(fullKey);
+    // if there's no propInfo defined, default to a plain string editor, key as name, under the default category.
+    return mappedPropInfo[keyBase]
+            ?? {name: `@${fullKey}@`, category: defaultCategory, type: "string"};
 }
 
 /**
@@ -69,6 +75,7 @@ function getCategoryInfo(/**@type string*/categoryId) {
 console.log('data index.js: aggregated versionDefaults and versionRelevants from json')
 
 export {
+    defaultCategory,
     mappedCategoryInfo,
     mappedPropInfo,
     depotsInfo,

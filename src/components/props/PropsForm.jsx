@@ -5,7 +5,7 @@ import Category from "./Category";
 // import { partsToHtmlSafeKey } from "../../utils/keyUtils";
 import { Editor } from "./Editor";
 // import { getDefaultsCategorizedFor, getInitialVersion } from "../../utils/saveDataUtils";
-import { useStoreGetAll, useStoreSetAll } from "../../context/SaveDataContext";
+import { useStoreSetAll } from "../../context/SaveDataContext";
 import { useRef } from "react";
 
 

@@ -21,3 +21,26 @@ export function decodeSaveFile(saveDataStr, version) {
         })
     );
 }
+
+
+// encode to string, from Map or array of entries
+/**
+ * Encode to string, from Map or array of entries.
+ * - Note: Keys with undefined or null values will be skipped. Other types, including an empty string, will be encoded.
+ * @template V
+ * @param {Map<string,V> | [string,V][]} savePropsMap 
+ * @param {string} version 
+ */
+export function encodeSaveFile(savePropsMap, version) {
+    // No version-specific actions; currently all game versions (supported) have the same save file format!
+    let data = '';
+    for(const [fullKey, value] of Array.from(savePropsMap)) {
+        // Note: ALLOWING empty string '', for lists such as previousLoadout
+        if(typeof(value) === "undefined" || value === null) {
+            continue;
+        }
+        data += `@${fullKey}@${value}\n`;
+    }
+    // return new Blob([data], {type: 'text/*'});
+    return data;
+}

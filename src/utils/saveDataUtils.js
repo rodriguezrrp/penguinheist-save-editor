@@ -1,7 +1,5 @@
-import { mappedCategoryInfo, mappedPropInfo, versionDefaults, versionRelevants, getPropInfo } from '../data';
+import { defaultCategory, mappedCategoryInfo, mappedPropInfo, versionDefaults, versionRelevants, getPropInfo } from '../data';
 import { getKeyParts } from './keyUtils';
-
-export const defaultCategory = "unknown";
 
 if(!mappedCategoryInfo[defaultCategory]) {
     throw new Error(`Expecting default category "${defaultCategory}" in mapped category info!`)
@@ -12,19 +10,19 @@ export function getInitialVersion() {  // todo: could potentially read version f
     return 'vCHP_latest';
 }
 
-/**
- * @returns {Record<string, string>}
- */
-export function getInitialDefaults() {
-    return initialSaveDefaults;  // fabricated testing data
-    // return getDefaultsFor(getInitialVersion());
-}
+// /**
+//  * @returns {Record<string, string>}
+//  */
+// export function getInitialDefaults() {
+//     return initialSaveDefaults;  // fabricated testing data
+//     // return getDefaultsFor(getInitialVersion());
+// }
 
-export function getInitialRelevants() {
-    // return initialSaveRelevants;  // fabricated testing data
-    // return versionRelevants[getInitialVersion()];
-    return getRelevantsFor(getInitialVersion());
-}
+// export function getInitialRelevants() {
+//     // return initialSaveRelevants;  // fabricated testing data
+//     // return versionRelevants[getInitialVersion()];
+//     return getRelevantsFor(getInitialVersion());
+// }
 
 // export function getInitialRelevantsCategorized() {
 //     // return initialSaveRelevantsCategorized;
@@ -59,21 +57,21 @@ export function getDefaultsCategorizedFor(version) {
  * @param {string} version
  * @param {Map<string, string | undefined>
  *          | Record<string, string | undefined>
- *          | undefined} fileData
+ *          | undefined} fileDataMap
  */
-export function getCompleteCategorizedSaveDataFor(version, fileData) {
-    if(fileData) {
-        if(fileData instanceof Map) {
-            fileData = Object.fromEntries(fileData.entries());
+export function getCompleteCategorizedSaveDataFor(version, fileDataMap) {
+    if(fileDataMap) {
+        if(fileDataMap instanceof Map) {
+            fileDataMap = Object.fromEntries(fileDataMap.entries());
         }
     } else {
-        fileData = {};
+        fileDataMap = {};
     }
     /** @type {Record<string, string | undefined>} */
     let data = {
         ...Object.fromEntries(getRelevantsFor(version).map(key => [key, undefined])),
         ...getDefaultsFor(version),
-        ...fileData
+        ...fileDataMap
     };
     return categorizeSaveDataRecord(data);
 }
@@ -83,7 +81,7 @@ export function getCompleteCategorizedSaveDataFor(version, fileData) {
  * @param {Record<string, V>} saveData
  * @returns {Record<string, Record<string, V>>}
  */
-export function categorizeSaveDataRecord(saveData) {
+function categorizeSaveDataRecord(saveData) {
     // using Maps will keep insertion-order sorting by their nature in JS
     /** @type {Map<string, Map<string, string>>} */
     const categorized = new Map(Object.keys(mappedCategoryInfo).map(
@@ -93,9 +91,9 @@ export function categorizeSaveDataRecord(saveData) {
     // Set keeps insertion-order sorting by their nature in JS
     const deDupedDefaultsKeys = new Set(Object.keys(saveData));
     for(const fullKey of deDupedDefaultsKeys) {
-        const [keyBase, ] = getKeyParts(fullKey);
+        // const [keyBase, ] = getKeyParts(fullKey);
         // if property info doesn't exist, put in the default category
-        const category = getPropInfo(keyBase)?.category || defaultCategory;
+        const category = getPropInfo(fullKey)?.category || defaultCategory;
         // ensure categorized dict has the category in it, ready for mapping keys
         if(!categorized.has(category)) {
             throw new Error(`categorized map did not have category of id "${category}"`);
@@ -179,6 +177,16 @@ function categorizeRelevants(relevantKeysList) {
     ));
     console.log('categorize: restructured:', restructured);
     return restructured;
+}
+/**
+ * @template V
+ * @param {Record<string, Record<string, V>>} categorizedSaveDataRecord 
+ * @returns {Record<string, V>}
+ */
+export function decategorizeSaveData(categorizedSaveDataRecord) {
+    return Object.fromEntries(Object.entries(categorizedSaveDataRecord)
+                                .flatMap(([catId, catData]) => Object.entries(catData))
+    );
 }
 
 

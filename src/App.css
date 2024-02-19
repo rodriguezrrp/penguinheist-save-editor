@@ -1,3 +1,33 @@
+input[type="checkbox"].switch {
+	border-radius: 2em;
+	/* border: 1px solid red; */
+	appearance: none;
+	-webkit-appearance: none;
+	height: 1em;
+	width: 2em;
+	/* background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3E%3Ccircle r='3' fill='rgba(0, 0, 0, 0.25)'/%3E%3C/svg%3E"); */
+	/* background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3E%3Ccircle r='3' fill='rgba(0, 0, 0, 0.25)'/%3E%3C/svg%3E"); */
+	background-repeat: no-repeat;
+	background-position: 0;
+	border: 1px solid gray;
+	margin-top: .25em;
+  margin-bottom: 0;
+	/* transition: background-position .15s ease-in-out; */
+	/* background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath fill='none' stroke='%23777' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='m6 6 8 8 m0 -8 -8 8'/%3E%3C/svg%3E"); */
+	/* background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3E %3Ccircle r='3' fill='rgba(0, 0, 0, 0.25)'/%3E %3Cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1' d='m-1-1 2 2m0-2-2 2'/%3E%3C/svg%3E"); */
+	background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3E %3Ccircle r='3.3' fill='rgba(0, 0, 0, 0.25)'/%3E %3Cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1' d='m-1-1 2 2m0-2-2 2'/%3E%3C/svg%3E");
+}
+input[type="checkbox"].switch.unset {
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3E%3Ccircle r='3.3' fill='rgba(0, 0, 0, 0.25)'/%3E%3C/svg%3E");
+  background-position: 50%;
+}
+input[type="checkbox"].switch:checked {
+	background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='m6 10 3 3 6-6'/%3E%3C/svg%3E");
+	background-color: blue;
+	background-position: 100%;
+	/* background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='m6 6 8 8 m0 -8 -8 8'/%3E%3C/svg%3E"); */
+}
+
 .App {
   text-align: center;
 }
@@ -10,6 +40,9 @@
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
+  }
+  input[type="checkbox"].switch {
+  	transition: background-position .15s ease-in-out;
   }
 }
 
