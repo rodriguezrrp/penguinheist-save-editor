@@ -1,0 +1,692 @@
+{
+    "2": {
+        "name": "Banana Peel",
+        "imgname": "banana_peel.png",
+        "post_office": false
+    },
+    "3": {
+        "name": "Banana Gun",
+        "imgname": "banana_gun.png",
+        "post_office": false
+    },
+    "4": {
+        "name": "Baseball Bat",
+        "imgname": "baseball_bat.png",
+        "post_office": false
+    },
+    "5": {
+        "name": "Bazooka",
+        "imgname": "bazooka.png",
+        "post_office": false
+    },
+    "6": {
+        "name": "Briefcase",
+        "imgname": "briefcase.png",
+        "post_office": false
+    },
+    "7": {
+        "name": "Exploding Fish",
+        "imgname": "exploding_fish.png",
+        "post_office": false
+    },
+    "8": {
+        "name": "Frying Pan",
+        "imgname": "frying_pan.png",
+        "post_office": false
+    },
+    "10": {
+        "name": "Pistol Pistol",
+        "imgname": "pistol_pistol.png",
+        "post_office": false
+    },
+    "11": {
+        "name": "Iron Sword",
+        "imgname": "iron_sword.png",
+        "post_office": false
+    },
+    "12": {
+        "name": "Jetpack",
+        "imgname": "jetpack.png",
+        "post_office": false
+    },
+    "13": {
+        "name": "Pistol",
+        "imgname": "pistol.png",
+        "post_office": false
+    },
+    "14": {
+        "name": "Plush Penguin",
+        "imgname": "plush_penguin.png",
+        "post_office": false
+    },
+    "15": {
+        "name": "Huge Revolver",
+        "imgname": "huge_revolver.png",
+        "post_office": false
+    },
+    "16": {
+        "name": "Shotgun",
+        "imgname": "shotgun.png",
+        "post_office": false
+    },
+    "17": {
+        "name": "SMG",
+        "imgname": "smg.png",
+        "post_office": false
+    },
+    "18": {
+        "name": "Staff",
+        "imgname": "staff.png",
+        "post_office": false
+    },
+    "19": {
+        "name": "Stiff Fish",
+        "imgname": "stiff_fish.png",
+        "post_office": false
+    },
+    "20": {
+        "name": "Taser",
+        "imgname": "taser.png",
+        "post_office": false
+    },
+    "21": {
+        "name": "Void Gun",
+        "imgname": "void_gun.png",
+        "post_office": false
+    },
+    "22": {
+        "name": "Radio",
+        "imgname": "radio.png",
+        "post_office": false
+    },
+    "23": {
+        "name": "Drone",
+        "imgname": "drone.png",
+        "post_office": false
+    },
+    "24": {
+        "name": "C4",
+        "imgname": "c4.png",
+        "post_office": false
+    },
+    "25": {
+        "name": "Lockpick",
+        "imgname": "lockpick.png",
+        "post_office": false
+    },
+    "26": {
+        "name": "Katana",
+        "imgname": "katana.png",
+        "post_office": false
+    },
+    "27": {
+        "name": "Umbrella",
+        "imgname": "umbrella.png",
+        "post_office": false
+    },
+    "28": {
+        "name": "Pongus Cola",
+        "imgname": "pongus_cola.png",
+        "post_office": false
+    },
+    "29": {
+        "name": "Hang Glider",
+        "imgname": "hang_glider.png",
+        "post_office": false
+    },
+    "30": {
+        "name": "Hacking Pad",
+        "imgname": "hacking_pad.png",
+        "post_office": false
+    },
+    "31": {
+        "name": "First Aid Kit",
+        "imgname": "first_aid_kit.png",
+        "post_office": false
+    },
+    "32": {
+        "name": "Inflatable Walrus",
+        "imgname": "inflatable_walrus.png",
+        "post_office": false
+    },
+    "33": {
+        "name": "Shovel",
+        "imgname": "shovel.png",
+        "post_office": false
+    },
+    "34": {
+        "name": "Flamethrower",
+        "imgname": "flamethrower.png",
+        "post_office": false
+    },
+    "35": {
+        "name": "Blow Torch",
+        "imgname": "blow_torch.png",
+        "post_office": false
+    },
+    "36": {
+        "name": "Freeze Ray",
+        "imgname": "freeze_ray.png",
+        "post_office": false
+    },
+    "37": {
+        "name": "Fire Extinguisher",
+        "imgname": "fire_extinguisher.png",
+        "post_office": false
+    },
+    "38": {
+        "name": "Shuriken",
+        "imgname": "shuriken.png",
+        "post_office": false
+    },
+    "39": {
+        "name": "Firework",
+        "imgname": "firework.png",
+        "post_office": false
+    },
+    "40": {
+        "name": "Hot Pepper",
+        "imgname": "hot_pepper.png",
+        "post_office": false
+    },
+    "41": {
+        "name": "Throwing Knife",
+        "imgname": "throwing_knife.png",
+        "post_office": false
+    },
+    "42": {
+        "name": "Molotov",
+        "imgname": "molotov.png",
+        "post_office": false
+    },
+    "43": {
+        "name": "Bear Trap",
+        "imgname": "bear_trap.png",
+        "post_office": false
+    },
+    "44": {
+        "name": "Surstr\u00f6mming",
+        "imgname": "surstromming.png",
+        "post_office": false
+    },
+    "45": {
+        "name": "Laser Pointer",
+        "imgname": "laser_pointer.png",
+        "post_office": false
+    },
+    "46": {
+        "name": "Teleportation Gun",
+        "imgname": "teleportation_gun.png",
+        "post_office": false
+    },
+    "47": {
+        "name": "Energy Sword (Red)",
+        "imgname": "energy_sword_red.png",
+        "post_office": false
+    },
+    "48": {
+        "name": "Gravity Disruptor",
+        "imgname": "gravity_disruptor.png",
+        "post_office": false
+    },
+    "49": {
+        "name": "Mj\u00f6lnir",
+        "imgname": "mjolnir.png",
+        "post_office": false
+    },
+    "50": {
+        "name": "Crossbow",
+        "imgname": "crossbow.png",
+        "post_office": false
+    },
+    "51": {
+        "name": "Comically Large Spoon",
+        "imgname": "comically_large_spoon.png",
+        "post_office": false
+    },
+    "52": {
+        "name": "Ice Cream",
+        "imgname": "ice_cream.png",
+        "post_office": false
+    },
+    "53": {
+        "name": "Snowball",
+        "imgname": "snowball.png",
+        "post_office": false
+    },
+    "54": {
+        "name": "Minigun",
+        "imgname": "minigun.png",
+        "post_office": false
+    },
+    "55": {
+        "name": "Dynamite",
+        "imgname": "dynamite.png",
+        "post_office": false
+    },
+    "56": {
+        "name": "Slingshot",
+        "imgname": "slingshot.png",
+        "post_office": false
+    },
+    "57": {
+        "name": "Throwing Card",
+        "imgname": "throwing_card.png",
+        "post_office": false
+    },
+    "58": {
+        "name": "The One Ring",
+        "imgname": "the_one_ring.png",
+        "post_office": false
+    },
+    "59": {
+        "name": "Pongo Juice",
+        "imgname": "pongo_juice.png",
+        "post_office": false
+    },
+    "60": {
+        "name": "Khopesh",
+        "imgname": "khopesh.png",
+        "post_office": false
+    },
+    "61": {
+        "name": "Maki Roll",
+        "imgname": "maki_roll.png",
+        "post_office": false
+    },
+    "62": {
+        "name": "Laxatives",
+        "imgname": "laxatives.png",
+        "post_office": false
+    },
+    "63": {
+        "name": "Silver Sword",
+        "imgname": "silver_sword.png",
+        "post_office": false
+    },
+    "64": {
+        "name": "Magic Wand",
+        "imgname": "magic_wand.png",
+        "post_office": false
+    },
+    "65": {
+        "name": "The Silver Beak",
+        "imgname": "the_silver_beak.png",
+        "post_office": false
+    },
+    "66": {
+        "name": "Lantern",
+        "imgname": "lantern.png",
+        "post_office": false
+    },
+    "67": {
+        "name": "Flippercopter",
+        "imgname": "flippercopter.png",
+        "post_office": false
+    },
+    "68": {
+        "name": "Wings of Death",
+        "imgname": "wings_of_death.png",
+        "post_office": false
+    },
+    "69": {
+        "name": "Rocket Fist",
+        "imgname": "rocket_fist.png",
+        "post_office": false
+    },
+    "70": {
+        "name": "Pongy's Chili",
+        "imgname": "pongys_chili.png",
+        "post_office": false
+    },
+    "71": {
+        "name": "Can of Sardines",
+        "imgname": "can_of_sardines.png",
+        "post_office": false
+    },
+    "72": {
+        "name": "Swordfish",
+        "imgname": "swordfish.png",
+        "post_office": false
+    },
+    "73": {
+        "name": "Snub Nose Revolver",
+        "imgname": "snub_nose_revolver.png",
+        "post_office": false
+    },
+    "74": {
+        "name": "Pickaxe",
+        "imgname": "pickaxe.png",
+        "post_office": false
+    },
+    "75": {
+        "name": "Baguette",
+        "imgname": "baguette.png",
+        "post_office": false
+    },
+    "76": {
+        "name": "Boxing Gloves",
+        "imgname": "boxing_gloves.png",
+        "post_office": false
+    },
+    "77": {
+        "name": "Laser Pistol",
+        "imgname": "laser_pistol.png",
+        "post_office": false
+    },
+    "78": {
+        "name": "Lethal Injection",
+        "imgname": "lethal_injection.png",
+        "post_office": false
+    },
+    "79": {
+        "name": "Chainsaw",
+        "imgname": "chainsaw.png",
+        "post_office": false
+    },
+    "80": {
+        "name": "Axe",
+        "imgname": "axe.png",
+        "post_office": false
+    },
+    "81": {
+        "name": "Fairy Wand",
+        "imgname": "fairy_wand.png",
+        "post_office": false
+    },
+    "82": {
+        "name": "Air Cannon",
+        "imgname": "air_cannon.png",
+        "post_office": false
+    },
+    "83": {
+        "name": "Grenade",
+        "imgname": "grenade.png",
+        "post_office": false
+    },
+    "84": {
+        "name": "Silenced Pistol",
+        "imgname": "silenced_pistol.png",
+        "post_office": false
+    },
+    "85": {
+        "name": "Silenced SMG",
+        "imgname": "silenced_smg.png",
+        "post_office": false
+    },
+    "86": {
+        "name": "Energy Sword (Blue)",
+        "imgname": "energy_sword_blue.png",
+        "post_office": false
+    },
+    "87": {
+        "name": "Energy Sword (Green)",
+        "imgname": "energy_sword_green.png",
+        "post_office": false
+    },
+    "88": {
+        "name": "Firecrackers",
+        "imgname": "firecrackers.png",
+        "post_office": false
+    },
+    "89": {
+        "name": "Electrical Glove",
+        "imgname": "electrical_glove.png",
+        "post_office": false
+    },
+    "90": {
+        "name": "Chemistry Beaker",
+        "imgname": "chemistry_beaker.png",
+        "post_office": false
+    },
+    "93": {
+        "name": "Toaster",
+        "imgname": "toaster.png",
+        "post_office": false
+    },
+    "95": {
+        "name": "Flyswatter",
+        "imgname": "flyswatter.png",
+        "post_office": false
+    },
+    "96": {
+        "name": "Metal Claws",
+        "imgname": "metal_claws.png",
+        "post_office": false
+    },
+    "97": {
+        "name": "Flintlock Pistol",
+        "imgname": "flintlock_pistol.png",
+        "post_office": false
+    },
+    "98": {
+        "name": "Sleep Dart",
+        "imgname": "sleep_dart.png",
+        "post_office": false
+    },
+    "99": {
+        "name": "Potatogun",
+        "imgname": "potatogun.png",
+        "post_office": false
+    },
+    "100": {
+        "name": "Gavel",
+        "imgname": "gavel.png",
+        "post_office": false
+    },
+    "101": {
+        "name": "Dingus Soda",
+        "imgname": "dingus_soda.png",
+        "post_office": false
+    },
+    "102": {
+        "name": "Sniper Rifle",
+        "imgname": "sniper_rifle.png",
+        "post_office": false
+    },
+    "103": {
+        "name": "Tranquilizer Rifle",
+        "imgname": "tranquilizer_rifle.png",
+        "post_office": false
+    },
+    "104": {
+        "name": "Flashlight",
+        "imgname": "flashlight.png",
+        "post_office": false
+    },
+    "105": {
+        "name": "Spyglass",
+        "imgname": "spyglass.png",
+        "post_office": false
+    },
+    "106": {
+        "name": "Shrink Wand",
+        "imgname": "shrink_wand.png",
+        "post_office": false
+    },
+    "107": {
+        "name": "Megaphone",
+        "imgname": "megaphone.png",
+        "post_office": false
+    },
+    "108": {
+        "name": "Bokken",
+        "imgname": "bokken.png",
+        "post_office": false
+    },
+    "109": {
+        "name": "Gold Sword",
+        "imgname": "gold_sword.png",
+        "post_office": false
+    },
+    "110": {
+        "name": "The Butcher",
+        "imgname": "the_butcher.png",
+        "post_office": true
+    },
+    "111": {
+        "name": "Jetpack Flyer",
+        "imgname": "jetpack_flyer.png",
+        "post_office": true
+    },
+    "112": {
+        "name": "Delta Jet",
+        "imgname": "delta_jet.png",
+        "post_office": true
+    },
+    "113": {
+        "name": "Freeze Bomb",
+        "imgname": "freeze_bomb.png",
+        "post_office": true
+    },
+    "114": {
+        "name": "Healing Sphere",
+        "imgname": "healing_sphere.png",
+        "post_office": true
+    },
+    "115": {
+        "name": "Golden Gun",
+        "imgname": "golden_gun.png",
+        "post_office": true
+    },
+    "116": {
+        "name": "Stamper",
+        "imgname": "stamper.png",
+        "post_office": true
+    },
+    "117": {
+        "name": "Icicle",
+        "imgname": "icicle.png",
+        "post_office": true
+    },
+    "118": {
+        "name": "Fish Cannon",
+        "imgname": "fish_cannon.png",
+        "post_office": true
+    },
+    "119": {
+        "name": "Grenade Launcher",
+        "imgname": "grenade_launcher.png",
+        "post_office": true
+    },
+    "120": {
+        "name": "Glowstick",
+        "imgname": "glowstick.png",
+        "post_office": true
+    },
+    "121": {
+        "name": "Flare Gun",
+        "imgname": "flare_gun.png",
+        "post_office": true
+    },
+    "122": {
+        "name": "Tiger Saw",
+        "imgname": "tiger_saw.png",
+        "post_office": true
+    },
+    "123": {
+        "name": "Timmy Gun",
+        "imgname": "timmy_gun.png",
+        "post_office": true
+    },
+    "124": {
+        "name": "Flash Bang",
+        "imgname": "flash_bang.png",
+        "post_office": true
+    },
+    "125": {
+        "name": "Sword of the Flame",
+        "imgname": "sword_of_the_flame.png",
+        "post_office": true
+    },
+    "126": {
+        "name": "Staff of Plague",
+        "imgname": "staff_of_plague.png",
+        "post_office": true
+    },
+    "127": {
+        "name": "Glue Gun",
+        "imgname": "glue_gun.png",
+        "post_office": true
+    },
+    "128": {
+        "name": "Lightning Rod",
+        "imgname": "lightning_rod.png",
+        "post_office": true
+    },
+    "129": {
+        "name": "Zapper",
+        "imgname": "zapper.png",
+        "post_office": true
+    },
+    "130": {
+        "name": "Photographer's Camera",
+        "imgname": "photographers_camera.png",
+        "post_office": false
+    },
+    "131": {
+        "name": "Clown Horn",
+        "imgname": "clown_horn.png",
+        "post_office": false
+    },
+    "132": {
+        "name": "Strapped-On Explosive",
+        "imgname": "strapped-on_explosive.png",
+        "post_office": false
+    },
+    "133": {
+        "name": "Guandao",
+        "imgname": "Guandao.png",
+        "post_office": false
+    },
+    "134": {
+        "name": "Plasma Cutter",
+        "imgname": "Plasma Cutter.png",
+        "post_office": false
+    },
+    "135": {
+        "name": "Neuro Stunner",
+        "imgname": "Neuro Stunner.png",
+        "post_office": false
+    },
+    "136": {
+        "name": "Compact Explosive",
+        "imgname": "Compact Explosive.png",
+        "post_office": false
+    },
+    "137": {
+        "name": "Tactical Drone",
+        "imgname": "Tactical Drone.png",
+        "post_office": false
+    },
+    "138": {
+        "name": "Claymore Mine",
+        "imgname": "Claymore Mine.png",
+        "post_office": false
+    },
+    "139": {
+        "name": "Kunai",
+        "imgname": "Kunai.png",
+        "post_office": false
+    },
+    "140": {
+        "name": "Tanegashima",
+        "imgname": "Tanegashima.png",
+        "post_office": false
+    },
+    "141": {
+        "name": "Ostuchi",
+        "imgname": "Ostuchi.png",
+        "post_office": false
+    },
+    "142": {
+        "name": "Pengu-no-Uchiwa",
+        "imgname": "Pengu-no-Uchiwa.png",
+        "post_office": false
+    },
+    "143": {
+        "name": "Ranged Drone",
+        "imgname": "Ranged Drone.png",
+        "post_office": false
+    }
+}

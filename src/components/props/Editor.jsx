@@ -2,7 +2,7 @@ import { getKeyParts, partsToHtmlSafeKey } from "../../utils/keyUtils";
 import { useStore } from "../../context/SaveDataContext";
 import { useVersion } from "../../context/VersionContext";
 import { isEmptyOrNullOrUndefined, saveDataValueValidate } from "../../utils/validUtils";
-import { getPropInfo } from "../../data";
+import { getPropInfo, resolvePropInfoName } from "../../data";
 import { useState } from "react";
 
 // export function Editor({ keyBase, keyExtra, keyValue }) {
@@ -40,7 +40,8 @@ export function Editor({ categoryId, fullKey }) {
 
   const propInfo = getPropInfo(fullKey);
 
-  const propName = propInfo.name;
+  // const propName = propInfo.name;
+  const propName = resolvePropInfoName(propInfo, keyExtra);
 
   const version = useVersion(); // note this is causing a dependency on the version Context; should not be an issue for re-rendering
 

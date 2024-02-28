@@ -1,0 +1,19 @@
+{
+    "version_dependent": true,
+    "vHH_initial": {
+        "inherit": "_earliest_supported_value_list"
+    },
+    "vCHP_latest": {
+        "inherit": "_earliest_supported_value_list"
+    },
+    "_earliest_supported_value_list": {
+        "inherit": false,
+        "values": {
+            "0": "Retro",
+            "1": "Low",
+            "2": "Medium",
+            "3": "High",
+            "4": "Ultra"
+        }
+    }
+}
