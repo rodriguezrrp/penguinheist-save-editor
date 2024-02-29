@@ -1,6 +1,8 @@
 // This file is prefixed .mjs to have Node recognize it as a ES6 Module when running scripts in the utilityscripts folder
 // and be importable with dynamic import()
 
+export const listDelim = ' ';
+
 // Note: Unicode officially considers the regex options (\r\n|[\n\v\f\r\x85\u2028\u2029]) to be possible newlines.
 
 // decode to Map

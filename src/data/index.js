@@ -142,8 +142,9 @@ function resolvePropInfoName(propInfo, propKeyExtra) {
 
 
 function resolveDropdownFromPropInfo(propInfo, /**@type string*/ version) {
-    const type = propInfo.type;
     let propDropdownValues;
+    if(!propInfo) return propDropdownValues;
+    const type = propInfo.type;
     if(type === 'int-dropdown' || type === 'intlist') {
         // get the dropdown's values
         if(typeof(propInfo.dropdown) === "string") {
@@ -199,6 +200,7 @@ function resolveDropdown(dropdownRefName, version) {
     return vals1;
 }
 
+/** @returns {{id: string}} */
 function resolveDropdown_nameMapIfNeeded(dropdownMapResult) {
     /* If the result's .values is an array instead of an object (mapping),
         create an object (mapping) from the array using the name map to make key-value pairs.

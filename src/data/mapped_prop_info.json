@@ -27,7 +27,7 @@
         "category":"loadout",
         "name":"Loadout",
         "type":"intlist",
-        "dropdown":"dropdown-items",
+        "dropdown":"items",
         "default":2
     },
     "clothingOwned": {
@@ -41,7 +41,7 @@
         "name":"Equipped Clothing #{name}",
         "name_map":{"0":1,"1":2,"2":3,"3":4,"4":5,"5":6},
         "type":"int-dropdown",
-        "dropdown":"dropdown-clothing",
+        "dropdown":"clothing",
         "dropdown_extra":{"-1":"None"}
     },
     "clothingColor": {
@@ -54,7 +54,7 @@
         "category":"outfit",
         "name":"Skin",
         "type":"int-dropdown",
-        "dropdown":"dropdown-skins"
+        "dropdown":"skins"
     },
     "hasStructure": {
         "category":"structures",
@@ -112,7 +112,7 @@
         "category":"graphics",
         "name":"Graphics",
         "type":"int-dropdown",
-        "dropdown":"dropdown-graphics",
+        "dropdown":"graphics",
         "note":"Level of quality",
         "sort":false
     },
@@ -191,110 +191,110 @@
         "category":"controls",
         "name":"Forward",
         "type":"int-dropdown",
-        "dropdown":"dropdown-keybinds"
+        "dropdown":"keybinds"
     },
     "bck": {
         "category":"controls",
         "name":"Backward",
         "type":"int-dropdown",
-        "dropdown":"dropdown-keybinds"
+        "dropdown":"keybinds"
     },
     "lft": {
         "category":"controls",
         "name":"Left",
         "type":"int-dropdown",
-        "dropdown":"dropdown-keybinds"
+        "dropdown":"keybinds"
     },
     "rgt": {
         "category":"controls",
         "name":"Right",
         "type":"int-dropdown",
-        "dropdown":"dropdown-keybinds"
+        "dropdown":"keybinds"
     },
     "jmp": {
         "category":"controls",
         "name":"Jump",
         "type":"int-dropdown",
-        "dropdown":"dropdown-keybinds"
+        "dropdown":"keybinds"
     },
     "sld": {
         "category":"controls",
         "name":"Slide",
         "type":"int-dropdown",
-        "dropdown":"dropdown-keybinds"
+        "dropdown":"keybinds"
     },
     "use": {
         "category":"controls",
         "name":"Attack",
         "type":"int-dropdown",
-        "dropdown":"dropdown-keybinds"
+        "dropdown":"keybinds"
     },
     "aim": {
         "category":"controls",
         "name":"Aim",
         "type":"int-dropdown",
-        "dropdown":"dropdown-keybinds"
+        "dropdown":"keybinds"
     },
     "r_punch": {
         "category":"controls",
         "name":"Right Punch",
         "type":"int-dropdown",
-        "dropdown":"dropdown-keybinds"
+        "dropdown":"keybinds"
     },
     "l_punch": {
         "category":"controls",
         "name":"Left Punch",
         "type":"int-dropdown",
-        "dropdown":"dropdown-keybinds"
+        "dropdown":"keybinds"
     },
     "rld": {
         "category":"controls",
         "name":"Reload",
         "type":"int-dropdown",
-        "dropdown":"dropdown-keybinds"
+        "dropdown":"keybinds"
     },
     "dqp": {
         "category":"controls",
         "name":"De-equip",
         "type":"int-dropdown",
-        "dropdown":"dropdown-keybinds"
+        "dropdown":"keybinds"
     },
     "zoom": {
         "category":"controls",
         "name":"Zoom",
         "type":"int-dropdown",
-        "dropdown":"dropdown-keybinds",
+        "dropdown":"keybinds",
         "note":"Use Scope"
     },
     "pngsns": {
         "category":"controls",
         "name":"Penguin Sense",
         "type":"int-dropdown",
-        "dropdown":"dropdown-keybinds"
+        "dropdown":"keybinds"
     },
     "noot": {
         "category":"controls",
         "name":"Noot",
         "type":"int-dropdown",
-        "dropdown":"dropdown-keybinds"
+        "dropdown":"keybinds"
     },
     "int": {
         "category":"controls",
         "name":"Interact",
         "type":"int-dropdown",
-        "dropdown":"dropdown-keybinds"
+        "dropdown":"keybinds"
     },
     "cam": {
         "category":"controls",
         "name":"Camera",
         "type":"int-dropdown",
-        "dropdown":"dropdown-keybinds"
+        "dropdown":"keybinds"
     },
     "view": {
         "category":"controls",
         "name":"View Penguin",
         "type":"int-dropdown",
-        "dropdown":"dropdown-keybinds"
+        "dropdown":"keybinds"
     },
     "previousDay": {
         "category":"misc",
@@ -317,7 +317,7 @@
         "category":"settings",
         "name":"Server Region",
         "type":"int-dropdown",
-        "dropdown":"dropdown-region",
+        "dropdown":"region",
         "sort":false
     },
     "timerEnabled": {
@@ -352,6 +352,6 @@
         "category":"misc",
         "name":"Previous Heist",
         "type":"int-dropdown",
-        "dropdown":"dropdown-heists"
+        "dropdown":"heists"
     }
 }

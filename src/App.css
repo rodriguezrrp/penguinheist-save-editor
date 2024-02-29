@@ -10,7 +10,9 @@ input[type="checkbox"].switch {
 	background-repeat: no-repeat;
 	background-position: 0;
 	border: 1px solid gray;
-	margin-top: .25em;
+	/* margin-top: .25em; */
+  margin-top: 0;
+  vertical-align: middle;
   margin-bottom: 0;
 	/* transition: background-position .15s ease-in-out; */
 	/* background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath fill='none' stroke='%23777' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='m6 6 8 8 m0 -8 -8 8'/%3E%3C/svg%3E"); */
@@ -26,6 +28,15 @@ input[type="checkbox"].switch:checked {
 	background-color: blue;
 	background-position: 100%;
 	/* background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='m6 6 8 8 m0 -8 -8 8'/%3E%3C/svg%3E"); */
+}
+input[type="checkbox"].switch-lg {
+  font-size: 1.1em;
+}
+
+input[type="range"] {
+  margin-top: 0;
+  margin-bottom: 0;
+  vertical-align: middle;
 }
 
 .App {

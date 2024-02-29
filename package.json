@@ -25,7 +25,15 @@
     "extends": [
       "react-app",
       "react-app/jest"
-    ]
+    ],
+    "rules": {
+      "react/no-unstable-nested-components": [
+        "warn",
+        {
+          "allowAsProps": false
+        }
+      ]
+    }
   },
   "browserslist": {
     "production": [

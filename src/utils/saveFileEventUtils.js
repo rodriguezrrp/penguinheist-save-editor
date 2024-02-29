@@ -70,14 +70,14 @@ export function useSaveFileDownloader(saveDataObj, filename, version) {
         console.log('in dl useEffect: filename:', filename);
         console.log('in dl useEffect: version:', version);
         console.log('in dl useEffect: saveDataObj:', saveDataObj);
-        let isCancel = false;
+        // let isCancel = false;
         // let blob, elem, url;
         if(saveDataObj) {
             const blobStr = encodeSaveFile(Object.entries(saveDataObj), version);
             fileDownload(blobStr, filename, 'text/*');
         }
         return () => {
-            isCancel = true;
+            // isCancel = true;
         }
     }, [saveDataObj, filename, version]);
 }
