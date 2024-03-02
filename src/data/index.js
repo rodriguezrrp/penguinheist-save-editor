@@ -80,6 +80,8 @@ if(!versionRelevants['all']) {
 
 console.log('data index.js: aggregated versionDefaults and versionRelevants from json');
 
+// const supportedVersionsInfo = Object.fromEntries(Object.entries(versionInfo).filter(([version, info]) => info.supported));
+
 
 
 const defaultCategory = "unknown";
@@ -241,6 +243,7 @@ export {
     versionInfo,
     versionDefaults,
     versionRelevants,
+    // supportedVersionsInfo,
     getPropInfo,
     getCategoryInfo,
     resolvePropInfoName,

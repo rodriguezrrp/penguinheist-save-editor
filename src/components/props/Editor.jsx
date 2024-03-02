@@ -5,6 +5,8 @@ import { HEX_COL_PATTERN, isEmptyOrNullOrUndefined, saveDataValueValidate, saveT
 import { getPropInfo, resolveDropdownFromPropInfo, resolvePropInfoName } from "../../data";
 import { useState } from "react";
 import { listDelim } from "../../utils/saveFileEncodingUtils.mjs";
+import { handleKeyDown, handleMouseUp } from "../../utils/unityMapping";
+import stopEvent from "../../utils/stopEvent";
 
 // export function Editor({ keyBase, keyExtra, keyValue }) {
 // export function Editor({ keyBase, keyExtra }) {
@@ -131,6 +133,7 @@ function RichSingleValueEditor({ children, type, saveDataValue, handleValueUpdat
     ));
     dropdownOptions.unshift(<option value="" disabled></option>);
   }
+  const doInputRecord = (type === "int-dropdown" && propInfo.dropdown === 'keybinds');
 
   switch (type) {
     case "int":
@@ -154,12 +157,37 @@ function RichSingleValueEditor({ children, type, saveDataValue, handleValueUpdat
       break;
 
     case "int-dropdown":
-      inputElem = <select style={{width: "18vw"}}
-        onChange={e => handleValueUpdate(e.target.value)}
-        value={saveDataValue || ''}
-      >
-        {dropdownOptions}
-      </select>;
+      if(doInputRecord) {
+        // const unityCodeCallback = (ucode) => handleValueUpdate(ucode);
+        const unityCodeCallback = handleValueUpdate;
+
+        inputElem = <div style={{width: "18vw", display: "inline-block"}}>
+          <input
+            type="text"
+            placeholder="Record input"
+            title="Press any key or mouse click in this box to record its input ID. To exit, click out of this box."
+            onContextMenu={stopEvent}
+            onKeyDown={e => handleKeyDown(e, unityCodeCallback)}
+            onMouseUp={e => handleMouseUp(e, unityCodeCallback)}
+            style={{width: "calc(50% - 8px)"}} // TODO: move these inlined styles out!
+          />
+          <select style={{width: "50%"}}
+            onChange={e => handleValueUpdate(e.target.value)}
+            value={saveDataValue || ''}
+          >
+            {dropdownOptions}
+          </select>
+        </div>;
+      } else {
+        inputElem = <div style={{width: "18vw", display: "inline-block"}}>
+          <select style={{width: "100%"}}
+            onChange={e => handleValueUpdate(e.target.value)}
+            value={saveDataValue || ''}
+          >
+            {dropdownOptions}
+          </select>
+        </div>;
+      }
       break;
     
     case "float-range":
@@ -193,7 +221,10 @@ function RichSingleValueEditor({ children, type, saveDataValue, handleValueUpdat
     case "intlist":
       isList = true;
       inputElem = (
-        <ListEditorItems type={type} propInfo={propInfo} saveDataValue={saveDataValue} handleValueUpdate={handleValueUpdate}>
+        <ListEditorItems type={type} propInfo={propInfo}
+          saveDataValue={saveDataValue} handleValueUpdate={handleValueUpdate}
+          version={version}
+        >
           {children}
         </ListEditorItems>
       );
@@ -233,10 +264,20 @@ function saveValListToStr(/**@type {any[]|null|undefined}*/saveDataStrAsList) {
 
 // let listEditorIdCtr = 0;
 
-function ListEditorItems({ children, type, propInfo, saveDataValue, handleValueUpdate }) {
+function ListEditorItems({ children, type, propInfo, saveDataValue, handleValueUpdate, version }) {
   console.log("ListEditorItems created");
   console.log("ListEditorItems saveDataValue", saveDataValue);
-  const defaultNewValue = '';
+  const defaultNewValue = String(propInfo.default ?? '');
+
+  let itemDropdownOptions;
+  // TODO: useMemo on resolveDropdownFromPropInfo, or its resolveDropdown function call inside it?
+  let dropdownValues = resolveDropdownFromPropInfo(propInfo, version);
+  if(typeof(dropdownValues) === "object") {
+    itemDropdownOptions = Object.entries(dropdownValues).map(([optValue, optContents]) => (
+      <option value={optValue}>{optContents}</option>
+    ));
+    itemDropdownOptions.unshift(<option value="" disabled></option>);
+  }
 
   // const initialItems = (
   // // const calcInitialItems = (saveDataValue) => {
@@ -323,14 +364,27 @@ function ListEditorItems({ children, type, propInfo, saveDataValue, handleValueU
     // .map(substr => String(substr ?? ''))
     // ?.map((substr, ind) => {
     ?.map((substr, ind) => {
-      substr = String(substr ?? '');
+      //substr = String(substr ?? '');
+      let inputElem;
+      if(itemDropdownOptions) {
+        inputElem = <div style={{width: "18vw", display: "inline-block"}}>
+          <select style={{width: "100%"}}
+            onChange={e => handleUpdateItem(ind, e.target.value)}
+            value={substr}
+          >
+            {itemDropdownOptions}
+          </select>
+        </div>;
+      } else {
+        inputElem = <input
+          type="text"
+          value={substr}
+          onChange={e => handleUpdateItem(ind, e.target.value)}
+        />;
+      }
       return (
         <div key={ind} style={{display: "inline-block"}}>
-          <input
-            type="text"
-            value={substr}
-            onChange={e => handleUpdateItem(ind, e.target.value)}
-          />
+          {inputElem}
           <button type="button" title="Remove item" onClick={e => handleDeleteItem(ind)}>
             &mdash;
           </button>

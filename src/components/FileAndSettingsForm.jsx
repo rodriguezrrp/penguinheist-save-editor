@@ -1,8 +1,10 @@
 import { useState } from "react";
-import { useStoreGetAll, useStoreSetAll } from "../context/SaveDataContext";
+import { useStoreSetAll } from "../context/SaveDataContext";
 import { useSetVersion, useVersion } from "../context/VersionContext";
-import { decategorizeSaveData, getCompleteCategorizedSaveDataFor } from "../utils/saveDataUtils";
-import { useSaveFileDownloader, useSaveFileReader } from "../utils/saveFileEventUtils";
+import { getCompleteCategorizedSaveDataFor } from "../utils/saveDataUtils";
+import { useSaveFileReader } from "../utils/saveFileEventUtils";
+import { versionInfo } from "../data";
+import SaveDownloadButton from "./SaveDownloadButton";
 
 
 function FileAndSettingsForm({ version, setVersion }) {
@@ -26,16 +28,17 @@ function FileAndSettingsForm({ version, setVersion }) {
       <FileInput />
 
       <br/>
-      <TestSetSaveDataButton />
+      {/* <TestSetSaveDataButton /> */}
       {/* <br/>
       <TestSetEditorKeysButton /> */}
       <br/>
       <VersionSelect />
       <br/>
-      <TestGetSaveDataButton />
+      <SaveDownloadButton />
     </form>
   );
 }
+
 
 function FileInput() {
   // eslint-disable-next-line no-unused-vars
@@ -73,53 +76,31 @@ function FileInput() {
   );
 }
 
-function TestSetSaveDataButton() {
-  // eslint-disable-next-line no-unused-vars
-  const [allData, setAllData] = useStoreSetAll(v => null);  // a constant return from the callback prevents React re-rendering
-  console.log('TestSetSaveDataButton created');
+
+let _foundSupportedVersionYet = false;
+const versionOptions = Object.entries(versionInfo)
+.filter(([version, info]) => !info.hideindropdown)
+.map(([version, info]) => {
+  const isFirstSupportedFound = (!_foundSupportedVersionYet && info.supported);
+  _foundSupportedVersionYet = info.supported;
+  const unsupported = !info.supported;
   return (
-    <button type="button" onClick={e => {
-      // setAllData({money: 700, stamps: 30});
-      let saveDataObj = {money: 700, stamps: 30, nonexistentproperty: 200};
-      // console.log(categorizeSaveDataRecord(saveDataObj));
-      // setAllData(categorizeSaveDataRecord(saveDataObj));
-    }}>
-      manual setAll
-    </button>
+    <option
+      disabled={unsupported}
+      selected={isFirstSupportedFound}
+      value={version}
+    >
+      {info.long_name || info.name}
+      {unsupported && ' (unsupported)'}
+      {isFirstSupportedFound && ' (latest supported)'}
+    </option>
   );
-}
-
-// function TestSetEditorKeysButton() {
-//   return (
-//     <button type="button" onClick={e => {
-//       console.log('todo');
-//     }}>
-//       manual setEditorKeys
-//     </button>
-//   );
-// }
-function TestGetSaveDataButton() {
-  console.log('TestGetSaveDataButton created');
-  const getAllData = useStoreGetAll();
-  const [saveDataObj, setSaveDataObj] = useState(null);
-  const filename = 'testfilename.sav';
-  
-  const version = useVersion(); // creating dependency on version context
-
-  useSaveFileDownloader(saveDataObj, filename, version);
-
-  return (
-    <button type="button" onClick={e => {
-      const allData = getAllData();
-      console.log(allData);
-      const decategorized = decategorizeSaveData(allData);
-      console.log(decategorized);
-      setSaveDataObj(decategorized);
-    }}>
-      manual getAll & download
-    </button>
-  );
-}
+});
+versionOptions.unshift(
+  <option value="">
+    Unknown (assume all properties)
+  </option>
+)
 
 function VersionSelect() {
   const version = useVersion();
@@ -133,8 +114,12 @@ function VersionSelect() {
       set version vCHP_latest
     </button>
     <span>(current version: {version})</span>
+    <select value={version} onChange={e => setVersion(e.target.value)}>
+      {versionOptions}
+    </select>
   </>
   );
 }
+
 
 export default FileAndSettingsForm;
