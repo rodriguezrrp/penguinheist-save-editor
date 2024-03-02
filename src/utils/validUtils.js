@@ -1,4 +1,4 @@
-import { getPropInfo } from "../data";
+import { getPropInfo, resolveDropdownFromPropInfo, versionInfo } from "../data";
 import { partsToKey } from "./keyUtils";
 import { getRelevantsFor } from "./saveDataUtils";
 
@@ -121,13 +121,65 @@ export function saveDataValueValidate(editorValue, keyBase, keyExtra, version) {
                 result.warning = 'Expects the value to be a valid color! (R;G;B;A and each value is 0-1)';
                 result.validity = false;
             } else {
-                if(editorValue.match(HEX_COL_PATTERN)) result.value = hexToSave(editorValue);
+                if(editorValue.match(HEX_COL_PATTERN))
+                    // provide an alternate value
+                    result.value = hexToSave(editorValue);
                 result.validity = true;
             }
             break;
-        case "intlist":
-            break;
         case "int-dropdown":
+            // verify the new value is within the expected dropdown values (ex., cannot expect new items in an old version of the game)
+            result.validity = true;
+            if(version) {
+                let dropdownValuesForVersion = resolveDropdownFromPropInfo(propInfo, version);
+                if(!dropdownValuesForVersion[editorValue]) {
+                    result.warning = `Selected save version does not expect the value "${editorValue}"`;
+                    result.validity = false;
+                }
+            }
+            break;
+        case "intlist":
+            result.validity = true;
+            // allow empty list '', and consider undefined as an empty list also
+            if((editorValue!=='' && typeof(editorValue)!=="undefined")) {
+                if (editorValue.split(' ').some(v=>!isInt(v))) {
+                    result.warning = 'Expects whole numbers in every position in the list (space-separated)!'
+                    result.validity = false;
+                } else {
+                    // check if loadout size is valid (this is a key-specific check)
+                    if(fullKey === 'previousLoadout') {
+                        let lsize = getMaxLoadoutSize(version);
+                        if(lsize && editorValue.split(' ').length > lsize) {
+                            result.warning = `Loadout list cannot hold more than ${lsize} items, in selected version!`
+                            result.validity = false;
+                        }
+                    }
+                    // check if all values in the list are allowed
+                    if(propInfo.dropdown) {
+                        console.error('TODO: check if all values from dropdowns in intlist are allowed');
+                        console.log('editorValue:', editorValue);
+                        let dropdownValues = version ? resolveDropdownFromPropInfo(propInfo, version) : null;
+                        // combine into two arrays, one array for each saveType, reduced by concatenating missing elems elementwise.
+                        // each saveType's array contains all keys that were not in its accepted dropdown values.
+                        let keysMissingFrom1 = editorValue.split(' ').map((listitem) => (
+                            dropdownValues && !dropdownValues.hasOwnProperty(listitem)
+                                ? listitem : undefined
+                        )).reduce((accumValue, curValue) => (
+                            // // AND elementwise (side effect: turns undefined into false!)
+                            // accumValue && curValue,
+                            // accumValue[1] && curValue[1]
+                            // include elements that were missing elementwise
+                            curValue ? accumValue.concat(curValue) : accumValue
+                        ), []); // start reduce with empty array
+                        // provide validation messages
+                        if(dropdownValues && keysMissingFrom1.length > 0) {
+                            let pluralize = keysMissingFrom1.length !== 1;
+                            result.warning = `Value${pluralize?'s':''} ${keysMissingFrom1.join(', ')} ${pluralize?'are':'is'} not expected for selected version!`
+                            result.validity = false;
+                        }
+                    }
+                }
+            }
             break;
         case "string":
             result.validity = true;
@@ -146,4 +198,49 @@ export function saveDataValueValidate(editorValue, keyBase, keyExtra, version) {
     // return true;
     // const propInfo = getPropInfo(keyBase);
     return result;
+}
+
+
+
+// TODO: do test cases on this function!
+// console.error('TODO: do test cases on _isValidVersion!');
+function _isValidVersion(v) {
+    return versionInfo.hasOwnProperty(v);
+}
+
+// TODO: do test cases on this function!
+// console.error('TODO: do test cases on compareVersion!');
+function compareVersion(v1, v2) {
+    // if([v1, v2].some(v=>!_isValidVersion(v))) {
+    //     let _failedVs = (_isValidVersion(v1)?[]:['v1']).concat(_isValidVersion(v2)?[]:['v2']);
+    //     throw new TypeError(`compareVersion: ${_failedVs.join(', ')} must be valid version ids!`);
+    // }
+    if(!_isValidVersion(v1)) {
+        console.info(`compareVersion: v1 "${v1}" was not a valid version id!`);
+        return null;
+    }
+    if(!_isValidVersion(v2)) {
+        console.info(`compareVersion: v2 "${v2}" was not a valid version id!`);
+        return null;
+    }
+    let diff = versionInfo[v1].steamdb_buildid - versionInfo[v2].steamdb_buildid;
+    if(isNaN(diff)) {
+        // let _missingBID = (versionInfo[v1].steamdb_buildid?[]:['v1']).concat(versionInfo[v2].steamdb_buildid?[]:['v2']);
+        // throw new Error(`compareVersion: ${_missingBID.join(', ')} must have a valid steamdb_buildid property in versionInfo!`);
+        if(!(versionInfo[v1].steamdb_buildid))
+            console.info(`compareVersion: v1 "${v1}" did not have a valid steamdb_buildid property in versionInfo!`);
+        if(!(versionInfo[v2].steamdb_buildid))
+            console.info(`compareVersion: v2 "${v2}" did not have a valid steamdb_buildid property in versionInfo!`);
+        return null;
+    }
+    return diff;
+}
+
+function getMaxLoadoutSize(version) {
+    if(typeof(version) === "undefined" || version === null) {
+        return null;
+    }
+    // compareVersion returns positive when the first version is later than the second version.
+    // therefore, when version is Post Office or later, the loadout size is 8. That's when it was upgraded.
+    return compareVersion(version, 'vP') >= 0 ? 8 : 6;
 }
