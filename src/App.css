@@ -10,9 +10,9 @@ input[type="checkbox"].switch {
 	background-repeat: no-repeat;
 	background-position: 0;
 	border: 1px solid gray;
-	/* margin-top: .25em; */
-  margin-top: 0;
-  vertical-align: middle;
+	margin-top: .25em;
+  /* margin-top: 0; */
+  /* vertical-align: middle; */
   margin-bottom: 0;
 	/* transition: background-position .15s ease-in-out; */
 	/* background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath fill='none' stroke='%23777' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='m6 6 8 8 m0 -8 -8 8'/%3E%3C/svg%3E"); */
@@ -32,12 +32,56 @@ input[type="checkbox"].switch:checked {
 input[type="checkbox"].switch-lg {
   font-size: 1.1em;
   /* font-size: 100%; */
+  margin-top: .125em;
+}
+input[type="color"] {
+  /* making it match heights of the other nearby inputs */
+  padding: 1px;
+  height: 22px;
 }
 
 input[type="range"] {
   margin-top: 0;
   margin-bottom: 0;
-  vertical-align: middle;
+  /* vertical-align: middle; */
+}
+
+summary.category-title-row {
+  cursor: pointer;
+  padding-left: 4px;
+  background: linear-gradient(5deg,#fff,#bbb);
+  font-weight: 700;
+  font-size: large;
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
+summary.category-title-row:not(:has(+ div > .editor-row)) {
+  /* opacity: 0.5; */
+  color: gray;
+}
+
+summary::before {
+	/* content: "\f285"; */
+	/* float: left; */
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-chevron-right' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708'/%3E%3C/svg%3E");
+	width: 1em;
+	height: 1em;
+	display: inline-block;
+}
+summary::marker, summary::-webkit-details-marker {
+	content: none;
+}
+summary > svg.category-icon {
+	/* vertical-align: -.125em; */
+	width: 1em;
+	height: 1em;
+	/* vertical-align: unset; */
+	height: .8em;
+	font-weight: 400;
+	line-height: 1;
+}
+details[open] > summary > svg.category-icon {
+	transform: rotate(90deg);
 }
 
 .editor-row:hover, .editor-row:has(:focus) {
@@ -49,16 +93,36 @@ input[type="range"] {
 .editor-row {
   padding-top: 1px;
   padding-bottom: 1px;
+  display: flex;
 }
 
-summary.category-title-row {
-  cursor: pointer;
-  padding-left: 4px;
-  background: linear-gradient(5deg,#fff,#bbb);
-  font-weight: 700;
-  font-size: large;
+.propname-container {
   padding-top: 1px;
+  margin-top: -1px;
   padding-bottom: 1px;
+  margin-bottom: -1px;
+}
+/* .propname-container:hover > .propname-fullkey {
+  display: block;
+} */
+.propname-fullkey {
+  /* display: none; */
+  color: #777;
+  font-size: 0.9em;
+}
+
+span.validation-ind {
+  display: inline-block;
+  width: 2rem;
+}
+.validation-ind.unused {
+  color: gray;
+}
+.validation-ind.accepted {
+  color: green;
+}
+.validation-ind.warning {
+  color: red;
 }
 
 .App {
@@ -76,6 +140,15 @@ summary.category-title-row {
   }
   input[type="checkbox"].switch {
   	transition: background-position .15s ease-in-out;
+  }
+  .propname-container:hover > .propname-fullkey {
+    display: block;
+  }
+  .propname-fullkey {
+    display: none;
+  }
+  summary > svg.category-icon {
+    /* transition: transform .2s ease-in-out; */
   }
 }
 

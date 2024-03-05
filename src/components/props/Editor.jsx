@@ -8,34 +8,12 @@ import { listDelim } from "../../utils/saveFileEncodingUtils.mjs";
 import { handleKeyDown, handleMouseUp } from "../../utils/unityMapping";
 import stopEvent from "../../utils/stopEvent";
 
-// export function Editor({ keyBase, keyExtra, keyValue }) {
-// export function Editor({ keyBase, keyExtra }) {
 export function Editor({ categoryId, fullKey }) {
   const [keyBase, keyExtra] = getKeyParts(fullKey);
-  // console.log(`Editor created keyBase ${keyBase} keyExtra ${keyExtra}`);
   console.log(`Editor created "${keyBase}" "${keyExtra}"`);
 
   const htmlSafeKey = partsToHtmlSafeKey(keyBase, keyExtra);
-  // const spacedKey = partsToKey(keyBase, keyExtra);
-  
-  // const dispatch = useSaveDataDispatch();
-  // return (
-  //   <div>
-  //     <span>keyBase {keyBase} - keyExtra {keyExtra} - value {keyValue}</span>
-  //     <br/>
-  //     <input
-  //       value={keyValue}
-  //       onChange={e => {
-  //         dispatch({
-  //           type: 'edit',
-  //           keyBase: keyBase,
-  //           keyExtra: keyExtra,
-  //           newValue: e.target.value
-  //         });
-  //       }}
-  //     />
-  //   </div>
-  // );
+
   const [saveDataValue, setSaveData] = useStore((store) => {//console.log('key: '+spacedKey+' store:',store);
                                                             // return store[spacedKey]});
                                                             return store[categoryId][fullKey]});
@@ -52,70 +30,78 @@ export function Editor({ categoryId, fullKey }) {
   // https://react.dev/reference/react/useState#avoiding-recreating-the-initial-state
   let _initialValidityResult = saveDataValueValidate(saveDataValue, keyBase, keyExtra, version);
   
-  const [validity, setValidity] = useState(_initialValidityResult.validity);
-  const [warning, setWarning] = useState(_initialValidityResult.warning);  // Note: may expand warnings into its own store? or incorporate warnings into value store?
+  // const validity = useState(/**@type {boolean | null}*/null);
+  // const warning = useState(/**@type {string | null}*/null);  // Note: may expand warnings into its own store? or incorporate warnings into value store?
   
+  const { validity, warning } = _initialValidityResult;
+
+  // setValidity(_initialValidityResult.validity);
+  // setWarning(_initialValidityResult.warning);
+
   // Note: may cache this later with useCallback(...) (or useMemo(...)?) for optimization
   const handleValueUpdate = (editorsValue) => {
     const result = saveDataValueValidate(editorsValue, keyBase, keyExtra, version);
     const validatedValue = result.value;
-    setValidity(result.validity);
-    setWarning(result.warning);
+    // setValidity(result.validity);
+    // setWarning(result.warning);
     setSaveData(categoryId, fullKey, validatedValue);
   };
   
   return (
     <div id={'editorRow-'+htmlSafeKey} className="editor-row">
-      {/* <span style={{display:'inline-block',width:'40vw'}}>keyBase {keyBase} - keyExtra {keyExtra}</span> */}
-      <span style={{display:'inline-block',width:'40vw'}}>"{propName}" @{fullKey}@</span>
+      <SinglePropName propName={propName} fullKey={fullKey} />
       
-      {/* <span style={{display:'inline-block',width:'2rem',color:(isValid===null?'gray':isValid?'green':'red')}}>{isValid===null?'∅':isValid?'✔':'✘'}</span> */}
-      <span style={{display:'inline-block',width:'2rem',
-                    color:(validity===null?'gray':validity?'green':'red')}}
-        title={warning}
-      >
-        {validity===null?'∅':validity?'✔':'✘'}
-      </span>
+      <ValidationIndicator validity={validity} warning={warning} />
 
-      {/* <input
-        type="text"
-        value={saveDataValue ?? ''} // the '' is to keep the input "controlled" in React, in case saveDataValue isn't provided (null or undefined)
-        onChange={e => handleValueUpdate(e.target.value)}
-      /> */}
-      <RichSingleValueEditor type={propInfo.type} propInfo={propInfo} version={version}
-        saveDataValue={saveDataValue} handleValueUpdate={handleValueUpdate}
-      >
-        <button type="button"
-          // disabled={saveDataValue === '' || saveDataValue === null || typeof(saveDataValue) === "undefined"}
-          disabled={isEmptyOrNullOrUndefined(saveDataValue)}
-          onClick={e => handleValueUpdate(undefined)}
-          title="Erase property's value"
+      <div style={{display: 'inline-block'}}>
+        <RichSingleValueEditor type={propInfo.type} propInfo={propInfo} version={version}
+          saveDataValue={saveDataValue} handleValueUpdate={handleValueUpdate}
         >
-          X
-        </button>
+          <button type="button"
+            disabled={isEmptyOrNullOrUndefined(saveDataValue)}
+            onClick={e => handleValueUpdate(undefined)}
+            title="Erase property's value"
+          >
+            X
+          </button>
 
-        <input
-          type="text"
-          disabled
-          readOnly={true}
-          value={saveDataValue ?? ''} /* the '' is to keep the input "controlled" in React incase saveDataValue isn't provided */
-          // onChange={e => {
-          //   setSaveData(categoryId, fullKey, e.target.value)
-          // }}
-          placeholder="No value"
-          title="Raw value in save file"
-        />
-      </RichSingleValueEditor>
+          <input
+            type="text"
+            disabled
+            readOnly={true}
+            value={saveDataValue ?? ''} /* the '' is to keep the input "controlled" in React in case saveDataValue isn't provided */
+            placeholder="No value"
+            title="Raw value in save file"
+          />
+        </RichSingleValueEditor>
 
-      <span> {propInfo.type}</span>
+        <span> {propInfo.type}</span>
+      </div>
     </div>
-  )
+  );
+}
 
-  // return <div id={'editorRow-'+htmlSafeKey} className="editor-row">
-  //   <RichEditor type={} version={} otherstufflalalala={} />
-  //   <erasorbuttonhere/>
-  //   <RawEditorView value={} />
-  // </div>
+function SinglePropName({ propName, fullKey }) {
+  // console.log('SinglePropName created');
+  return (
+    <div className="propname-container" style={{display:'inline-block',width:'40vw'}}>
+      <span>{propName}</span>
+      <div className="propname-fullkey">
+        <span> @{fullKey}@</span>
+      </div>
+    </div>
+  );
+}
+
+function ValidationIndicator({ /**@type {boolean | null}*/ validity, /**@type {string | null}*/ warning }) {
+  // console.log('ValidationIndicator created');
+  return (
+    <span className={"validation-ind"+(validity===null?" unused":validity?" accepted":" warning")}
+      title={warning}
+    >
+      {validity===null?'∅':validity?'✔':'✘'}
+    </span>
+  );
 }
 
 
@@ -262,8 +248,6 @@ function saveValListToStr(/**@type {any[]|null|undefined}*/saveDataStrAsList) {
   return saveDataStrAsList?.join(listDelim);
 }
 
-// let listEditorIdCtr = 0;
-
 function ListEditorItems({ children, type, propInfo, saveDataValue, handleValueUpdate, version }) {
   console.log("ListEditorItems created");
   console.log("ListEditorItems saveDataValue", saveDataValue);
@@ -271,6 +255,7 @@ function ListEditorItems({ children, type, propInfo, saveDataValue, handleValueU
 
   let itemDropdownOptions;
   // TODO: useMemo on resolveDropdownFromPropInfo, or its resolveDropdown function call inside it?
+  // let dropdownValues;
   let dropdownValues = resolveDropdownFromPropInfo(propInfo, version);
   if(typeof(dropdownValues) === "object") {
     itemDropdownOptions = Object.entries(dropdownValues).map(([optValue, optContents]) => (
@@ -279,44 +264,13 @@ function ListEditorItems({ children, type, propInfo, saveDataValue, handleValueU
     itemDropdownOptions.unshift(<option value="" disabled></option>);
   }
 
-  // const initialItems = (
-  // // const calcInitialItems = (saveDataValue) => {
-  // //   console.log('calcInitialItems');
-  // //   return (
-  //     typeof(saveDataValue)==="string" ? saveDataValue.split(listDelim)
-  //     : (saveDataValue && Array.isArray(saveDataValue)) ? saveDataValue
-  //     : []
-  //   ).map(
-  //     (v) => ({ id: listEditorIdCtr++, value: v })
-  //   );
-  // // }
-  // const [items, setItems] = useState(initialItems);
-  // const [items, setItems] = useState(calcInitialItems(saveDataValue));
-  // const items = useMemo(() => calcInitialItems(saveDataValue), [saveDataValue]);
-
-  // function setItems(i) {items = i}
-  // function setItems(i) {} // TODO REMOVE THIS as state is being passed in via saveDataValue instead
-
-  // function setItemsAndUpdate(items) {
-  //   // setItems(items);
-  //   handleValueUpdate(items.map(item => item.value)
-  //                 // .filter(v => v!=="" && v!==null && typeof(v)!=="undefined")
-  //                 .join(' '));
-  // }
-
   function handleAddItem(newValue) {
-    // setItemsAndUpdate([
-    //   ...items,
-    //   { id: listEditorIdCtr++, value: newValue }
-    // ]);
     handleValueUpdate(saveDataValue===null || typeof(saveDataValue)==="undefined"
                       ? newValue // replacing the nullish previous value with a single newValue
                       : saveDataValue + listDelim + newValue);
   }
 
-  // function handleDeleteItem(itemId) {
   function handleDeleteItem(ind) {
-    // setItemsAndUpdate(items.filter((item) => item.id !== itemId));
     let asArr = saveValStrToList(saveDataValue);
     if(!Array.isArray(asArr)) {
       console.error('When trying to handle delete, asArr was not an array! Performing NO ACTION.');
@@ -328,9 +282,7 @@ function ListEditorItems({ children, type, propInfo, saveDataValue, handleValueU
     handleValueUpdate(saveValListToStr(asArr.filter((v, i) => i !== ind)));
   }
 
-  // function handleUpdateItem(itemId, newValue) {
   function handleUpdateItem(ind, newValue) {
-    // setItemsAndUpdate(items.map((item) => (item.id === itemId ? { id: item.id, value: newValue } : item)));
     let asArr = saveValStrToList(saveDataValue);
     if(!Array.isArray(asArr)) {
       console.error('When trying to handle delete, asArr was not an array! Performing NO ACTION.');
@@ -343,59 +295,48 @@ function ListEditorItems({ children, type, propInfo, saveDataValue, handleValueU
     handleValueUpdate(saveValListToStr(asArr));
   }
 
-  return <div style={{display: "inline-grid"}}>
-    {/* <span>id ctr {listEditorIdCtr}</span> */}
-    {/* {items.map(item => (
-      <div key={item.id} style={{display: "inline-block"}}>
-        <input
-          type="text"
-          value={item.value}
-          onChange={e => handleUpdateItem(item.id, e.target.value)}
-        />
-        <button type="button" title="Remove item" onClick={e => handleDeleteItem(item.id)}>
-          &mdash;
-        </button>
-      </div>
-    ))} */}
-    {
-    // saveDataValue
-    saveValStrToList(saveDataValue)
-    // ?.split(' ')
-    // .map(substr => String(substr ?? ''))
-    // ?.map((substr, ind) => {
-    ?.map((substr, ind) => {
-      //substr = String(substr ?? '');
-      let inputElem;
-      if(itemDropdownOptions) {
-        inputElem = <div style={{width: "18vw", display: "inline-block"}}>
-          <select style={{width: "100%"}}
-            onChange={e => handleUpdateItem(ind, e.target.value)}
+  return (
+    <div style={{display: "inline-grid"}}>
+      {
+      // saveDataValue
+      saveValStrToList(saveDataValue)
+      // ?.split(' ')
+      // .map(substr => String(substr ?? ''))
+      // ?.map((substr, ind) => {
+      ?.map((substr, ind) => {
+        //substr = String(substr ?? '');
+        let inputElem;
+        if(itemDropdownOptions) {
+          inputElem = <div style={{width: "18vw", display: "inline-block"}}>
+            <select style={{width: "100%"}}
+              onChange={e => handleUpdateItem(ind, e.target.value)}
+              value={dropdownValues?.hasOwnProperty(substr) ? substr : ''}
+            >
+              {itemDropdownOptions}
+            </select>
+          </div>;
+        } else {
+          inputElem = <input
+            type="text"
             value={substr}
-          >
-            {itemDropdownOptions}
-          </select>
-        </div>;
-      } else {
-        inputElem = <input
-          type="text"
-          value={substr}
-          onChange={e => handleUpdateItem(ind, e.target.value)}
-        />;
-      }
-      return (
-        <div key={ind} style={{display: "inline-block"}}>
-          {inputElem}
-          <button type="button" title="Remove item" onClick={e => handleDeleteItem(ind)}>
-            &mdash;
-          </button>
-        </div>
-      );
-    })}
-    <div style={{display: "inline-block"}}>
-      <button type="button" title="Add item" onClick={e => handleAddItem(defaultNewValue)}>
-        +
-      </button>
-      {children}
+            onChange={e => handleUpdateItem(ind, e.target.value)}
+          />;
+        }
+        return (
+          <div key={ind} style={{display: "inline-block"}}>
+            {inputElem}
+            <button type="button" title="Remove item" onClick={e => handleDeleteItem(ind)}>
+              &mdash;
+            </button>
+          </div>
+        );
+      })}
+      <div style={{display: "inline-block"}}>
+        <button type="button" title="Add item" onClick={e => handleAddItem(defaultNewValue)}>
+          +
+        </button>
+        {children}
+      </div>
     </div>
-  </div>;
+  );
 }

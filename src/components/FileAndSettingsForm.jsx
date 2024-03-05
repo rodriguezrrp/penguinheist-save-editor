@@ -114,9 +114,13 @@ function VersionSelect() {
       set version vCHP_latest
     </button>
     <span>(current version: {version})</span>
-    <select value={version} onChange={e => setVersion(e.target.value)}>
-      {versionOptions}
-    </select>
+    <br/>
+    <label>
+      Version:&nbsp;
+      <select value={version} onChange={e => setVersion(e.target.value)}>
+        {versionOptions}
+      </select>
+    </label>
   </>
   );
 }
