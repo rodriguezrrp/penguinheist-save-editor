@@ -16,14 +16,16 @@ export default function SaveDownloadButton() {
   useSaveFileDownloader(saveDataObjForDL, filename, version);
 
   return (
-    <button type="button" onClick={e => {
-      const allData = getAllData();
-      console.log(allData);
-      const decategorized = decategorizeSaveData(allData);
-      console.log(decategorized);
-      setSaveDataObjForDL(decategorized);
-    }}>
-      Download as Save File
-    </button>
+    <div className="download-button-row">
+      <button type="button" onClick={e => {
+        const allData = getAllData();
+        console.log(allData);
+        const decategorized = decategorizeSaveData(allData);
+        console.log(decategorized);
+        setSaveDataObjForDL(decategorized);
+      }}>
+        Download as Save File
+      </button>
+    </div>
   );
 }

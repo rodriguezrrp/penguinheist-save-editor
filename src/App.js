@@ -9,6 +9,7 @@ import QuickActions from './components/QuickActions';
 import SaveDownloadButton from './components/SaveDownloadButton';
 
 import { VersionProvider } from './context/VersionContext';
+import { SliderWithCardIconClass } from './components/svgs/Icons';
 
 function App() {
   // const [ version, setVersion ] = useState('');
@@ -38,13 +39,16 @@ function App() {
           {/* <PropListProvider> */}
 
             <Card>
+              <h1>__&nbsp;Upload and Configure Save File(?)</h1>
               {/* <FileAndSettingsForm version={version} setVersion={setVersion}/> */}
               <FileAndSettingsForm />
             </Card>
             <Card>
+              <h1>__&nbsp;Downgrading Info</h1>
               <DowngradingInfo />
             </Card>
             <Card>
+              <h1><SliderWithCardIconClass />&nbsp;Edit Properties</h1>
               <QuickActions />
               <PropsForm />
               <SaveDownloadButton />
