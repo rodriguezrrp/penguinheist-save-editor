@@ -244,3 +244,35 @@ function getMaxLoadoutSize(version) {
     // therefore, when version is Post Office or later, the loadout size is 8. That's when it was upgraded.
     return compareVersion(version, 'vP') >= 0 ? 8 : 6;
 }
+
+export function versionHasStamps(version) {
+    if(typeof(version) === "undefined" || version === null) {
+        return null;
+    }
+    // stamps were introduced in Post Office update
+    return compareVersion(version, 'vP') >= 0;
+}
+
+export function versionHasStructures(version) {
+    if(typeof(version) === "undefined" || version === null) {
+        return null;
+    }
+    // structures were replaced with blueprints in Blueprint update
+    return compareVersion(version, 'vBP') < 0;
+}
+
+export function versionHasBlueprints(version) {
+    if(typeof(version) === "undefined" || version === null) {
+        return null;
+    }
+    // structures were replaced with blueprints in Blueprint update
+    return compareVersion(version, 'vBP') >= 0;
+}
+
+export function versionHasLockableHeists(version) {
+    if(typeof(version) === "undefined" || version === null) {
+        return null;
+    }
+    // heists became progression-locked in the Heist Planner patch update
+    return compareVersion(version, 'vCHP_initial') >= 0;
+}

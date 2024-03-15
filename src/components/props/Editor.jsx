@@ -45,6 +45,25 @@ export function Editor({ categoryId, fullKey }) {
     // setWarning(result.warning);
     setSaveData(categoryId, fullKey, validatedValue);
   };
+
+  const eraseBtn = <button type="button"
+    className="editor-erase-button"
+    disabled={isEmptyOrNullOrUndefined(saveDataValue)}
+    onClick={e => handleValueUpdate(undefined)}
+    title="Erase property's value"
+  >
+    X
+  </button>;
+
+  const rawEditor = <input
+    type="text"
+    className="raw-editor"
+    disabled
+    readOnly={true}
+    value={saveDataValue ?? ''} /* the '' is to keep the input "controlled" in React in case saveDataValue isn't provided */
+    placeholder="No value"
+    title="Raw value in save file"
+  />;
   
   return (
     <div id={'editorRow-'+htmlSafeKey} className="editor-row">
@@ -56,25 +75,13 @@ export function Editor({ categoryId, fullKey }) {
         <RichSingleValueEditor type={propInfo.type} propInfo={propInfo} version={version}
           saveDataValue={saveDataValue} handleValueUpdate={handleValueUpdate}
         >
-          <button type="button"
-            disabled={isEmptyOrNullOrUndefined(saveDataValue)}
-            onClick={e => handleValueUpdate(undefined)}
-            title="Erase property's value"
-          >
-            X
-          </button>
-
-          <input
-            type="text"
-            disabled
-            readOnly={true}
-            value={saveDataValue ?? ''} /* the '' is to keep the input "controlled" in React in case saveDataValue isn't provided */
-            placeholder="No value"
-            title="Raw value in save file"
-          />
+          {eraseBtn}
+          {rawEditor}
         </RichSingleValueEditor>
 
-        <span className="prop-type"> {propInfo.type}</span>
+        <div className="prop-type">
+          <span className="prop-type"> {propInfo.type}</span>
+        </div>
       </div>
     </div>
   );
@@ -84,7 +91,7 @@ function SinglePropName({ propName, fullKey, note }) {
   // console.log('SinglePropName created');
   return (
     <div className="propname-container">
-      <span>{propName}</span>
+      <span className="propname">{propName}</span>
       {note && <span className="propname-note" title={note}>
         &nbsp;
         <svg className="icon propname-icon"
@@ -130,7 +137,7 @@ function RichSingleValueEditor({ children, type, saveDataValue, handleValueUpdat
 
   switch (type) {
     case "int":
-      inputElem = <input style={{width: "calc(18vw - 8px)"}}
+      inputElem = <input style={{width: "100%"}}
         type="number"
         value={saveDataValue ?? ''} // the '' is to keep the input "controlled" in React, in case saveDataValue isn't provided (null or undefined)
         onChange={e => handleValueUpdate(e.target.value)}
@@ -154,7 +161,9 @@ function RichSingleValueEditor({ children, type, saveDataValue, handleValueUpdat
         // const unityCodeCallback = (ucode) => handleValueUpdate(ucode);
         const unityCodeCallback = handleValueUpdate;
 
-        inputElem = <div style={{width: "18vw", display: "inline-block"}}>
+        inputElem = 
+        <>
+        {/* <div style={{width: "18vw", display: "inline-block"}}> */}
           <input
             type="text"
             placeholder="Record input"
@@ -170,16 +179,19 @@ function RichSingleValueEditor({ children, type, saveDataValue, handleValueUpdat
           >
             {dropdownOptions}
           </select>
-        </div>;
+        {/* </div> */}
+        </>
+        ;
       } else {
-        inputElem = <div style={{width: "18vw", display: "inline-block"}}>
+        inputElem = 
+        // <div style={{width: "18vw", display: "inline-block"}}>
           <select style={{width: "100%"}}
             onChange={e => handleValueUpdate(e.target.value)}
             value={saveDataValue || ''}
           >
             {dropdownOptions}
           </select>
-        </div>;
+        // </div>;
       }
       break;
     
@@ -195,20 +207,24 @@ function RichSingleValueEditor({ children, type, saveDataValue, handleValueUpdat
       break;
 
     case "color":
-      inputElem = <div style={{display: "inline-block", width: "18vw"}}>
-        <input style={{width: "5em"}}
+      inputElem = 
+      <>
+      {/* <div style={{display: "inline-block", width: "18vw"}}> */}
+        <input style={{width: "5em", height: "auto"}}
           type="color"
           value={(typeof(saveDataValue) === "undefined" || saveDataValue === null ? ''
                   : saveDataValue.match(HEX_COL_PATTERN) ? saveDataValue : saveToHex(saveDataValue) || '')}
           onChange={e => handleValueUpdate(e.target.value)}
         />
-        <input style={{width: "calc(100% - 5em - 8px"}}
+        <input style={{width: "calc(100% - 5em)"}}
           type="text"
           value={(typeof(saveDataValue) === "undefined" || saveDataValue === null ? ''
                   : saveToHex(saveDataValue) || saveDataValue)}
           onChange={e => handleValueUpdate(e.target.value)}
         />
-      </div>;
+      {/* </div> */}
+      </>
+      ;
       break;
 
     case "intlist":
@@ -237,8 +253,12 @@ function RichSingleValueEditor({ children, type, saveDataValue, handleValueUpdat
   return ( isList
     ? inputElem
     : <>
-      {inputElem || <></>}
-      {children}
+      <div className="rich-editor-row">
+        {inputElem || <></>}
+      </div>
+      {/* <div className="raw-editor-and-eraser-row"> */}
+        {children}
+      {/* </div> */}
     </>
   );
 }
@@ -303,7 +323,7 @@ function ListEditorItems({ children, type, propInfo, saveDataValue, handleValueU
   }
 
   return (
-    <div style={{display: "inline-grid"}}>
+    <div className="list-editor-grid">
       {
       // saveDataValue
       saveValStrToList(saveDataValue)
@@ -314,14 +334,12 @@ function ListEditorItems({ children, type, propInfo, saveDataValue, handleValueU
         //substr = String(substr ?? '');
         let inputElem;
         if(itemDropdownOptions) {
-          inputElem = <div style={{width: "18vw", display: "inline-block"}}>
-            <select style={{width: "100%"}}
-              onChange={e => handleUpdateItem(ind, e.target.value)}
-              value={dropdownValues?.hasOwnProperty(substr) ? substr : ''}
-            >
-              {itemDropdownOptions}
-            </select>
-          </div>;
+          inputElem = <select
+            onChange={e => handleUpdateItem(ind, e.target.value)}
+            value={dropdownValues?.hasOwnProperty(substr) ? substr : ''}
+          >
+            {itemDropdownOptions}
+          </select>;
         } else {
           inputElem = <input
             type="text"
@@ -330,7 +348,7 @@ function ListEditorItems({ children, type, propInfo, saveDataValue, handleValueU
           />;
         }
         return (
-          <div key={ind} style={{display: "inline-block"}}>
+          <div key={ind} className="list-editor-grid-row">
             {inputElem}
             <button type="button" title="Remove item" onClick={e => handleDeleteItem(ind)}>
               &mdash;
@@ -338,7 +356,7 @@ function ListEditorItems({ children, type, propInfo, saveDataValue, handleValueU
           </div>
         );
       })}
-      <div style={{display: "inline-block"}}>
+      <div className="list-editor-grid-row">
         <button type="button" title="Add item" onClick={e => handleAddItem(defaultNewValue)}>
           +
         </button>

@@ -1,10 +1,5 @@
 import Category from "./Category";
-// import mappedPropCategories from './../../data/mapped_prop_categories.json';
-// import mappedPropInfo from './../../data/mapped_prop_info.json';
-// import { useSaveData } from "../../context/SaveDataContext";
-// import { partsToHtmlSafeKey } from "../../utils/keyUtils";
 import { Editor } from "./Editor";
-// import { getDefaultsCategorizedFor, getInitialVersion } from "../../utils/saveDataUtils";
 import { useStoreSetAll } from "../../context/SaveDataContext";
 import { useRef } from "react";
 

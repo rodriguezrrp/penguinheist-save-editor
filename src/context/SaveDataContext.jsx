@@ -8,9 +8,11 @@ import { useVersion } from './VersionContext';
 /**
  * @typedef {(categoryId: string, fullKey: string, newValue: string) => void} DataStoreSetFunction
  * @typedef {(newCategorizedData: Record<string, Record<string, string>>) => void} DataStoreSetAllFunction
+ * @typedef {(categoryId: string, mapFn: ([key, oldValue]: [string, string]) => [string, string]) => void} DataStoreMapOverCategoryFunction
  * @typedef {{ getAll: () => Record<string, Record<string, string>>,
  *            set: DataStoreSetFunction,
  *            setAll: DataStoreSetAllFunction,
+ *            mapOverCategory: DataStoreMapOverCategoryFunction,
  *            subscribe: (callback: any) => () => boolean
  *          }} DataStoreFunctions
  */
@@ -62,13 +64,24 @@ function useStoreData(version) {
     store.current = newCategorizedData;
     return subscribers.current.forEach(callback => callback());
   }, []);
+  const mapOverCategory = useCallback((/**@type string*/ categoryId,
+                          /**@type {([key,oldValue]: [string,string]) => [string,string]}*/ mapFn) => {
+    store.current = {
+      ...store.current,
+      // replace value of fullKey (in category categoryId) with newValue
+      [categoryId]: Object.fromEntries(
+        Object.entries(store.current[categoryId]).map(mapFn)
+      )
+    };
+    return subscribers.current.forEach(callback => callback());
+  }, []); 
 
   const subscribe = useCallback((callback) => {
     subscribers.current.add(callback);
     return () => subscribers.current.delete(callback);
   }, []);
 
-  return { getAll, set, setAll, subscribe }
+  return { getAll, set, setAll, mapOverCategory, subscribe }
 }
 
 /**
@@ -77,10 +90,10 @@ function useStoreData(version) {
  * @returns {[T, DataStoreSetFunction]}
  */
 export function useStore(selector) {
-  // store should be the { getAll, set, setAll, subscribe } functions
+  // store should be the { getAll, set, setAll, mapOverCategory, subscribe } functions
   const store = useContext(SaveDataContext);
   // console.log(store);
-  if(!store) throw new Error('store was not existing. Should be like { getAll, set, setAll, subscribe } functions');
+  if(!store) throw new Error('store was not existing. Should be like { getAll, set, setAll, mapOverCategory, subscribe } functions');
   
   // the arg getSnapshot's result is determined via the passed-in selector function
   const state = useSyncExternalStore(store.subscribe, () => selector(store.getAll()));
@@ -93,10 +106,10 @@ export function useStore(selector) {
  * @returns {[T, DataStoreSetAllFunction]}
  */
 export function useStoreSetAll(selector) {
-  // store should be the { getAll, set, setAll, subscribe } functions
+  // store should be the { getAll, set, setAll, mapOverCategory, subscribe } functions
   const store = useContext(SaveDataContext);
   // console.log(store);
-  if(!store) throw new Error('store was not existing. Should be like { getAll, set, setAll, subscribe } functions');
+  if(!store) throw new Error('store was not existing. Should be like { getAll, set, setAll, mapOverCategory, subscribe } functions');
   
   // the arg getSnapshot's result is determined via the passed-in selector function
   const state = useSyncExternalStore(store.subscribe, () => selector(store.getAll()));
@@ -104,13 +117,29 @@ export function useStoreSetAll(selector) {
 }
 
 /**
+ * @template T
+ * @param {(data: Record<string, Record<string, string>>) => T} selector 
+ * @returns {[T, DataStoreMapOverCategoryFunction]}
+ */
+export function useStoreMapOverCategory(selector) {
+  // store should be the { getAll, set, setAll, mapOverCategory, subscribe } functions
+  const store = useContext(SaveDataContext);
+  // console.log(store);
+  if(!store) throw new Error('store was not existing. Should be like { getAll, set, setAll, mapOverCategory, subscribe } functions');
+  
+  // the arg getSnapshot's result is determined via the passed-in selector function
+  const state = useSyncExternalStore(store.subscribe, () => selector(store.getAll()));
+  return [state, store.mapOverCategory];
+}
+
+/**
  * @returns {() => Record<string, Record<string, string>>}
 */
 export function useStoreGetAll() {
-  // store should be the { getAll, set, setAll, subscribe } functions
+  // store should be the { getAll, set, setAll, mapOverCategory, subscribe } functions
   const store = useContext(SaveDataContext);
   // console.log(store);
-  if(!store) throw new Error('store was not existing. Should be like { getAll, set, setAll, subscribe } functions');
+  if(!store) throw new Error('store was not existing. Should be like { getAll, set, setAll, mapOverCategory, subscribe } functions');
   
   return store.getAll;
 }

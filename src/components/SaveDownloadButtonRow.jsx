@@ -6,7 +6,7 @@ import { useSaveFileDownloader } from "../utils/saveFileEventUtils";
 
 const filename = 'PHSaveMain.sav';
 
-export default function SaveDownloadButton() {
+export default function SaveDownloadButtonRow() {
   console.log('TestGetSaveDataButton created');
   const getAllData = useStoreGetAll();
   const [saveDataObjForDL, setSaveDataObjForDL] = useState(null);
@@ -17,7 +17,7 @@ export default function SaveDownloadButton() {
 
   return (
     <div className="download-button-row">
-      <button type="button" onClick={e => {
+      <button type="button" style={{height: "2em"}} onClick={e => {
         const allData = getAllData();
         console.log(allData);
         const decategorized = decategorizeSaveData(allData);

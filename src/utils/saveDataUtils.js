@@ -43,15 +43,15 @@ export function getRelevantsFor(version) {
     return relevants;
 }
 
-export function getRelevantsCategorizedFor(version) {
-    let relevants = getRelevantsFor(version);
-    return categorizeRelevants(relevants);
-}
+// export function getRelevantsCategorizedFor(version) {
+//     let relevants = getRelevantsFor(version);
+//     return categorizeRelevants(relevants);
+// }
 
-export function getDefaultsCategorizedFor(version) {
-    let defaults = getDefaultsFor(version);
-    return categorizeSaveDataRecord(defaults);
-}
+// export function getDefaultsCategorizedFor(version) {
+//     let defaults = getDefaultsFor(version);
+//     return categorizeSaveDataRecord(defaults);
+// }
 
 /**
  * @param {string} version

@@ -4,7 +4,7 @@ import { useSetVersion, useVersion } from "../context/VersionContext";
 import { getCompleteCategorizedSaveDataFor } from "../utils/saveDataUtils";
 import { useSaveFileReader } from "../utils/saveFileEventUtils";
 import { versionInfo } from "../data";
-import SaveDownloadButton from "./SaveDownloadButton";
+import { useEditorStyle, useSetEditorStyle } from "../context/EditorStyleContext";
 
 
 function FileAndSettingsForm({ version, setVersion }) {
@@ -18,32 +18,30 @@ function FileAndSettingsForm({ version, setVersion }) {
     //   setAllData(categorizeSaveDataRecord(saveDataObj));
     // })}
     >
-      <span>Todo: save file upload input and save settings here</span>
       {/* <input type="file" name="fileSelect" id="fileSelect"
           value="Upload Save" class="btn btn-outline-secondary --form-control w-100 h-100 file-select fw-600"
           aria-describedby="fileSelectDesc"
       ></input> */}
-      <br/>
 
-      <FileInput />
+      <label htmlFor="fileSelect">
+        Upload Save File
+      </label>
+      <div className="upload-row">
+        <FileInput />
+        <FileResetBtn />
+      </div>
 
-      <br/>
-      {/* <TestSetSaveDataButton /> */}
-      {/* <br/>
-      <TestSetEditorKeysButton /> */}
-      <br/>
       <VersionSelect />
-      <br/>
-      <SaveDownloadButton />
+      <PropertiesEditorOptions />
+      {/* <SaveDownloadButtonRow /> */}
     </form>
   );
 }
 
 
 function FileInput() {
-  // eslint-disable-next-line no-unused-vars
-  const [allData, setAllData] = useStoreSetAll(v => null);  // a constant return from the callback prevents React re-rendering
   console.log('FileInput created');
+  const [, setAllData] = useStoreSetAll(v => null);  // a constant return from the callback prevents React re-rendering
   
   const [file, setFile] = useState(null);
   
@@ -76,26 +74,69 @@ function FileInput() {
   );
 }
 
+function FileResetBtn() {
+  console.log('FileResetBtn created');
+  const [, setAllData] = useStoreSetAll(v => null);  // a constant return from the callback prevents React re-rendering
+  const version = useVersion(); // creating dependency on version context
+  
+  return (
+    <button type="button" id="fileReset"
+      onClick={(e) => setAllData(getCompleteCategorizedSaveDataFor(version))}
+    >
+      Reset to Default
+    </button>
+  );
+}
+
+function PropertiesEditorOptions() {
+  console.log('PropertiesEditorOptions created');
+  const editorStyle = useEditorStyle();
+  const setEditorStyle = useSetEditorStyle();
+
+  return <fieldset onChange={(e) => {setEditorStyle(e.target.value)}}>
+    <legend>Property Editors Options:</legend>
+    <div>
+      <input
+        type="radio" name="propFormOpts"
+        id="optIndividual"
+        value="individual"
+        checked={editorStyle === "individual"}
+      />
+      <label htmlFor="optIndividual">Show Individual Editors Only</label>
+    </div>
+    <div>
+      <input
+        type="radio" name="propFormOpts"
+        id="optSpecial"
+        value="special"
+        checked={editorStyle === "special"}
+      />
+      <label htmlFor="optSpecial">Show Specialized Editors</label>
+    </div>
+    <span>(debug: current style: {editorStyle})</span>
+  </fieldset>;
+}
+
 
 let _foundSupportedVersionYet = false;
 const versionOptions = Object.entries(versionInfo)
-.filter(([version, info]) => !info.hideindropdown)
-.map(([version, info]) => {
-  const isFirstSupportedFound = (!_foundSupportedVersionYet && info.supported);
-  _foundSupportedVersionYet = info.supported;
-  const unsupported = !info.supported;
-  return (
-    <option
-      disabled={unsupported}
-      selected={isFirstSupportedFound}
-      value={version}
-    >
-      {info.long_name || info.name}
-      {unsupported && ' (unsupported)'}
-      {isFirstSupportedFound && ' (latest supported)'}
-    </option>
-  );
-});
+  .filter(([version, info]) => !info.hideindropdown)
+  .map(([version, info]) => {
+    const isFirstSupportedFound = (!_foundSupportedVersionYet && info.supported);
+    _foundSupportedVersionYet = info.supported;
+    const unsupported = !info.supported;
+    return (
+      <option
+        disabled={unsupported}
+        selected={isFirstSupportedFound}
+        value={version}
+      >
+        {info.long_name || info.name}
+        {unsupported && ' (unsupported)'}
+        {isFirstSupportedFound && ' (latest supported)'}
+      </option>
+    );
+  });
 versionOptions.unshift(
   <option value="">
     Unknown (assume all properties)

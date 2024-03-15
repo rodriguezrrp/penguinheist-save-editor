@@ -4,11 +4,12 @@ import FileAndSettingsForm from './components/FileAndSettingsForm';
 import DowngradingInfo from './components/DowngradingInfo';
 import PropsForm from './components/props/PropsForm';
 import { SaveDataProvider } from './context/SaveDataContext';
+import { VersionProvider } from './context/VersionContext';
+import { EditorStyleProvider } from './context/EditorStyleContext';
 import Card from './components/Card';
 import QuickActions from './components/QuickActions';
-import SaveDownloadButton from './components/SaveDownloadButton';
+import SaveDownloadButtonRow from './components/SaveDownloadButtonRow';
 
-import { VersionProvider } from './context/VersionContext';
 import { SliderWithCardIconClass } from './components/svgs/Icons';
 
 function App() {
@@ -37,6 +38,7 @@ function App() {
         {/* <span style={{'font-weight': 'bold'}}>Version: "{version}"</span> */}
         <SaveDataProvider>
           {/* <PropListProvider> */}
+          <EditorStyleProvider>
 
             <Card>
               <h1>__&nbsp;Upload and Configure Save File(?)</h1>
@@ -50,10 +52,12 @@ function App() {
             <Card>
               <h1><SliderWithCardIconClass />&nbsp;Edit Properties</h1>
               <QuickActions />
+              <SaveDownloadButtonRow />
               <PropsForm />
-              <SaveDownloadButton />
+              <SaveDownloadButtonRow />
             </Card>
             
+          </EditorStyleProvider>
           {/* </PropListProvider> */}
         </SaveDataProvider>
       </VersionProvider>
