@@ -129,6 +129,7 @@ const versionOptions = Object.entries(versionInfo)
       <option
         disabled={unsupported}
         selected={isFirstSupportedFound}
+        key={version}
         value={version}
       >
         {info.long_name || info.name}
@@ -138,7 +139,7 @@ const versionOptions = Object.entries(versionInfo)
     );
   });
 versionOptions.unshift(
-  <option value="">
+  <option key="" value="">
     Unknown (assume all properties)
   </option>
 )

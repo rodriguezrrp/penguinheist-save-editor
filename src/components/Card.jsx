@@ -3,9 +3,9 @@
 function Card({ children }) {
   console.log('Card created');
   return (
-    <card className="w-90vw">
+    <div className="card w-90vw">
       { children }
-    </card>
+    </div>
   );
 }
 

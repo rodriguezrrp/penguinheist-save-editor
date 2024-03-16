@@ -1,7 +1,95 @@
 import Category from "./Category";
-import { Editor } from "./Editor";
+import { Editor, ItemSpecialEditor } from "./Editor";
 import { useStoreSetAll } from "../../context/SaveDataContext";
 import { useRef } from "react";
+import { useEditorStyle } from "../../context/EditorStyleContext";
+import { getKeyParts, partsToKey } from "../../utils/keyUtils";
+
+//Partition function
+//https://stackoverflow.com/questions/11731072/dividing-an-array-by-filter-function
+function partition(array, filter) {
+  let pass = [], fail = [];
+  array.forEach((e, idx, arr) => (filter(e, idx, arr) ? pass : fail).push(e));
+  return [pass, fail];
+}
+
+function regularEditorsFromObj(categoryId, categoryKeysDataObj) {
+  return regularEditorsFromEntries(categoryId, Object.entries(categoryKeysDataObj));
+}
+function regularEditorsFromEntries(categoryId, entries) {
+  return entries.map(([fullkey, value]) => regularEditorFromFullKey(categoryId, fullkey));
+}
+// function regularEditorFromEntry(categoryId, [fullkey, value]) {
+function regularEditorFromFullKey(categoryId, fullKey) {
+  return <Editor
+    key={fullKey}
+    fullKey={fullKey}
+    categoryId={categoryId}
+  />;
+}
+// .filter((keyExtra,i,a) => a.indexOf(keyExtra)===i)  // make the strings unique; could be quicker with a [...new Set( .. )]
+function casedEditorsFromObj(categoryId, categoryKeysDataObj) {
+  switch(categoryId) {
+    case 'items':
+      // let [itemEntries, otherEntries] = partition(Object.entries(categoryKeysDataObj), ([k,v]) => 
+      //   k.startsWith('itemAvailable')
+      //   || k.startsWith('itemOwned')
+      //   || k.startsWith('newBlueprint')
+      //   || k.startsWith('decipheredHint')
+      // );
+      // let specialEditors = [];
+      // for (const [fullKey, value] of itemEntries) {
+      //   //
+      // }
+      //   .map(([fullKey, value]) => getKeyParts(fullKey)[1])
+      //   .map((keyExtra) => (
+      //     <ItemSpecialEditor
+      //       fullKey=
+      //     />
+      //   ));
+      // // TODO: could re-interlace to "preserve" order somehow, as a QoL change?
+      // return specialEditors.concat(regularEditorsFromEntries(otherEntries));
+      
+      const _placeholderKeyBase = 'itemOwned';  // chose the key 'itemOwned' to avoid any collisions with other real fullKeys.
+      let mappedEditors = {};
+      for(const fullKey of Object.keys(categoryKeysDataObj)) {
+        const [keyBase, keyExtra] = getKeyParts(fullKey);
+        const isSpecial = (
+          keyBase === 'itemAvailable'
+          || keyBase === 'itemOwned'
+          || keyBase === 'newBlueprint'
+          || keyBase === 'decipheredHint');
+        if(isSpecial) {
+          // save the real key into its corresponding Set of related keys, for an editor later
+          const _placeholderKey = partsToKey(_placeholderKeyBase, keyExtra);
+          if(mappedEditors[_placeholderKey]) {
+            mappedEditors[_placeholderKey].add(fullKey);
+          } else {
+            mappedEditors[_placeholderKey] = new Set([fullKey]);
+          }
+        } else {
+          mappedEditors[fullKey] = fullKey;
+        }
+      }
+      return Object.entries(mappedEditors).map(([key, value]) => {
+        if(key.startsWith(_placeholderKeyBase)) {
+          if(!Array.isArray(value)) value = Array.from(value);
+          if(!value.length) throw new Error(`Expected at least one keyBase for special editor; special key ${key}`);
+          return <ItemSpecialEditor
+            key={key}
+            categoryId={categoryId}
+            fullKeysArray={value}
+          />;
+          // (new Set()).
+        } else {
+          // return value;
+          return regularEditorFromFullKey(categoryId, value);
+        }
+      });
+    default:
+      return regularEditorsFromObj(categoryId, categoryKeysDataObj);
+  }
+}
 
 
 function PropsForm() {
@@ -24,116 +112,30 @@ function PropsForm() {
     return cachedStrippedData.current;
   }
 
-  // let categorizedSaveDataMapping = {};
-  // const saveData = useSaveData();
-  // const saveData = getInitialRelevantsCategorized();
-  // const saveData = getDefaultsCategorizedFor(getInitialVersion());
-  
-  // const getAll = useStoreGetAll();
-  // const [_saveData, setAll] = useStoreSetAll((data) => data);
-  // const [saveDataStrippedVals, setAll] = useStoreSetAll((data) => data);
-  // const [_saveData, setAll] = useStoreSetAll((data) => Object.entries(data).map(([catId, catData]) => Object.keys(catData)));
-  // const [_saveData, setAll] = useStoreSetAll((data) => Object.fromEntries(Object.entries(data)));
-  // const [saveDataStrippedVals, setAll] = useStoreSetAll((data) => Object.fromEntries(Object.entries(data)
-  //                                                       .map(([cId, cData]) => [cId, Object.fromEntries(Object.entries(cData).map(([key,_]) => [key,null]))])));
-  // const saveData = getAll();
-  const [saveDataStrippedVals, setAll] = useStoreSetAll((data) => stripValsCached(data));
+  const editorStyle = useEditorStyle();
+  const [saveDataStrippedVals, ] = useStoreSetAll((data) => stripValsCached(data));
   console.log('PropsForm: saveDataStrippedVals:', saveDataStrippedVals);
-  // return <></>;
+  
+  let contents;
+  if(editorStyle === 'special') {
+    contents = Object.entries(saveDataStrippedVals).map(([categoryId, categoryKeysDataObj]) => (
+      <Category key={categoryId} categoryKey={categoryId}>
+        {casedEditorsFromObj(categoryId, categoryKeysDataObj)}
+      </Category>
+    ));
+  } else {
+    contents = Object.entries(saveDataStrippedVals).map(([categoryId, categoryKeysDataObj]) => (
+      <Category key={categoryId} categoryKey={categoryId}>
+        {regularEditorsFromObj(categoryId, categoryKeysDataObj)}
+      </Category>
+    ));
+  }
 
-  // for(const [keyBase, keyData] of Object.entries(saveData)) {
-  // for (const data of saveData) {
-  //   const keyCategory = mappedPropInfo[data.keyBase]?.category ?? defaultCategory;
-
-  //   let keyDataArr = categorizedSaveDataMapping[keyCategory];
-  //   if(!keyDataArr) {
-  //     keyDataArr = [];
-  //     categorizedSaveDataMapping[keyCategory] = keyDataArr;
-  //   }
-  //   keyDataArr.push(data);
-  // }
-
-  // return (
-  //   <form id="saveForm">
-  //     {Object.entries(categorizedSaveDataMapping).map((entry) => {
-  //       const [keyCategory, keyDataArr] = entry;
-  //       return keyDataArr.map(keyData => {
-  //         return (
-  //           <Category key={keyCategory} keyCategory={keyCategory}>
-  //             {
-  //               keyData.extras.map(extra => {
-  //                 return (
-  //                   <Editor
-  //                     key={extra.keyExtra}
-  //                     keyBase={keyData.keyBase} keyExtra={extra.keyExtra} keyValue={extra.value}
-  //                   />
-  //                 );
-  //               })
-  //             }
-  //           </Category>
-  //         );
-  //       });
-  //     })}
-  //   </form>
-  // );
-  // return (
-  //   <form id="saveForm">
-  //     {saveData.map((categoryEntry) => {
-  //       const catid = categoryEntry.categoryId;
-  //       const keysData = categoryEntry.keysData;
-  //       return keysData.map(keyData => {
-  //         return keyData.extras.map(extra => {
-  //           return (
-  //             <Editor
-  //               key={extra.keyExtra}
-  //               keyBase={keyData.keyBase} keyExtra={extra.keyExtra} keyValue={extra.value}
-  //             />
-  //           );
-  //         })
-  //       });
-  //     })}
-  //   </form>
-  // );
-  ;
-  // return (
-  //   <form id="saveForm">
-  //     {saveData.map((categoryEntry) => {
-  //       const categoryId = categoryEntry.categoryId;
-  //       const keysData = categoryEntry.keysData;
-  //       return (
-  //       <Category key={categoryId} categoryKey={categoryId}>
-  //         {keysData.map(keyData => {
-  //           const keyBase = keyData.keyBase;
-  //           return keyData.extras.map(extra => {
-  //             return (
-  //               <Editor
-  //                 key={extra}
-  //                 keyBase={keyBase} keyExtra={extra}
-  //                 // fullKey={fullKey}
-  //               />
-  //             );
-  //           })
-  //         })}
-  //       </Category>
-  //       )
-  //     })}
-  //   </form>
-  // );
   return (
     <form id="saveForm">
-      {/* {Object.entries(saveData).map(([categoryId, categoryKeysDataObj]) => ( */}
-      {Object.entries(saveDataStrippedVals).map(([categoryId, categoryKeysDataObj]) => (
-        <Category key={categoryId} categoryKey={categoryId}>
-          {Object.entries(categoryKeysDataObj).map(([fullKey, value]) => (
-            <Editor
-              key={fullKey}
-              // keyBase={keyBase} keyExtra={extra}
-              fullKey={fullKey}
-              categoryId={categoryId}
-            />
-          ))}
-        </Category>
-      ))}
+      {/* <DropdownValuesProvider></DropdownValuesProvider> */}
+
+      {contents}
     </form>
   );
 }

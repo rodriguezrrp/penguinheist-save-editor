@@ -1,4 +1,10 @@
 {
+    "_specialgroup_item": {
+        "category":"items",
+        "name":"Item {name}",
+        "name_map":"item",
+        "type":"bool"
+    },
     "itemOwned": {
         "category":"items",
         "name":"Item {name} Owned",

@@ -1,5 +1,4 @@
-import { defaultCategory, mappedCategoryInfo, mappedPropInfo, versionDefaults, versionRelevants, getPropInfo } from '../data';
-import { getKeyParts } from './keyUtils';
+import { defaultCategory, mappedCategoryInfo, versionDefaults, versionRelevants, getPropInfo } from '../data';
 
 if(!mappedCategoryInfo[defaultCategory]) {
     throw new Error(`Expecting default category "${defaultCategory}" in mapped category info!`)
@@ -131,53 +130,53 @@ function categorizeSaveDataRecord(saveData) {
     return restructured;
 }
 
-/**
- * @param {string[]} relevantKeysList
- * @returns {{categoryId: string, keysData: {keyBase: string, extras: string[]}[]}[]}
- */
-function categorizeRelevants(relevantKeysList) {
-    // using Maps will keep insertion-order sorted nature of mappings
-    /** @type {Map<string, Map<string, string[]>>} */
-    const categorized = new Map(Object.keys(mappedCategoryInfo).map(
-        (catId) => [catId, new Map()]
-    ));
-    console.log('categorize: categorized initially:', categorized);
-    // Set keeps insertion-order sorted nature
-    const deDupedRelevants = new Set(relevantKeysList);
-    for(const fullKey of deDupedRelevants) {
-        const [keyBase, keyExtra] = getKeyParts(fullKey);
-        // if property info doesn't exist, put in the default category
-        const category = mappedPropInfo[keyBase]?.category || defaultCategory;
-        // ensure categorized dict has the category in it, ready for mapping keys
-        if(!categorized.has(category)) {
-            throw new Error(`categorized map did not have category of id "${category}"`);
-            // // using a Map will keep insertion-order sorted nature of mappings
-            // categorized.set(category, new Map());
-        }
-        const keysDataMap = categorized.get(category);
-        // console.log(keyBase);
-        if(!keysDataMap.has(keyBase)) {
-            keysDataMap.set(keyBase, []);
-        }
-        keysDataMap.get(keyBase).push(keyExtra);
-    }
-    console.log('categorize: categorized:', categorized);
+// /**
+//  * @param {string[]} relevantKeysList
+//  * @returns {{categoryId: string, keysData: {keyBase: string, extras: string[]}[]}[]}
+//  */
+// function categorizeRelevants(relevantKeysList) {
+//     // using Maps will keep insertion-order sorted nature of mappings
+//     /** @type {Map<string, Map<string, string[]>>} */
+//     const categorized = new Map(Object.keys(mappedCategoryInfo).map(
+//         (catId) => [catId, new Map()]
+//     ));
+//     console.log('categorize: categorized initially:', categorized);
+//     // Set keeps insertion-order sorted nature
+//     const deDupedRelevants = new Set(relevantKeysList);
+//     for(const fullKey of deDupedRelevants) {
+//         const [keyBase, keyExtra] = getKeyParts(fullKey);
+//         // if property info doesn't exist, put in the default category
+//         const category = mappedPropInfo[keyBase]?.category || defaultCategory;
+//         // ensure categorized dict has the category in it, ready for mapping keys
+//         if(!categorized.has(category)) {
+//             throw new Error(`categorized map did not have category of id "${category}"`);
+//             // // using a Map will keep insertion-order sorted nature of mappings
+//             // categorized.set(category, new Map());
+//         }
+//         const keysDataMap = categorized.get(category);
+//         // console.log(keyBase);
+//         if(!keysDataMap.has(keyBase)) {
+//             keysDataMap.set(keyBase, []);
+//         }
+//         keysDataMap.get(keyBase).push(keyExtra);
+//     }
+//     console.log('categorize: categorized:', categorized);
 
-    // now restructure this into the desired "React-friendly" format
-    const restructured = Array.from(categorized).map(([keyCatId, valKeyMap]) => (
-        {
-            categoryId: keyCatId,
-            keysData: Array.from(valKeyMap).map(([keyBase, keyExtras]) => (
-                {
-                    keyBase: keyBase,
-                    extras: keyExtras
-                }
-            ))
-        }
-    ));
-    console.log('categorize: restructured:', restructured);
-    return restructured;
-}
+//     // now restructure this into the desired "React-friendly" format
+//     const restructured = Array.from(categorized).map(([keyCatId, valKeyMap]) => (
+//         {
+//             categoryId: keyCatId,
+//             keysData: Array.from(valKeyMap).map(([keyBase, keyExtras]) => (
+//                 {
+//                     keyBase: keyBase,
+//                     extras: keyExtras
+//                 }
+//             ))
+//         }
+//     ));
+//     console.log('categorize: restructured:', restructured);
+//     return restructured;
+// }
 /**
  * @template V
  * @param {Record<string, Record<string, V>>} categorizedSaveDataRecord 

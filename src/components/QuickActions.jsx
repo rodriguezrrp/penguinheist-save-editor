@@ -17,7 +17,7 @@ function QuickActions() {
   const version = useVersion(); // creating dependency on version context
   
 
-  return <card style={{margin: '1em', '--border-color': 'var(--grayblue)'}}>
+  return <div className="card" style={{margin: '1em', '--border-color': 'var(--grayblue)'}}>
     <h2>Quick Actions</h2>
     <div style={{display: 'grid', gridTemplateRows: 'repeat(1, 1fr)', gridTemplateColumns: 'repeat(12, 1fr)'
                 , gap: '.5rem', margin: '.5rem'}}>
@@ -67,10 +67,10 @@ function QuickActions() {
       <button type="button" id="quickActionReset" className="quick-action-button"
         onClick={(e) => setAllData(getCompleteCategorizedSaveDataFor(version))}
       >
-        Reset to Default
+        ↺ Reset to Default
       </button>
     </div>
-  </card>;
+  </div>;
 }
 
 export default QuickActions;
