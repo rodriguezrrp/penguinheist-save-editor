@@ -59,18 +59,21 @@ export function getRelevantsFor(version) {
  *          | undefined} fileDataMap
  */
 export function getCompleteCategorizedSaveDataFor(version, fileDataMap) {
+    let newSaveDataObj;
     if(fileDataMap) {
         if(fileDataMap instanceof Map) {
             fileDataMap = Object.fromEntries(fileDataMap.entries());
         }
+        newSaveDataObj = fileDataMap;
     } else {
-        fileDataMap = {};
+        newSaveDataObj = getDefaultsFor(version);
     }
     /** @type {Record<string, string | undefined>} */
     let data = {
         ...Object.fromEntries(getRelevantsFor(version).map(key => [key, undefined])),
-        ...getDefaultsFor(version),
-        ...fileDataMap
+        // ...getDefaultsFor(version),      either default or fileDataMap, one or the other. together is causing problems
+        // ...fileDataMap
+        ...newSaveDataObj
     };
     return categorizeSaveDataRecord(data);
 }

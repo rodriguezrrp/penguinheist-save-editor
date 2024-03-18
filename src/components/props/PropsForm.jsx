@@ -72,7 +72,7 @@ function casedEditorsFromObj(categoryId, categoryKeysDataObj) {
         }
       }
       return Object.entries(mappedEditors).map(([key, value]) => {
-        if(key.startsWith(_placeholderKeyBase)) {
+        if(getKeyParts(key)[0] === _placeholderKeyBase) {
           if(!Array.isArray(value)) value = Array.from(value);
           if(!value.length) throw new Error(`Expected at least one keyBase for special editor; special key ${key}`);
           return <ItemSpecialEditor

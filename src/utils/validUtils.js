@@ -54,6 +54,34 @@ function preparePropInfoMinMax(propInfo, fullKey) {
     }
 }
 
+/**
+ * @template V
+ * @param {V | undefined} editorValue 
+ * @param {string} keyBase 
+ * @param {string} keyExtra 
+ * @param {any} version 
+ * @returns {{value: V | undefined; validity: boolean | null; warning: string | null}}
+ * */
+function saveDataValueAdjust(editorValue, keyBase, keyExtra, version) {
+    const fullKey = partsToKey(keyBase, keyExtra);
+    const type = getPropInfo(fullKey).type;
+    let adjustedValue = editorValue;
+    switch(type) {
+        case "bool":
+            if(editorValue === true)
+                adjustedValue = '1';
+            else if(editorValue === false)
+                adjustedValue = '0';
+            break;
+        case "color":
+            if(editorValue?.match(HEX_COL_PATTERN))
+                // provide an alternate value for the raw representation of the color
+                adjustedValue = hexToSave(editorValue);
+            break;
+        default:
+    }
+    return adjustedValue;
+}
 
 /**
  * @template V
@@ -66,8 +94,11 @@ function preparePropInfoMinMax(propInfo, fullKey) {
 export function saveDataValueValidate(editorValue, keyBase, keyExtra, version) {
     console.log('saveDataValueValidate called for', editorValue);
     const fullKey = partsToKey(keyBase, keyExtra);
+    
+    const adjustedValue = saveDataValueAdjust(editorValue, keyBase, keyExtra, version);
+    
     /** @type {{value: V; validity: boolean | null; warning: string | null}} */
-    const result = {value: editorValue, warning: null};
+    const result = {value: adjustedValue, warning: null};
     
     if(!getRelevantsFor(version).includes(fullKey)) {
         result.validity = null;
@@ -84,10 +115,8 @@ export function saveDataValueValidate(editorValue, keyBase, keyExtra, version) {
 
     switch (type) {
         case "bool":
-            if(editorValue === true) editorValue = '1';
-            else if(editorValue === false) editorValue = '0';
-            result.value = editorValue;
-            if(editorValue !== '1' && editorValue !== '0') {
+            // using the adjusted value, where it should be appropriately converted to '0' or '1'
+            if(adjustedValue !== '1' && adjustedValue !== '0') {
                 result.warning = 'Expects the value to be 1 or 0 (true or false)!';
                 result.validity = false;
             } else {
