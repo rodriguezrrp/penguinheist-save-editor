@@ -12,6 +12,9 @@
     "outfit": {
         "name":"Current Outfit"
     },
+    "outfits": {
+        "name":"Saved Outfits"
+    },
     "clothing": {
         "name":"All Clothing"
     },

@@ -3,7 +3,25 @@
         "category":"items",
         "name":"Item {name}",
         "name_map":"item",
-        "type":"bool"
+        "type":"bool",
+        "keybasesmap":{
+            "itemAvailable": "Available",
+            "itemOwned":     "Owned",
+            "newBlueprint":  "Blueprint",
+            "decipheredHint":"Hint"
+        }
+    },
+    "_specialgroup_savedoutfit": {
+        "category":"outfits",
+        "name":"Outfit {name}",
+        "name_map":{"0":1,"1":2,"2":3,"3":4,"4":5,"5":6},
+        "type":"int-dropdown",
+        "dropdown1":"clothing",
+        "dropdown2":"skins",
+        "keybasesmap":{
+            "outfitColors": "Outfit Clothes",
+            "outfitIndices":"Outfit Colors"
+        }
     },
     "itemOwned": {
         "category":"items",
@@ -359,5 +377,20 @@
         "name":"Previous Heist",
         "type":"int-dropdown",
         "dropdown":"heists"
+    },
+    "outfitIndices": {
+        "category":"outfits",
+        "name":"Saved Outfit #{name} Clothes and Skin",
+        "name_map":{"0":1,"1":2,"2":3,"3":4,"4":5,"5":6,"6":7,"7":8},
+        "type":"outfitindices",
+        "dropdown":"clothing",
+        "dropdown_extra":{"-1":"None"},
+        "dropdown2":"skins"
+    },
+    "outfitColors": {
+        "category":"outfits",
+        "name":"Saved Outfit #{name} Colors",
+        "name_map":{"0":1,"1":2,"2":3,"3":4,"4":5,"5":6,"6":7,"7":8},
+        "type":"colorlist"
     }
 }

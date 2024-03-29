@@ -636,57 +636,57 @@
     },
     "133": {
         "name": "Guandao",
-        "imgname": "Guandao.png",
+        "imgname": "guandao.png",
         "post_office": false
     },
     "134": {
         "name": "Plasma Cutter",
-        "imgname": "Plasma Cutter.png",
+        "imgname": "plasma_cutter.png",
         "post_office": false
     },
     "135": {
         "name": "Neuro Stunner",
-        "imgname": "Neuro Stunner.png",
+        "imgname": "neuro_stunner.png",
         "post_office": false
     },
     "136": {
         "name": "Compact Explosive",
-        "imgname": "Compact Explosive.png",
+        "imgname": "compact_explosive.png",
         "post_office": false
     },
     "137": {
         "name": "Tactical Drone",
-        "imgname": "Tactical Drone.png",
+        "imgname": "tactical_drone.png",
         "post_office": false
     },
     "138": {
         "name": "Claymore Mine",
-        "imgname": "Claymore Mine.png",
+        "imgname": "claymore_mine.png",
         "post_office": false
     },
     "139": {
         "name": "Kunai",
-        "imgname": "Kunai.png",
+        "imgname": "kunai.png",
         "post_office": false
     },
     "140": {
         "name": "Tanegashima",
-        "imgname": "Tanegashima.png",
+        "imgname": "tanegashima.png",
         "post_office": false
     },
     "141": {
         "name": "Ostuchi",
-        "imgname": "Ostuchi.png",
+        "imgname": "ostuchi.png",
         "post_office": false
     },
     "142": {
         "name": "Pengu-no-Uchiwa",
-        "imgname": "Pengu-no-Uchiwa.png",
+        "imgname": "pengu-no-uchiwa.png",
         "post_office": false
     },
     "143": {
         "name": "Ranged Drone",
-        "imgname": "Ranged Drone.png",
+        "imgname": "ranged_drone.png",
         "post_office": false
     }
 }

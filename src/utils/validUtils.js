@@ -1,6 +1,7 @@
 import { getPropInfo, resolveDropdownFromPropInfo, versionInfo } from "../data";
 import { partsToKey } from "./keyUtils";
 import { getRelevantsFor } from "./saveDataUtils";
+import { listDelim } from "./saveFileEncodingUtils.mjs";
 
 // Short-circuiting, and saving a parse operation
 export function isInt(value) {
@@ -16,7 +17,18 @@ export function isEmptyOrNullOrUndefined(value) {
     return (value === "" || value === null || typeof(value) === "undefined")
 }
 
-export const SAVE_COL_PATTERN = /^((0(\.\d+)?|1);){3}(0(\.\d+)?|1)$/g;
+export function saveValStrToList(/**@type {string|null|undefined}*/saveDataStr) {
+  if(saveDataStr === null || typeof(saveDataStr) === "undefined") {
+    return saveDataStr;
+  } else {
+    return saveDataStr.split(listDelim);
+  }
+}
+export function saveValListToStr(/**@type {any[]|null|undefined}*/saveDataStrAsList) {
+  return saveDataStrAsList?.join(listDelim);
+}
+
+export const SAVE_COL_PATTERN = /^((0(\.\d+)?|(1(\.0+)?));){3}(0(\.\d+)?|(1(\.0+)?))$/g;
 export const HEX_COL_PATTERN = /^#([\da-f]{2})([\da-f]{2})([\da-f]{2})([\da-f]{2})?$/gi;
 
 /** According to UnityEngine.Color32, conversion between 0-255 and 0-1 is done by dividing and multiplying by 255.
@@ -60,11 +72,39 @@ function preparePropInfoMinMax(propInfo, fullKey) {
  * @param {string} keyBase 
  * @param {string} keyExtra 
  * @param {any} version 
- * @returns {{value: V | undefined; validity: boolean | null; warning: string | null}}
+ * @returns {V | undefined}
  * */
-function saveDataValueAdjust(editorValue, keyBase, keyExtra, version) {
+export function saveDataValueAdjust(editorValue, keyBase, keyExtra, version) {
     const fullKey = partsToKey(keyBase, keyExtra);
-    const type = getPropInfo(fullKey).type;
+    // const type = getPropInfo(fullKey).type;
+    // let adjustedValue = editorValue;
+    // switch(type) {
+    //     case "bool":
+    //         if(editorValue === true)
+    //             adjustedValue = '1';
+    //         else if(editorValue === false)
+    //             adjustedValue = '0';
+    //         break;
+    //     case "color":
+    //         if(editorValue?.match(HEX_COL_PATTERN))
+    //             // provide an alternate value for the raw representation of the color
+    //             adjustedValue = hexToSave(editorValue);
+    //         break;
+    //     default:
+    // }
+    // return adjustedValue;
+    return saveDataValueAdjustUsingPropInfo(editorValue, getPropInfo(fullKey), version);
+}
+
+/**
+ * @template V
+ * @param {V | undefined} editorValue 
+ * @param {any} propInfo 
+ * @param {any} version 
+ * @returns {V | undefined}
+ * */
+export function saveDataValueAdjustUsingPropInfo(editorValue, propInfo, version) {
+    const type = propInfo.type;
     let adjustedValue = editorValue;
     switch(type) {
         case "bool":
@@ -77,6 +117,12 @@ function saveDataValueAdjust(editorValue, keyBase, keyExtra, version) {
             if(editorValue?.match(HEX_COL_PATTERN))
                 // provide an alternate value for the raw representation of the color
                 adjustedValue = hexToSave(editorValue);
+            break;
+        case "colorlist":
+            if((editorValue!=='' && typeof(editorValue)!=="undefined")) {
+                // convert any hex color values to their proper save file representation
+                adjustedValue = editorValue?.split(' ').map(c => c.match(HEX_COL_PATTERN) ? hexToSave(c) : c).join(' ');
+            }
             break;
         default:
     }
@@ -108,7 +154,7 @@ export function saveDataValueValidate(editorValue, keyBase, keyExtra, version) {
     const propInfo = getPropInfo(fullKey);
     const type = propInfo.type;
 
-    if(!propInfo.required && isEmptyOrNullOrUndefined(editorValue) && type !== "intlist") {
+    if(!propInfo.required && isEmptyOrNullOrUndefined(editorValue) && type !== "intlist" && type !== "colorlist") {
         result.validity = true;
         return result;
     }
@@ -185,8 +231,8 @@ export function saveDataValueValidate(editorValue, keyBase, keyExtra, version) {
                     }
                     // check if all values in the list are allowed
                     if(propInfo.dropdown) {
-                        console.error('TODO: check if all values from dropdowns in intlist are allowed');
-                        console.log('editorValue:', editorValue);
+                        // console.error('TODO: check if all values from dropdowns in intlist are allowed');
+                        // console.log('editorValue:', editorValue);
                         let dropdownValues = version ? resolveDropdownFromPropInfo(propInfo, version) : null;
                         // combine into two arrays, one array for each saveType, reduced by concatenating missing elems elementwise.
                         // each saveType's array contains all keys that were not in its accepted dropdown values.
@@ -194,9 +240,6 @@ export function saveDataValueValidate(editorValue, keyBase, keyExtra, version) {
                             dropdownValues && !dropdownValues.hasOwnProperty(listitem)
                                 ? listitem : undefined
                         )).reduce((accumValue, curValue) => (
-                            // // AND elementwise (side effect: turns undefined into false!)
-                            // accumValue && curValue,
-                            // accumValue[1] && curValue[1]
                             // include elements that were missing elementwise
                             curValue ? accumValue.concat(curValue) : accumValue
                         ), []); // start reduce with empty array
@@ -204,6 +247,25 @@ export function saveDataValueValidate(editorValue, keyBase, keyExtra, version) {
                         if(dropdownValues && keysMissingFrom1.length > 0) {
                             let pluralize = keysMissingFrom1.length !== 1;
                             result.warning = `Value${pluralize?'s':''} ${keysMissingFrom1.join(', ')} ${pluralize?'are':'is'} not expected for selected version!`
+                            result.validity = false;
+                        }
+                    }
+                }
+            }
+            break;
+        case "colorlist":
+            result.validity = true;
+            // allow empty list '', and consider undefined as an empty list also
+            if((adjustedValue!=='' && typeof(adjustedValue)!=="undefined")) {
+                if (adjustedValue.split(' ').some(c=>!c.match(SAVE_COL_PATTERN))) {
+                    result.warning = 'Expects valid colors in every position in the list (space-separated)! Colors are like R;G;B;A and each value is 0-1'
+                    result.validity = false;
+                } else {
+                    // check if loadout size is valid (this is a key-specific check)
+                    if(keyBase === 'outfitColors') {
+                        let osize = getMaxOutfitSize(version);
+                        if(osize && adjustedValue.split(' ').length > osize) {
+                            result.warning = `Outfit list cannot hold more than ${osize} items, in selected version!`
                             result.validity = false;
                         }
                     }
@@ -263,6 +325,14 @@ function compareVersion(v1, v2) {
         return null;
     }
     return diff;
+}
+
+export function getMaxOutfitSize(version) {
+    if(typeof(version) === "undefined" || version === null) {
+        return null;
+    }
+    // currently all known/supported game versions have a fixed outfit size of 6.
+    return 6;
 }
 
 function getMaxLoadoutSize(version) {

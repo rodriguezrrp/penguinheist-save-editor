@@ -86,6 +86,13 @@ function casedEditorsFromObj(categoryId, categoryKeysDataObj) {
           return regularEditorFromFullKey(categoryId, value);
         }
       });
+
+    // case "outfits":
+    //   return null;
+    
+    // case "outfits":
+    //   return null;
+
     default:
       return regularEditorsFromObj(categoryId, categoryKeysDataObj);
   }

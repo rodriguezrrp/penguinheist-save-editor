@@ -14,7 +14,7 @@ const depotsInfo = require('./depots_info.json');
  * @type {Record<string, {
  *   category: string,
  *   name: string,
- *   type: "string" | "bool" | "int" | "float-range" | "color" | "intlist" | "int-dropdown",
+ *   type: "string" | "bool" | "int" | "float-range" | "color" | "intlist" | "int-dropdown" | "colorlist" | "outfitindices",
  *   name_map?: "_self" | Record<string, any> | string,
  *   note?: string,
  *   range?: [number, number],

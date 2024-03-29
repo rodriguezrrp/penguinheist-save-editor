@@ -13,6 +13,7 @@ legend {
 body {
   --flex-gap: .5rem;
   --editor-row-padding-x: 1px;
+  --valid-ind-width: 1.5rem;
 
 /* --border-color: #5555; */
   --accent: #0087ff;
@@ -51,8 +52,9 @@ div.card {
   background-color: var(--offwhite);
   background: linear-gradient(var(--border-color), var(--offwhite) 1.28em);
 }
-.w-90vw {
-	width: 90vw;
+.card-width {
+	width: 85vw;
+  max-width: 800px;
 }
 .w-100 {
   width: 100%;
@@ -193,6 +195,16 @@ input::file-selector-button {
   grid-column: auto / span 3;
 }
 
+.switch-grid {
+  flex: 1 0 auto;
+  display: grid;
+  gap: var(--editor-row-padding-x) var(--flex-gap);
+  grid-template-columns: auto auto; /* fallback if min-content not supported */
+  grid-template-columns: min-content auto;
+  grid-template-rows: auto;
+  grid-template-areas: "header header" "switch eraser";
+}
+
 summary.category-title-row {
   cursor: pointer;
   padding-left: 4px;
@@ -263,6 +275,7 @@ details[open] > summary > svg.category-icon {
 .editor-items-container {
   /* display: inline-block; */
   flex-basis: 50%;
+  flex-shrink: 0;
   display: inline-flex;
   gap: var(--flex-gap);
   align-self: flex-start;
@@ -289,6 +302,7 @@ details[open] > summary > svg.category-icon {
   /* flex: 0 0 40%; */
   flex: 0 0 auto;
   width: 32%;
+  cursor: text;
 }
 .editor-erase-button {
   flex: 0 0 auto;
@@ -315,6 +329,9 @@ details[open] > summary > svg.category-icon {
     /* override the width */
     width: auto;
     flex: 1 0 auto;
+  }
+  & > span {
+    padding-top: .125rem;
   }
 }
 
@@ -347,11 +364,44 @@ svg.propname-icon:hover {
   color: currentColor;
 }
 
+.validation-inds-container {
+  display: flex;
+  
+  /* & > span.validation-ind:has(+ .validation-others-container) {
+    transition: all 0s linear;
+  } */
+  &:hover > span.validation-ind:has(+ .validation-others-container) {
+    width: 0;
+    overflow-x: hidden;
+    /* visibility: collapse; */
+    /* background-color: red; */
+  }
+}
+.validation-others-container {
+  display: flex;
+  width: 0;
+  /* transition: all 0s linear; */
+  /* display: none; */
+  flex-wrap: nowrap;
+  overflow-x: hidden;
+
+  .validation-inds-container:hover > & {
+    display: flex;
+    width: calc(var(--valid-inds-ct, 4) * var(--valid-ind-width));
+  }
+}
 span.validation-ind {
   display: inline-block;
-  width: 1.5rem;
+  width: var(--valid-ind-width);
   text-align: center;
-  align-self: center;
+  /* align-self: center; */
+  padding-top: .125rem;
+
+  &:hover {
+    /* using a tiny nonzero alpha in rgba as a workaround for fading to transparent without a gray midpoint */
+    background: linear-gradient(0deg, currentcolor 0%, 15%, rgba(255,255,255,0.01) 100%);
+  }
+
   &.unused {
     color: gray;
   }
@@ -401,6 +451,12 @@ span.validation-ind {
   /* summary > svg.category-icon { */
     /* transition: transform .2s ease-in-out; */
   /* } */
+  span.validation-ind:has(+ .validation-others-container) {
+    transition: all .1s linear;
+  }
+  .validation-others-container {
+    transition: all .1s linear;
+  }
 }
 
 .App-header {

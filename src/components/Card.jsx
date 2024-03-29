@@ -3,7 +3,7 @@
 function Card({ children }) {
   console.log('Card created');
   return (
-    <div className="card w-90vw">
+    <div className="card card-width">
       { children }
     </div>
   );

@@ -1,11 +1,12 @@
 import { getKeyParts, keyStrMakeHtmlSafe, partsToHtmlSafeKey, partsToKey } from "../../utils/keyUtils";
-import { useStore } from "../../context/SaveDataContext";
+import { useStore, useStoreGetAll } from "../../context/SaveDataContext";
 import { useVersion } from "../../context/VersionContext";
-import { HEX_COL_PATTERN, isEmptyOrNullOrUndefined, saveDataValueValidate, saveToHex } from "../../utils/validUtils";
+import { HEX_COL_PATTERN, getMaxOutfitSize, isEmptyOrNullOrUndefined, saveDataValueAdjustUsingPropInfo, saveDataValueValidate, saveToHex, saveValListToStr, saveValStrToList } from "../../utils/validUtils";
 import { getPropInfo, resolveDropdownFromPropInfo, resolvePropInfoName } from "../../data";
 import { listDelim } from "../../utils/saveFileEncodingUtils.mjs";
 import { handleKeyDown, handleMouseUp } from "../../utils/unityMapping";
 import stopEvent from "../../utils/stopEvent";
+import { useState } from "react";
 
 export function Editor({ categoryId, fullKey }) {
   const [keyBase, keyExtra] = getKeyParts(fullKey);
@@ -54,7 +55,7 @@ export function Editor({ categoryId, fullKey }) {
     <div id={'editorRow-'+htmlSafeKey} className="editor-row">
       <SinglePropName propName={propName} fullKey={fullKey} note={propInfo.note} />
       
-      <ValidationIndicator validity={validity} warning={warning} />
+      <SingleValidationIndicator validity={validity} warning={warning} />
 
       <div className="editor-items-container">
         <RichSingleValueEditor type={propInfo.type} propInfo={propInfo} version={version}
@@ -92,15 +93,50 @@ function SinglePropName({ propName, fullKey, note }) {
   );
 }
 
-function ValidationIndicator({ /**@type {boolean | null}*/ validity, /**@type {string | null}*/ warning }) {
+function warningMsgWithKey(fullKey, warning) {
+  return fullKey + ':\n' + warning;
+}
+function warningMsgForMultipleValidities(validities) {
+  return validities.filter(([fullKey, valInfo]) => valInfo.warning)
+    .map(([fullKey, valInfo]) => warningMsgWithKey(fullKey, valInfo.warning))
+    .join('\n');
+}
+
+function ValidationIndicator({ /**@type {boolean | null}*/ validity, /**@type {string | null}*/ warning,
+  /**@type {{fullKey: {validity: boolean | null, warning: string | null}}}*/ otherIndsValidity }) {
   // console.log('ValidationIndicator created');
-  return (
-    <span className={"validation-ind"+(validity===null?" unused":validity?" accepted":" warning")}
-      title={warning}
+  
+  if(otherIndsValidity) {
+    const areErrored = Object.entries(otherIndsValidity).filter(([fullKey, valInfo]) => valInfo.validity !== null && !valInfo.validity);
+    const areValid = Object.entries(otherIndsValidity).filter(([fullKey, valInfo]) => valInfo.validity !== null && valInfo.validity);
+    // combined overall validity indication and overall warning messages
+    validity = areErrored.length ? false : areValid.length ? true : null;
+    warning = warningMsgForMultipleValidities(Object.entries(otherIndsValidity));
+  }
+  const others = otherIndsValidity && <div className="validation-others-container"
+      style={{'--valid-inds-ct': Object.keys(otherIndsValidity).length}}
     >
-      {validity===null?'∅':validity?'✔':'✘'}
-    </span>
-  );
+      {Object.entries(otherIndsValidity).map(([fullKey, {validity, warning}]) => {
+        // let validity = v === 1 ? null : v === 2;
+        return <SingleValidationIndicator validity={validity} warning={warning && warningMsgWithKey(fullKey, warning)} />
+      })}
+    </div>;
+  
+  return <div className="validation-inds-container">
+    <SingleValidationIndicator validity={validity} warning={warning} />
+    {others}
+  </div>;
+}
+
+const unusedValidityMessage = 'Ignored by selected version'
+
+function SingleValidationIndicator({ /**@type {boolean | null}*/ validity, /**@type {string | null}*/ warning }) {
+  const message = warning ? warning : validity === null ? unusedValidityMessage : undefined;
+  return <span className={"validation-ind"+(validity===null?" unused":validity?" accepted":" warning")}
+    title={message}
+  >
+    {validity===null?'∅':validity?'✔':'✘'}
+  </span>;
 }
 
 
@@ -193,7 +229,31 @@ function RichSingleValueEditor({ children, type, saveDataValue, handleValueUpdat
         </ListEditorItems>
       );
       break;
-      
+
+    case "colorlist":
+      isList = true;
+      inputElem = (
+        <LimitableRetainingListEditor type={type} propInfo={propInfo}
+          saveDataValue={saveDataValue} handleValueUpdate={handleValueUpdate}
+          version={version} fixedCount={getMaxOutfitSize(version)}
+        >
+          {children}
+        </LimitableRetainingListEditor>
+      );
+      break;
+
+    case "outfitindices":
+      isList = true;
+      inputElem = (
+        <LimitableRetainingListEditor type={type} propInfo={propInfo}
+          saveDataValue={saveDataValue} handleValueUpdate={handleValueUpdate}
+          version={version} fixedCount={getMaxOutfitSize(version)}
+        >
+          {children}
+        </LimitableRetainingListEditor>
+      );
+      break;
+
     case "string":
     default:
       if(type !== "string") console.error(`Rich value editor: Unexpected type "${type}"; treating as string.`);
@@ -232,7 +292,7 @@ function BooleanEditor({ saveDataValue, handleValueUpdate, className="w-100", in
   </div>;
 }
 
-function ColorEditor({ saveDataValue, handleValueUpdate }) {
+function ColorEditor({ saveDataValue, handleValueUpdate, disabled=false }) {
   return <>
   {/* <div style={{display: "inline-block", width: "18vw"}}> */}
     <input style={{width: "5em", height: "auto"}}
@@ -240,22 +300,25 @@ function ColorEditor({ saveDataValue, handleValueUpdate }) {
       value={(typeof(saveDataValue) === "undefined" || saveDataValue === null ? ''
               : saveDataValue.match(HEX_COL_PATTERN) ? saveDataValue : saveToHex(saveDataValue) || '')}
       onChange={e => handleValueUpdate(e.target.value)}
+      disabled={disabled}
     />
     <input style={{width: "calc(100% - 5em)"}}
       type="text"
       value={(typeof(saveDataValue) === "undefined" || saveDataValue === null ? ''
               : saveToHex(saveDataValue) || saveDataValue)}
       onChange={e => handleValueUpdate(e.target.value)}
+      disabled={disabled}
     />
   {/* </div> */}
   </>;
 }
 
-function SelectEditor({ saveDataValue, handleValueUpdate, dropdownOptions, className = "" }) {
+function SelectEditor({ saveDataValue, handleValueUpdate, dropdownOptions, className="", disabled=false }) {
   return <select
     className={className}
     onChange={e => handleValueUpdate(e.target.value)}
     value={saveDataValue || ''}
+    disabled={disabled}
   >
     {dropdownOptions}
   </select>;
@@ -284,17 +347,6 @@ function PropRawTextInput({ saveDataValue }) {
 }
 
 
-
-function saveValStrToList(/**@type {string|null|undefined}*/saveDataStr) {
-  if(saveDataStr === null || typeof(saveDataStr) === "undefined") {
-    return saveDataStr;
-  } else {
-    return saveDataStr.split(listDelim);
-  }
-}
-function saveValListToStr(/**@type {any[]|null|undefined}*/saveDataStrAsList) {
-  return saveDataStrAsList?.join(listDelim);
-}
 
 function ListEditorItems({ children, type, propInfo, saveDataValue, handleValueUpdate, version }) {
   console.log("ListEditorItems created");
@@ -348,14 +400,9 @@ function ListEditorItems({ children, type, propInfo, saveDataValue, handleValueU
       {
       saveValStrToList(saveDataValue)
       ?.map((substr, ind) => {
+
         let inputElem;
         if(itemDropdownOptions) {
-          // inputElem = <select
-          //   onChange={e => handleUpdateItem(ind, e.target.value)}
-          //   value={dropdownValues?.hasOwnProperty(substr) && substr || ''}
-          // >
-          //   {itemDropdownOptions}
-          // </select>;
           inputElem = <SelectEditor
             saveDataValue={dropdownValues?.hasOwnProperty(substr) && substr}
             handleValueUpdate={val => handleUpdateItem(ind, val)}
@@ -376,6 +423,7 @@ function ListEditorItems({ children, type, propInfo, saveDataValue, handleValueU
             </button>
           </div>
         );
+
       })}
       <div className="list-editor-grid-row">
         <button type="button" title="Add item" onClick={e => handleAddItem(defaultNewValue)}>
@@ -387,33 +435,247 @@ function ListEditorItems({ children, type, propInfo, saveDataValue, handleValueU
   );
 }
 
+function LimitableRetainingListEditor({ children, type, propInfo, saveDataValue, handleValueUpdate, version, fixedCount=0, disableInputsWhenUnset=true }) {
+  console.log("ListEditorFixableSize created");
+  console.log("ListEditorFixableSize saveDataValue", saveDataValue);
+  const defaultNewValue = String(propInfo.default ?? '');
+  
+  const allowAddAndRemove = !(fixedCount && fixedCount > 0);
+  
+  const defaultRetainedValue = allowAddAndRemove ? null : saveValListToStr(Array.from({length: fixedCount}, (v) => defaultNewValue));
 
+  // Retain the previous saveDataValue when the current one becomes null or undefined
+  //  and use this state as an intermediary for the actual editor elements.
+  //  This is to allow retaining and possible editing of the property value while it is not in the main save data state.
+  // const [retainedSaveDataValue, setRetainedSaveDataValue] = useState(null);
+  const [retainedSaveDataValue, setRetainedSaveDataValue] = useState(defaultRetainedValue);
+  if(saveDataValue && saveDataValue !== retainedSaveDataValue) {
+    // new truthy value came in, sync it up (and 'retain' it)
+    console.log('syncing retained from', retainedSaveDataValue, 'to', saveDataValue);
+    setRetainedSaveDataValue(saveDataValue); // TODO efficiency check: will this cause one rerender (see if-condition) or none?
+  }
 
-export const relatedKeyBasesForItems = [
-  'itemAvailable',
-  'itemOwned',
-  'newBlueprint',
-  'decipheredHint',
-];
-export const relatedNamingMapForItems = {
-  'itemAvailable': 'Available',
-  'itemOwned': 'Owned',
-  'newBlueprint': 'Blueprint',
-  'decipheredHint': 'Hint',
+  function updateSaveDataValue(newValue) {
+    const validatedValue = saveDataValueAdjustUsingPropInfo(newValue, propInfo, version);
+    setRetainedSaveDataValue(validatedValue);
+
+    if(saveDataValue) {
+      // this call may (depending on implementation) trigger a new re-render as well, via saveDataValue changing
+      handleValueUpdate(newValue);
+    } else {
+    }
+  }
+
+  let propInfoDd1 = (type !== "outfitindices") ? propInfo : {...propInfo, type: "int-dropdown"};
+  let propInfoDd2 = (type !== "outfitindices") ? null : {...propInfo, type: "int-dropdown",
+    dropdown: propInfo.dropdown2, dropdown_extra: propInfo.dropdown2_extra};
+
+  let dropdownOptions;
+  // TODO optimization idea: useMemo on resolveDropdownFromPropInfo, or its resolveDropdown function call inside it?
+  let dropdownValues = resolveDropdownFromPropInfo(propInfoDd1, version);
+  if(typeof(dropdownValues) === "object") {
+    dropdownOptions = Object.entries(dropdownValues).map(([optValue, optContents]) => (
+      <option value={optValue}>{optContents}</option>
+    ));
+    dropdownOptions.unshift(<option value="" disabled></option>);
+  }
+  
+  let dropdownClothesValues, clothesDropdownOptions;
+  let dropdownSkinsValues, skinsDropdownOptions;
+  if(type === "outfitindices") {
+    dropdownClothesValues = dropdownValues; dropdownValues = undefined;
+    clothesDropdownOptions = dropdownOptions; dropdownOptions = undefined;
+    // TODO optimization idea: useMemo on resolveDropdownFromPropInfo, or its resolveDropdown function call inside it?
+    dropdownSkinsValues = resolveDropdownFromPropInfo(propInfoDd2, version);
+    if(typeof(dropdownSkinsValues) === "object") {
+      skinsDropdownOptions = Object.entries(dropdownSkinsValues).map(([optValue, optContents]) => (
+        <option value={optValue}>{optContents}</option>
+      ));
+      skinsDropdownOptions.unshift(<option value="" disabled></option>);
+    }
+  }
+
+  function handleAddItem(newValue) {
+    updateSaveDataValue(retainedSaveDataValue===null || typeof(retainedSaveDataValue)==="undefined"
+                      ? newValue // replacing the nullish previous value with a single newValue
+                      : retainedSaveDataValue + listDelim + newValue);
+  }
+
+  function handleDeleteItem(ind) {
+    let asArr = saveValStrToList(retainedSaveDataValue);
+    if(!Array.isArray(asArr)) {
+      console.error('When trying to handle delete, asArr was not an array! Performing NO ACTION.');
+      return;
+    }
+    if(ind >= asArr.length || ind < 0) {
+      throw new Error(`index ${ind} out of bounds for save value array ${asArr}`);
+    }
+    updateSaveDataValue(saveValListToStr(asArr.filter((v, i) => i !== ind)));
+  }
+
+  function handleUpdateItem(ind, newValue) {
+    let asArr = saveValStrToList(retainedSaveDataValue);
+    if(!Array.isArray(asArr)) {
+      console.error('When trying to handle delete, asArr was not an array! Performing NO ACTION.');
+      return;
+    }
+    if(ind >= asArr.length || ind < 0) {
+      throw new Error(`index ${ind} out of bounds for save value array ${asArr}`);
+    }
+    asArr[ind] = newValue;
+    updateSaveDataValue(saveValListToStr(asArr));
+  }
+
+  return (
+    <div className="list-editor-grid">
+      {
+      // saveValStrToList(saveDataValue)
+      saveValStrToList(retainedSaveDataValue)
+      ?.map((substr, ind) => {
+
+        let inputElem;
+        if(dropdownOptions) {
+          inputElem = <SelectEditor
+            saveDataValue={dropdownValues?.hasOwnProperty(substr) && substr}
+            handleValueUpdate={val => handleUpdateItem(ind, val)}
+            dropdownOptions={dropdownOptions}
+            disabled={Boolean(disableInputsWhenUnset && !saveDataValue)}
+          />;
+        } else {
+          if(type === "colorlist") {
+            inputElem = <ColorEditor
+              saveDataValue={substr}
+              handleValueUpdate={val => handleUpdateItem(ind, val)}
+              disabled={Boolean(disableInputsWhenUnset && !saveDataValue)}
+            />
+          } else if(type === "outfitindices") {
+            // Do skins last.
+            const _doSkins = ind === getMaxOutfitSize(version);
+            let _ddvals = _doSkins ? dropdownSkinsValues : dropdownClothesValues;
+            let _ddopts = _doSkins ? skinsDropdownOptions : clothesDropdownOptions;
+            let _selectEditor = <SelectEditor
+              saveDataValue={_ddvals?.hasOwnProperty(substr) && substr}
+              handleValueUpdate={val => handleUpdateItem(ind, val)}
+              dropdownOptions={_ddopts}
+              disabled={Boolean(disableInputsWhenUnset && !saveDataValue)}
+            />;
+            if(_doSkins) {
+              inputElem = <>
+                <span>Skin:</span>
+                {/* <SelectEditor
+                  saveDataValue={dropdownSkinsValues?.hasOwnProperty(substr) && substr}
+                  handleValueUpdate={val => handleUpdateItem(ind, val)}
+                  dropdownOptions={skinsDropdownOptions}
+                  disabled={Boolean(disableInputsWhenUnset && !saveDataValue)}
+                />; */}
+                {_selectEditor}
+              </>
+            } else {
+              // inputElem = <SelectEditor
+              //   saveDataValue={dropdownClothesValues?.hasOwnProperty(substr) && substr}
+              //   handleValueUpdate={val => handleUpdateItem(ind, val)}
+              //   dropdownOptions={clothesDropdownOptions}
+              //   disabled={Boolean(disableInputsWhenUnset && !saveDataValue)}
+              // />;
+              inputElem = _selectEditor;
+            }
+          } else {
+            inputElem = <input
+              type="text"
+              value={substr}
+              onChange={e => handleUpdateItem(ind, e.target.value)}
+              disabled={Boolean(disableInputsWhenUnset && !saveDataValue)}
+            />;
+          }
+        }
+        return (
+          <div key={ind} className="list-editor-grid-row">
+            {inputElem}
+            {allowAddAndRemove &&
+              <button type="button" title="Remove item" onClick={e => handleDeleteItem(ind)}>
+                &mdash;
+              </button>
+            }
+          </div>
+        );
+
+      })}
+      <div className="list-editor-grid-row">
+        {allowAddAndRemove
+        ?
+          <button type="button" title="Add item" onClick={e => handleAddItem(defaultNewValue)}>
+            +
+          </button>
+        :
+          // with no add or remove, use a nice boolean editor to serve as a toggle of the entire list
+          <BooleanEditor
+            saveDataValue={saveDataValue ? '1' : undefined}
+            className=""
+            handleValueUpdate={
+              // if it's unchecking (false), unset it (undefined) instead.
+              checked => {
+                // toggle the editor's retained value being transferred/synced to the main save data state.
+                // notice the direct call to handleValueUpdate, not the intermediate handleUpdateItem. This keeps the retained value.
+                if(checked) {
+                  handleValueUpdate(retainedSaveDataValue);
+                } else {
+                  handleValueUpdate(undefined);
+                }
+              }
+            }
+          />
+        }
+        {children}
+      </div>
+      {/* debug: show current main save data state's value, and the current retained value */}
+      {/* <div className="list-editor-grid-row">debug {disableInputsWhenUnset&&'d '}<span>({''+saveDataValue})</span> <span>r({''+retainedSaveDataValue})</span></div> */}
+    </div>
+  );
 }
+
+
+
 export const propInfoFullKeyForItems = '_specialgroup_item';
+export const propInfoForItems = getPropInfo(propInfoFullKeyForItems);
+export const relatedKeyBasesForItems = Object.keys(propInfoForItems.keybasesmap);
+export const relatedNamingMapForItems = propInfoForItems.keybasesmap;
 
 export function ItemSpecialEditor({ categoryId, fullKeysArray }) {
   console.log('ItemSpecialEditor created ', fullKeysArray);
   // return <div style={{border:'1px steelblue solid'}}>{fullKeysArray.map(k=><div key={k}>{k}</div>)}</div>;
   const commonKeyExtra = getKeyParts(fullKeysArray[0])[1]; // get keyExtra
 
-  const groupPropInfo = getPropInfo(propInfoFullKeyForItems);
+  const groupPropInfo = propInfoForItems;
   const groupName = resolvePropInfoName(groupPropInfo, commonKeyExtra);
+
+  const version = useVersion();
+
+  // const [saveDataValue, setSaveData] = useStore((store) => {//console.log('key: '+spacedKey+' store:',store);
+  //   // return store[spacedKey]});
+  //   return store[categoryId][fullKey]}
+  // );
+  const getAllData = useStoreGetAll();
+
+  const _initialDataOfCategory = getAllData()[categoryId];
+
+  const [keysValidity, setKeysValidity] = useState(
+    Object.fromEntries(relatedKeyBasesForItems.map(keyBase => {
+      const fullKey = partsToKey(keyBase, commonKeyExtra);
+      let _initialValidityResult = saveDataValueValidate(_initialDataOfCategory[fullKey], keyBase, commonKeyExtra, version);
+      return [fullKey, {validity: _initialValidityResult.validity, warning: _initialValidityResult.warning}];
+    }))
+  );
+  function setSingleKeyValidity(fullKey, newValidity, newWarning) {
+    setKeysValidity({
+      ...keysValidity,
+      [fullKey]: {validity: newValidity, warning: newWarning}
+    });
+  }
 
   let contents = relatedKeyBasesForItems.map(keyBase =>
     <ItemSpecialEditorInnerSingleSwitch key={keyBase}
       categoryId={categoryId} keyBase={keyBase} commonKeyExtra={commonKeyExtra}
+      setSingleKeyValidity={setSingleKeyValidity}
     />
   );
 
@@ -424,13 +686,14 @@ export function ItemSpecialEditor({ categoryId, fullKeysArray }) {
       keyBasesArray={relatedKeyBasesForItems}
       commonKeyExtra={commonKeyExtra}
     />
+    <ValidationIndicator otherIndsValidity={keysValidity} />
     <div className="editor-items-container">
       {contents}
     </div>
   </div>;
 }
 
-function ItemSpecialEditorInnerSingleSwitch({ categoryId, keyBase, commonKeyExtra }) {
+function ItemSpecialEditorInnerSingleSwitch({ categoryId, keyBase, commonKeyExtra, setSingleKeyValidity }) {
   // Note that no validity is being saved or indicated.
   // As part of a special editor, plus simply being a boolean, validity indication is intentionally ignored.
   
@@ -450,9 +713,7 @@ function ItemSpecialEditorInnerSingleSwitch({ categoryId, keyBase, commonKeyExtr
     setSaveData(categoryId, fullKey, validatedValue);
   };
 
-  return <div style={{flex: '1 0 auto', display: 'grid', gap: 'var(--editor-row-padding-x) var(--flex-gap)',
-    gridTemplateColumns: '1fr 1fr', gridTemplateRows: 'auto', gridTemplateAreas: '"header header" "switch eraser"'}}
-  >
+  return <div className="switch-grid">
     <div style={{gridArea: 'header'}}>
       <label htmlFor={switchId}>{relatedNamingMapForItems[keyBase]}</label>
     </div>
