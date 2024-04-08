@@ -6,7 +6,7 @@ import { getPropInfo, resolveDropdownFromPropInfo, resolvePropInfoName } from ".
 import { listDelim } from "../../utils/saveFileEncodingUtils.mjs";
 import { handleKeyDown, handleMouseUp } from "../../utils/unityMapping";
 import stopEvent from "../../utils/stopEvent";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 export function Editor({ categoryId, fullKey }) {
   const [keyBase, keyExtra] = getKeyParts(fullKey);
@@ -28,7 +28,7 @@ export function Editor({ categoryId, fullKey }) {
   
   // TODO Note: can optimize avoiding calling this twice by passing a function to useState directly. Perhaps by wrapping it in useCallback.
   // https://react.dev/reference/react/useState#avoiding-recreating-the-initial-state
-  let _initialValidityResult = saveDataValueValidate(saveDataValue, keyBase, keyExtra, version);
+  let _initialValidityResult = saveDataValueValidate(saveDataValue, keyBase, keyExtra, version, propInfo.delim);
   
   // const validity = useState(/**@type {boolean | null}*/null);
   // const warning = useState(/**@type {string | null}*/null);  // Note: may expand warnings into its own store? or incorporate warnings into value store?
@@ -40,7 +40,7 @@ export function Editor({ categoryId, fullKey }) {
 
   // Note: may cache this later with useCallback(...) (or useMemo(...)?) for optimization
   const handleValueUpdate = (editorsValue) => {
-    const result = saveDataValueValidate(editorsValue, keyBase, keyExtra, version);
+    const result = saveDataValueValidate(editorsValue, keyBase, keyExtra, version, propInfo.delim);
     const validatedValue = result.value;
     // setValidity(result.validity);
     // setWarning(result.warning);
@@ -144,7 +144,7 @@ function SingleValidationIndicator({ /**@type {boolean | null}*/ validity, /**@t
 function RichSingleValueEditor({ children, type, saveDataValue, handleValueUpdate, propInfo, version }) {
   console.log(`RichSingleValueEditor created ${type}`);
   let inputElem = null;
-  let isList = false;
+  let isComplexInput = false;
   let dropdownOptions = [];
   if(type === "int-dropdown") {
     // TODO: useMemo on resolveDropdownFromPropInfo, or its resolveDropdown function call inside it?
@@ -204,7 +204,7 @@ function RichSingleValueEditor({ children, type, saveDataValue, handleValueUpdat
       break;
     
     case "float-range":
-      inputElem = <input style={{width: "18vw", margin: 0}}
+      inputElem = <input style={{width: "90%", margin: 0}}
         type="range"
         value={saveDataValue ?? ''}
         onChange={e => handleValueUpdate(e.target.value)}
@@ -219,7 +219,7 @@ function RichSingleValueEditor({ children, type, saveDataValue, handleValueUpdat
       break;
 
     case "intlist":
-      isList = true;
+      isComplexInput = true;
       inputElem = (
         <ListEditorItems type={type} propInfo={propInfo}
           saveDataValue={saveDataValue} handleValueUpdate={handleValueUpdate}
@@ -231,7 +231,7 @@ function RichSingleValueEditor({ children, type, saveDataValue, handleValueUpdat
       break;
 
     case "colorlist":
-      isList = true;
+      isComplexInput = true;
       inputElem = (
         <LimitableRetainingListEditor type={type} propInfo={propInfo}
           saveDataValue={saveDataValue} handleValueUpdate={handleValueUpdate}
@@ -243,7 +243,7 @@ function RichSingleValueEditor({ children, type, saveDataValue, handleValueUpdat
       break;
 
     case "outfitindices":
-      isList = true;
+      isComplexInput = true;
       inputElem = (
         <LimitableRetainingListEditor type={type} propInfo={propInfo}
           saveDataValue={saveDataValue} handleValueUpdate={handleValueUpdate}
@@ -251,6 +251,18 @@ function RichSingleValueEditor({ children, type, saveDataValue, handleValueUpdat
         >
           {children}
         </LimitableRetainingListEditor>
+      );
+      break;
+
+    case "furnituretransform":
+      isComplexInput = true;
+      inputElem = (
+        <FurnitureTransformEditor type={type} propInfo={propInfo}
+          saveDataValue={saveDataValue} handleValueUpdate={handleValueUpdate}
+          version={version}
+        >
+          {children}
+        </FurnitureTransformEditor>
       );
       break;
 
@@ -266,15 +278,13 @@ function RichSingleValueEditor({ children, type, saveDataValue, handleValueUpdat
       break;
   }
   // if(!inputElem) inputElem = <></>;
-  return ( isList
+  return ( isComplexInput
     ? inputElem
     : <>
       <div className="rich-editor-row">
         {inputElem || <></>}
       </div>
-      {/* <div className="raw-editor-and-eraser-row"> */}
-        {children}
-      {/* </div> */}
+      {children}
     </>
   );
 }
@@ -295,14 +305,18 @@ function BooleanEditor({ saveDataValue, handleValueUpdate, className="w-100", in
 function ColorEditor({ saveDataValue, handleValueUpdate, disabled=false }) {
   return <>
   {/* <div style={{display: "inline-block", width: "18vw"}}> */}
-    <input style={{width: "5em", height: "auto"}}
+    <input
+      // style={{width: "5em", height: "auto"}}
+      className="for-color-editor"
       type="color"
       value={(typeof(saveDataValue) === "undefined" || saveDataValue === null ? ''
               : saveDataValue.match(HEX_COL_PATTERN) ? saveDataValue : saveToHex(saveDataValue) || '')}
       onChange={e => handleValueUpdate(e.target.value)}
       disabled={disabled}
     />
-    <input style={{width: "calc(100% - 5em)"}}
+    <input
+      // style={{width: "calc(100% - 5em)"}}
+      className="for-color-editor"
       type="text"
       value={(typeof(saveDataValue) === "undefined" || saveDataValue === null ? ''
               : saveToHex(saveDataValue) || saveDataValue)}
@@ -314,10 +328,11 @@ function ColorEditor({ saveDataValue, handleValueUpdate, disabled=false }) {
 }
 
 function SelectEditor({ saveDataValue, handleValueUpdate, dropdownOptions, className="", disabled=false }) {
+  let hasSaveDataValue = typeof(dropdownOptions?.find((v) => String(v.props.value) === String(saveDataValue))) !== "undefined";
   return <select
     className={className}
     onChange={e => handleValueUpdate(e.target.value)}
-    value={saveDataValue || ''}
+    value={hasSaveDataValue ? saveDataValue : ''}
     disabled={disabled}
   >
     {dropdownOptions}
@@ -325,11 +340,12 @@ function SelectEditor({ saveDataValue, handleValueUpdate, dropdownOptions, class
 }
 
 function PropEraseButton({ saveDataValue, handleValueUpdate }) {
+  // Note: does not disable when saveDataValue is an empty string ('')
   return <button type="button"
     className="editor-erase-button"
-    disabled={isEmptyOrNullOrUndefined(saveDataValue)}
+    disabled={saveDataValue===null || typeof(saveDataValue)==="undefined"}
     onClick={e => handleValueUpdate(undefined)}
-    title="Erase property's value"
+    title="Erase property from save"
   >
     X
   </button>;
@@ -348,15 +364,17 @@ function PropRawTextInput({ saveDataValue }) {
 
 
 
-function ListEditorItems({ children, type, propInfo, saveDataValue, handleValueUpdate, version }) {
+function ListEditorItems({ children, type, propInfo, saveDataValue, handleValueUpdate, version, delim = listDelim }) {
   console.log("ListEditorItems created");
   console.log("ListEditorItems saveDataValue", saveDataValue);
   const defaultNewValue = String(propInfo.default ?? '');
+  if(propInfo.delim) delim = propInfo.delim;
 
   let itemDropdownOptions;
   // TODO: useMemo on resolveDropdownFromPropInfo, or its resolveDropdown function call inside it?
   // let dropdownValues;
   let dropdownValues = resolveDropdownFromPropInfo(propInfo, version);
+  // TODO optimization idea: useMemo around the code that generates the dropdownOptions list!
   if(typeof(dropdownValues) === "object") {
     itemDropdownOptions = Object.entries(dropdownValues).map(([optValue, optContents]) => (
       <option value={optValue}>{optContents}</option>
@@ -367,11 +385,11 @@ function ListEditorItems({ children, type, propInfo, saveDataValue, handleValueU
   function handleAddItem(newValue) {
     handleValueUpdate(saveDataValue===null || typeof(saveDataValue)==="undefined"
                       ? newValue // replacing the nullish previous value with a single newValue
-                      : saveDataValue + listDelim + newValue);
+                      : saveDataValue + delim + newValue);
   }
 
   function handleDeleteItem(ind) {
-    let asArr = saveValStrToList(saveDataValue);
+    let asArr = saveValStrToList(saveDataValue, delim);
     if(!Array.isArray(asArr)) {
       console.error('When trying to handle delete, asArr was not an array! Performing NO ACTION.');
       return;
@@ -379,11 +397,11 @@ function ListEditorItems({ children, type, propInfo, saveDataValue, handleValueU
     if(ind >= asArr.length || ind < 0) {
       throw new Error(`index ${ind} out of bounds for save value array ${asArr}`);
     }
-    handleValueUpdate(saveValListToStr(asArr.filter((v, i) => i !== ind)));
+    handleValueUpdate(saveValListToStr(asArr.filter((v, i) => i !== ind), delim));
   }
 
   function handleUpdateItem(ind, newValue) {
-    let asArr = saveValStrToList(saveDataValue);
+    let asArr = saveValStrToList(saveDataValue, delim);
     if(!Array.isArray(asArr)) {
       console.error('When trying to handle delete, asArr was not an array! Performing NO ACTION.');
       return;
@@ -392,13 +410,13 @@ function ListEditorItems({ children, type, propInfo, saveDataValue, handleValueU
       throw new Error(`index ${ind} out of bounds for save value array ${asArr}`);
     }
     asArr[ind] = newValue;
-    handleValueUpdate(saveValListToStr(asArr));
+    handleValueUpdate(saveValListToStr(asArr, delim));
   }
 
   return (
     <div className="list-editor-grid">
       {
-      saveValStrToList(saveDataValue)
+      saveValStrToList(saveDataValue, delim)
       ?.map((substr, ind) => {
 
         let inputElem;
@@ -409,7 +427,7 @@ function ListEditorItems({ children, type, propInfo, saveDataValue, handleValueU
             dropdownOptions={itemDropdownOptions}
           />;
         } else {
-          inputElem = <input
+          inputElem = <input className="w-100"
             type="text"
             value={substr}
             onChange={e => handleUpdateItem(ind, e.target.value)}
@@ -435,34 +453,64 @@ function ListEditorItems({ children, type, propInfo, saveDataValue, handleValueU
   );
 }
 
-function LimitableRetainingListEditor({ children, type, propInfo, saveDataValue, handleValueUpdate, version, fixedCount=0, disableInputsWhenUnset=true }) {
+
+
+function LimitableRetainingListEditor({ children, type, propInfo, saveDataValue, handleValueUpdate, version,
+                                        fixedCount=0, disableInputsWhenUnset=true }) {
   console.log("ListEditorFixableSize created");
   console.log("ListEditorFixableSize saveDataValue", saveDataValue);
   const defaultNewValue = String(propInfo.default ?? '');
+  const _defaultSkin = '';
   
   const allowAddAndRemove = !(fixedCount && fixedCount > 0);
   
-  const defaultRetainedValue = allowAddAndRemove ? null : saveValListToStr(Array.from({length: fixedCount}, (v) => defaultNewValue));
+  const defaultValueWhenFalsy = allowAddAndRemove ? null : saveValListToStr(
+    type === "outfitindices"
+    ? Array.from({length: fixedCount + 1}, (v, i) => i === fixedCount ? _defaultSkin : defaultNewValue)
+    : Array.from({length: fixedCount}, (v) => defaultNewValue)
+  );
 
-  // Retain the previous saveDataValue when the current one becomes null or undefined
+  // Retain the previous saveDataValue when the current one becomes null or undefined (by this editor!)
   //  and use this state as an intermediary for the actual editor elements.
   //  This is to allow retaining and possible editing of the property value while it is not in the main save data state.
-  // const [retainedSaveDataValue, setRetainedSaveDataValue] = useState(null);
-  const [retainedSaveDataValue, setRetainedSaveDataValue] = useState(defaultRetainedValue);
-  if(saveDataValue && saveDataValue !== retainedSaveDataValue) {
-    // new truthy value came in, sync it up (and 'retain' it)
+  const [retainedSaveDataValue, setRetainedSaveDataValue] = useState(null);
+  // const [retainedSaveDataValue, setRetainedSaveDataValue] = useState(defaultRetainedValue);
+  // const [dataUpdateWasFromThis, setDataUpdateWasFromThis] = useState(false);
+  const dataUpdateWasFromThis = useRef(false);
+  console.log('dataUpdateWasFromThis:', dataUpdateWasFromThis.current, ', different:', saveDataValue !== retainedSaveDataValue);
+  
+  // If new value came in, sync it up (and 'retain' it)
+  // if(saveDataValue && saveDataValue !== retainedSaveDataValue) {
+  // if((!dataUpdateWasFromThis || saveDataValue) && saveDataValue !== retainedSaveDataValue) {
+  if((!dataUpdateWasFromThis.current || saveDataValue) && saveDataValue !== retainedSaveDataValue) {
     console.log('syncing retained from', retainedSaveDataValue, 'to', saveDataValue);
     setRetainedSaveDataValue(saveDataValue); // TODO efficiency check: will this cause one rerender (see if-condition) or none?
+    // setDataUpdateWasFromThis(false);
+    dataUpdateWasFromThis.current = false;
   }
 
   function updateSaveDataValue(newValue) {
+    // setDataUpdateWasFromThis(true);
+    dataUpdateWasFromThis.current = true;
     const validatedValue = saveDataValueAdjustUsingPropInfo(newValue, propInfo, version);
     setRetainedSaveDataValue(validatedValue);
-
+    
     if(saveDataValue) {
-      // this call may (depending on implementation) trigger a new re-render as well, via saveDataValue changing
+      // this call may (depending on implementation) trigger a re-render, via saveDataValue changing
       handleValueUpdate(newValue);
     } else {
+    }
+  }
+  function toggleSaveDataValue(checked) {
+    // setDataUpdateWasFromThis(true);
+    dataUpdateWasFromThis.current = true;
+    // toggle the editor's retained value being transferred/synced to the main save data state.
+    // Notice the direct call to handleValueUpdate, not the intermediate handleUpdateItem. This keeps the retained value.
+    if(checked) {
+      // handleValueUpdate(retainedSaveDataValue);
+      handleValueUpdate(retainedSaveDataValue || defaultValueWhenFalsy);
+    } else {
+      handleValueUpdate(undefined);
     }
   }
 
@@ -473,6 +521,7 @@ function LimitableRetainingListEditor({ children, type, propInfo, saveDataValue,
   let dropdownOptions;
   // TODO optimization idea: useMemo on resolveDropdownFromPropInfo, or its resolveDropdown function call inside it?
   let dropdownValues = resolveDropdownFromPropInfo(propInfoDd1, version);
+  // TODO optimization idea: useMemo around the code that generates the dropdownOptions list!
   if(typeof(dropdownValues) === "object") {
     dropdownOptions = Object.entries(dropdownValues).map(([optValue, optContents]) => (
       <option value={optValue}>{optContents}</option>
@@ -516,7 +565,7 @@ function LimitableRetainingListEditor({ children, type, propInfo, saveDataValue,
   function handleUpdateItem(ind, newValue) {
     let asArr = saveValStrToList(retainedSaveDataValue);
     if(!Array.isArray(asArr)) {
-      console.error('When trying to handle delete, asArr was not an array! Performing NO ACTION.');
+      console.error('When trying to handle update, asArr was not an array! Performing NO ACTION.');
       return;
     }
     if(ind >= asArr.length || ind < 0) {
@@ -530,7 +579,7 @@ function LimitableRetainingListEditor({ children, type, propInfo, saveDataValue,
     <div className="list-editor-grid">
       {
       // saveValStrToList(saveDataValue)
-      saveValStrToList(retainedSaveDataValue)
+      saveValStrToList(retainedSaveDataValue || defaultValueWhenFalsy)
       ?.map((substr, ind) => {
 
         let inputElem;
@@ -609,26 +658,233 @@ function LimitableRetainingListEditor({ children, type, propInfo, saveDataValue,
         :
           // with no add or remove, use a nice boolean editor to serve as a toggle of the entire list
           <BooleanEditor
+            // if it's unchecking (false), unset it (undefined) instead.
             saveDataValue={saveDataValue ? '1' : undefined}
             className=""
             handleValueUpdate={
               // if it's unchecking (false), unset it (undefined) instead.
-              checked => {
-                // toggle the editor's retained value being transferred/synced to the main save data state.
-                // notice the direct call to handleValueUpdate, not the intermediate handleUpdateItem. This keeps the retained value.
-                if(checked) {
-                  handleValueUpdate(retainedSaveDataValue);
-                } else {
-                  handleValueUpdate(undefined);
-                }
-              }
+              checked => toggleSaveDataValue(checked)
             }
           />
         }
         {children}
       </div>
       {/* debug: show current main save data state's value, and the current retained value */}
-      {/* <div className="list-editor-grid-row">debug {disableInputsWhenUnset&&'d '}<span>({''+saveDataValue})</span> <span>r({''+retainedSaveDataValue})</span></div> */}
+      {/* <div className="list-editor-grid-row">debug {disableInputsWhenUnset&&'d '}{dataUpdateWasFromThis.current&&'s '}
+        <span>({''+saveDataValue})</span> <span>r({''+retainedSaveDataValue})</span></div> */}
+    </div>
+  );
+}
+
+
+
+const furnitureTransformDelim = ':';
+const transformPosOrRotDelim = ',';
+
+function FurnitureTransformEditor({ children, type, propInfo, saveDataValue, handleValueUpdate, version }) {
+  console.log("FurnitureTransformEditor created");
+  console.log("FurnitureTransformEditor saveDataValue", saveDataValue);
+  const defaultNewFurnitureValue = String(propInfo.default ?? '');
+  const defaultNewPosRotValue = '';
+  
+  const defaultValueWhenFalsy = saveValListToStr([
+    defaultNewFurnitureValue,
+    saveValListToStr(Array.from({length: 3}, (v) => defaultNewPosRotValue), transformPosOrRotDelim),
+    saveValListToStr(Array.from({length: 4}, (v) => defaultNewPosRotValue), transformPosOrRotDelim)
+  ], furnitureTransformDelim);
+
+  let furnitureDropdownOptions;
+  // TODO: useMemo on resolveDropdownFromPropInfo, or its resolveDropdown function call inside it?
+  // let dropdownValues;
+  let dropdownValues = resolveDropdownFromPropInfo(propInfo, version);
+  // TODO optimization idea: useMemo around the code that generates the dropdownOptions list!
+  if(typeof(dropdownValues) === "object") {
+    furnitureDropdownOptions = Object.entries(dropdownValues).map(([optValue, optContents]) => (
+      <option value={optValue}>{optContents}</option>
+    ));
+    furnitureDropdownOptions.unshift(<option value="" disabled></option>);
+  }
+
+  // function handleAddItem(newValue) {
+  //   handleValueUpdate(saveDataValue===null || typeof(saveDataValue)==="undefined"
+  //                     ? newValue // replacing the nullish previous value with a single newValue
+  //                     : saveDataValue + furnitureTransformDelim + newValue);
+  // }
+
+  function handleDeleteItem(ind) {
+    let asArr = saveValStrToList(saveDataValue, furnitureTransformDelim);
+    if(!Array.isArray(asArr)) {
+      console.error('When trying to handle delete, asArr was not an array! Performing NO ACTION.');
+      return;
+    }
+    if(ind >= asArr.length || ind < 0) {
+      throw new Error(`index ${ind} out of bounds for save value array ${asArr}`);
+    }
+    handleValueUpdate(saveValListToStr(asArr.filter((v, i) => i !== ind), furnitureTransformDelim));
+  }
+
+  function handleUpdateItem(ind, newValue) {
+    let asArr = saveValStrToList(saveDataValue, furnitureTransformDelim);
+    if(!Array.isArray(asArr)) {
+      console.error('When trying to handle update, asArr was not an array! Performing NO ACTION.');
+      return;
+    }
+    // if(ind >= asArr.length || ind < 0) {
+    if(ind < 0) {
+      throw new Error(`index ${ind} out of bounds for save value array ${asArr}`);
+    }
+    while(ind >= asArr.length) {
+      asArr.push(defaultNewPosRotValue);
+    }
+    asArr[ind] = newValue;
+    handleValueUpdate(saveValListToStr(asArr, furnitureTransformDelim));
+  }
+  function toggleSaveDataValue(checked) {
+    if(checked) {
+      handleValueUpdate(saveDataValue || defaultValueWhenFalsy);
+    } else {
+      handleValueUpdate(undefined);
+    }
+  }
+
+  let saveValAsList = saveValStrToList(saveDataValue, furnitureTransformDelim) ?? [];
+  // // ensure its existence and length for the editors, avoiding undefined / out-of-bounds problems
+  // if(!saveValAsList)
+  //   saveValAsList = [];
+  // while(saveValAsList && saveValAsList.length < 3) {
+  //   saveValAsList.push('');
+  // }
+
+  return (
+    <div className="list-editor-grid">
+      <div className="list-editor-grid-row furniture-selector">
+        <span>Furniture:</span>
+        <SelectEditor
+          saveDataValue={dropdownValues?.hasOwnProperty(saveValAsList[0]) && saveValAsList[0]}
+          handleValueUpdate={val => handleUpdateItem(0, val)}
+          dropdownOptions={furnitureDropdownOptions}
+        />
+        <PropRawTextInput
+          saveDataValue={saveValAsList[0]}
+        />
+      </div>
+      <div className="list-editor-grid-row">
+        <FurnitureTransformEditorSubgrid
+          defaultNewPosRotValue={defaultNewPosRotValue}
+          posSaveDataValue={saveValAsList[1]}
+          rotSaveDataValue={saveValAsList[2]}
+          handlePosValueUpdate={val => handleUpdateItem(1, val)}
+          handleRotValueUpdate={val => handleUpdateItem(2, val)}
+        />
+      </div>
+      {saveValAsList && saveValAsList.length > 3 && saveValAsList.slice(3).map((substr, ind) => {
+        ind = ind + 3;
+        return <div key={ind} className="list-editor-grid-row">
+          <input
+            type="text"
+            value={substr}
+            onChange={e => handleUpdateItem(ind, e.target.value)}
+          />
+          <button type="button" title="Remove item" onClick={e => handleDeleteItem(ind)}>
+            &mdash;
+          </button>
+        </div>;
+      })}
+      <div className="list-editor-grid-row">
+        <BooleanEditor
+          // if it's unchecking (false), unset it (undefined) instead.
+          saveDataValue={saveDataValue ? '1' : undefined}
+          className=""
+          handleValueUpdate={
+            // if it's unchecking (false), unset it (undefined) instead.
+            checked => toggleSaveDataValue(checked)
+          }
+        />
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function FurnitureTransformEditorSubgrid({ defaultNewPosRotValue, posSaveDataValue, rotSaveDataValue, handlePosValueUpdate, handleRotValueUpdate }) {
+  const posAsList = saveValStrToList(posSaveDataValue, transformPosOrRotDelim) ?? [];
+  const rotAsList = saveValStrToList(rotSaveDataValue, transformPosOrRotDelim) ?? [];
+
+  function handleUpdateItem(fullValue, handleUpdateFn, ind, newValue) {
+    let asArr = saveValStrToList(fullValue, transformPosOrRotDelim) ?? [];
+    if(!Array.isArray(asArr)) {
+      console.error('When trying to handle update, asArr was not an array! Performing NO ACTION.');
+      return;
+    }
+    // if(ind >= asArr.length || ind < 0) {
+    if(ind < 0) {
+      throw new Error(`index ${ind} out of bounds for save value array ${asArr}`);
+    }
+    while(ind >= asArr.length) {
+      asArr.push(defaultNewPosRotValue);
+    }
+    asArr[ind] = newValue;
+    handleUpdateFn(saveValListToStr(asArr, transformPosOrRotDelim));
+  }
+  function handleUpdatePosItem(ind, newValue) {
+    return handleUpdateItem(posSaveDataValue, handlePosValueUpdate, ind, newValue);
+  }
+  function handleUpdateRotItem(ind, newValue) {
+    return handleUpdateItem(rotSaveDataValue, handleRotValueUpdate, ind, newValue);
+  }
+
+  return (
+    <div className="transform-grid">
+      <span style={{gridArea: 'x'}}>x</span>
+      <span style={{gridArea: 'y'}}>y</span>
+      <span style={{gridArea: 'z'}}>z</span>
+      <span style={{gridArea: 'w'}}>w</span>
+      
+      <input className="transform-axis-label" style={{gridArea: 'px'}}
+        type="text"
+        value={posAsList[0] || ''}
+        onChange={e => handleUpdatePosItem(0, e.target.value)}
+      />
+      <input className="transform-axis-label" style={{gridArea: 'py'}}
+        type="text"
+        value={posAsList[1] || ''}
+        onChange={e => handleUpdatePosItem(1, e.target.value)}
+      />
+      <input className="transform-axis-label" style={{gridArea: 'pz'}}
+        type="text"
+        value={posAsList[2] || ''}
+        onChange={e => handleUpdatePosItem(2, e.target.value)}
+      />
+      
+      <input className="transform-axis-label" style={{gridArea: 'rx'}}
+        type="text"
+        value={rotAsList[0] || ''}
+        onChange={e => handleUpdateRotItem(0, e.target.value)}
+      />
+      <input className="transform-axis-label" style={{gridArea: 'ry'}}
+        type="text"
+        value={rotAsList[1] || ''}
+        onChange={e => handleUpdateRotItem(1, e.target.value)}
+      />
+      <input className="transform-axis-label" style={{gridArea: 'rz'}}
+        type="text"
+        value={rotAsList[2] || ''}
+        onChange={e => handleUpdateRotItem(2, e.target.value)}
+      />
+      <input className="transform-axis-label" style={{gridArea: 'rw'}}
+        type="text"
+        value={rotAsList[3] || ''}
+        onChange={e => handleUpdateRotItem(3, e.target.value)}
+      />
+
+      <div style={{gridArea: 'pe'}}>
+        <span className="transform-part-label">Position</span>
+        <PropEraseButton saveDataValue={posSaveDataValue} handleValueUpdate={val => handlePosValueUpdate(val)} />
+      </div>
+      <div style={{gridArea: 're'}}>
+        <span className="transform-part-label">Rotation</span>
+        <PropEraseButton saveDataValue={rotSaveDataValue} handleValueUpdate={val => handleRotValueUpdate(val)} />
+      </div>
     </div>
   );
 }

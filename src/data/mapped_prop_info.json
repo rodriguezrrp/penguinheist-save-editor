@@ -392,5 +392,33 @@
         "name":"Saved Outfit #{name} Colors",
         "name_map":{"0":1,"1":2,"2":3,"3":4,"4":5,"5":6,"6":7,"7":8},
         "type":"colorlist"
+    },
+    "realEstateOwned": {
+        "category":"housing",
+        "name":"Real Estate {name} Owned",
+        "name_map":"housing",
+        "type":"bool"
+    },
+    "placedFurnitureIndices": {
+        "category":"housing",
+        "name":"Indices of Furniture Placed in {name}",
+        "name_map":"housing",
+        "type":"intlist",
+        "delim":":"
+    },
+    "furnitureTransformData": {
+        "category":"housing",
+        "name":"Position and Rotation of {name0} Furniture index {name1}",
+        "keyextra_separator":" ",
+        "name_map0":"housing",
+        "name_map1":"_self",
+        "dropdown":"furniture",
+        "type":"furnituretransform"
+    },
+    "furnitureAmountOwned": {
+        "category":"furnitureowned",
+        "name":"Amount of Furniture {name} Owned",
+        "name_map":"furniture",
+        "type":"int"
     }
 }

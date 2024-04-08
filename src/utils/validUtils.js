@@ -1,6 +1,6 @@
 import { getPropInfo, resolveDropdownFromPropInfo, versionInfo } from "../data";
 import { partsToKey } from "./keyUtils";
-import { getRelevantsFor } from "./saveDataUtils";
+import { isRelevant } from "./saveDataUtils";
 import { listDelim } from "./saveFileEncodingUtils.mjs";
 
 // Short-circuiting, and saving a parse operation
@@ -13,19 +13,70 @@ export function isInt(value) {
     return (x | 0) === x;
 }
 
+// const FLOAT_REGEX = /^[+-]?[0-9]*([0-9]\.|\.[0-9]+)?(e[+-]?[0-9]*)?$/i
+const FLOAT_REGEX = /^[+-]?[0-9]*([0-9]|[0-9]\.|\.[0-9]+)(e[+-]?[0-9]*)?$/i
+
+/* TODO: Tests:
+YES examples:
+    1.0
+    1
+    .0
+    0
+    01.0
+    10
+    01
+    1e0
+    00E0
+    1.0e2
+    1.e2
+    .1e2
+    10e2
+    10e22
+    1e-3
+    1e+3
+    99e-22
+    99e-020
+    00E0
+    .123
+    12.345
+    .123e-0
+    1112.e+9
+    111.111e111
+NO examples:
+    .
+    111.111e111.1
+ */
+export function isFloat(value, inCommaLocale) {
+    if (isNaN(value)) {
+        return false;
+    }
+    if(typeof(value) === "number") {
+        return true;
+    }
+    if(typeof(value) === "string") {
+        if(inCommaLocale) {
+            // remove any thousands periods, replace deliminating comma with period
+            value = value.replaceAll('.', '').replaceAll(',', '.');
+        }
+        // return parseFloat(value) === ;
+        return value.match(FLOAT_REGEX);
+    }
+    return false;
+}
+
 export function isEmptyOrNullOrUndefined(value) {
     return (value === "" || value === null || typeof(value) === "undefined")
 }
 
-export function saveValStrToList(/**@type {string|null|undefined}*/saveDataStr) {
+export function saveValStrToList(/**@type {string|null|undefined}*/saveDataStr, delim = listDelim) {
   if(saveDataStr === null || typeof(saveDataStr) === "undefined") {
     return saveDataStr;
   } else {
-    return saveDataStr.split(listDelim);
+    return saveDataStr.split(delim);
   }
 }
-export function saveValListToStr(/**@type {any[]|null|undefined}*/saveDataStrAsList) {
-  return saveDataStrAsList?.join(listDelim);
+export function saveValListToStr(/**@type {any[]|null|undefined}*/saveDataStrAsList, delim = listDelim) {
+  return saveDataStrAsList?.join(delim);
 }
 
 export const SAVE_COL_PATTERN = /^((0(\.\d+)?|(1(\.0+)?));){3}(0(\.\d+)?|(1(\.0+)?))$/g;
@@ -76,23 +127,6 @@ function preparePropInfoMinMax(propInfo, fullKey) {
  * */
 export function saveDataValueAdjust(editorValue, keyBase, keyExtra, version) {
     const fullKey = partsToKey(keyBase, keyExtra);
-    // const type = getPropInfo(fullKey).type;
-    // let adjustedValue = editorValue;
-    // switch(type) {
-    //     case "bool":
-    //         if(editorValue === true)
-    //             adjustedValue = '1';
-    //         else if(editorValue === false)
-    //             adjustedValue = '0';
-    //         break;
-    //     case "color":
-    //         if(editorValue?.match(HEX_COL_PATTERN))
-    //             // provide an alternate value for the raw representation of the color
-    //             adjustedValue = hexToSave(editorValue);
-    //         break;
-    //     default:
-    // }
-    // return adjustedValue;
     return saveDataValueAdjustUsingPropInfo(editorValue, getPropInfo(fullKey), version);
 }
 
@@ -104,6 +138,7 @@ export function saveDataValueAdjust(editorValue, keyBase, keyExtra, version) {
  * @returns {V | undefined}
  * */
 export function saveDataValueAdjustUsingPropInfo(editorValue, propInfo, version) {
+    let customDelim = propInfo.delim || listDelim;
     const type = propInfo.type;
     let adjustedValue = editorValue;
     switch(type) {
@@ -121,7 +156,7 @@ export function saveDataValueAdjustUsingPropInfo(editorValue, propInfo, version)
         case "colorlist":
             if((editorValue!=='' && typeof(editorValue)!=="undefined")) {
                 // convert any hex color values to their proper save file representation
-                adjustedValue = editorValue?.split(' ').map(c => c.match(HEX_COL_PATTERN) ? hexToSave(c) : c).join(' ');
+                adjustedValue = editorValue?.split(customDelim).map(c => c.match(HEX_COL_PATTERN) ? hexToSave(c) : c).join(customDelim);
             }
             break;
         default:
@@ -135,18 +170,21 @@ export function saveDataValueAdjustUsingPropInfo(editorValue, propInfo, version)
  * @param {string} keyBase 
  * @param {string} keyExtra 
  * @param {any} version 
+ * @param {string?} customDelim 
  * @returns {{value: V; validity: boolean | null; warning: string | null}}
  * */
-export function saveDataValueValidate(editorValue, keyBase, keyExtra, version) {
+export function saveDataValueValidate(editorValue, keyBase, keyExtra, version, customDelim) {
+    if(!customDelim) customDelim = listDelim;
+    
     console.log('saveDataValueValidate called for', editorValue);
     const fullKey = partsToKey(keyBase, keyExtra);
     
-    const adjustedValue = saveDataValueAdjust(editorValue, keyBase, keyExtra, version);
+    const adjustedValue = saveDataValueAdjust(editorValue, keyBase, keyExtra, version, customDelim);
     
     /** @type {{value: V; validity: boolean | null; warning: string | null}} */
     const result = {value: adjustedValue, warning: null};
     
-    if(!getRelevantsFor(version).includes(fullKey)) {
+    if(!isRelevant(fullKey, version)) {
         result.validity = null;
         return result;
     }
@@ -158,6 +196,8 @@ export function saveDataValueValidate(editorValue, keyBase, keyExtra, version) {
         result.validity = true;
         return result;
     }
+
+    const delimMsg = (customDelim === ' ' ? '(space-separated)' : `(separated by "${customDelim}")`);
 
     switch (type) {
         case "bool":
@@ -217,14 +257,14 @@ export function saveDataValueValidate(editorValue, keyBase, keyExtra, version) {
             result.validity = true;
             // allow empty list '', and consider undefined as an empty list also
             if((editorValue!=='' && typeof(editorValue)!=="undefined")) {
-                if (editorValue.split(' ').some(v=>!isInt(v))) {
-                    result.warning = 'Expects whole numbers in every position in the list (space-separated)!'
+                if (editorValue.split(customDelim).some(v=>!isInt(v))) {
+                    result.warning = `Expects whole numbers in every position in the list ${delimMsg}!`
                     result.validity = false;
                 } else {
                     // check if loadout size is valid (this is a key-specific check)
                     if(fullKey === 'previousLoadout') {
                         let lsize = getMaxLoadoutSize(version);
-                        if(lsize && editorValue.split(' ').length > lsize) {
+                        if(lsize && editorValue.split(customDelim).length > lsize) {
                             result.warning = `Loadout list cannot hold more than ${lsize} items, in selected version!`
                             result.validity = false;
                         }
@@ -236,17 +276,14 @@ export function saveDataValueValidate(editorValue, keyBase, keyExtra, version) {
                         let dropdownValues = version ? resolveDropdownFromPropInfo(propInfo, version) : null;
                         // combine into two arrays, one array for each saveType, reduced by concatenating missing elems elementwise.
                         // each saveType's array contains all keys that were not in its accepted dropdown values.
-                        let keysMissingFrom1 = editorValue.split(' ').map((listitem) => (
+                        let keysMissing = editorValue.split(customDelim).map((listitem) => (
                             dropdownValues && !dropdownValues.hasOwnProperty(listitem)
                                 ? listitem : undefined
-                        )).reduce((accumValue, curValue) => (
-                            // include elements that were missing elementwise
-                            curValue ? accumValue.concat(curValue) : accumValue
-                        ), []); // start reduce with empty array
+                        )).filter(v => v !== undefined);
                         // provide validation messages
-                        if(dropdownValues && keysMissingFrom1.length > 0) {
-                            let pluralize = keysMissingFrom1.length !== 1;
-                            result.warning = `Value${pluralize?'s':''} ${keysMissingFrom1.join(', ')} ${pluralize?'are':'is'} not expected for selected version!`
+                        if(dropdownValues && keysMissing.length > 0) {
+                            let pluralize = keysMissing.length !== 1;
+                            result.warning = `Value${pluralize?'s':''} ${keysMissing.join(', ')} ${pluralize?'are':'is'} not expected for selected version!`
                             result.validity = false;
                         }
                     }
@@ -254,22 +291,98 @@ export function saveDataValueValidate(editorValue, keyBase, keyExtra, version) {
             }
             break;
         case "colorlist":
+            // note: colorlist currently uses ' ' as its deliminator so it is hardcoded.
             result.validity = true;
             // allow empty list '', and consider undefined as an empty list also
             if((adjustedValue!=='' && typeof(adjustedValue)!=="undefined")) {
                 if (adjustedValue.split(' ').some(c=>!c.match(SAVE_COL_PATTERN))) {
-                    result.warning = 'Expects valid colors in every position in the list (space-separated)! Colors are like R;G;B;A and each value is 0-1'
+                    result.warning = `Expects valid colors in every position in the list ${delimMsg}! Colors are like R;G;B;A and each value is a decimal 0-1`
                     result.validity = false;
-                } else {
-                    // check if loadout size is valid (this is a key-specific check)
-                    if(keyBase === 'outfitColors') {
-                        let osize = getMaxOutfitSize(version);
-                        if(osize && adjustedValue.split(' ').length > osize) {
-                            result.warning = `Outfit list cannot hold more than ${osize} items, in selected version!`
-                            result.validity = false;
-                        }
+                    break;
+                }
+                // check if list size is valid (this is a key-specific check)
+                if(keyBase === 'outfitColors') {
+                    let osize = getMaxOutfitSize(version);
+                    if(osize && adjustedValue.split(' ').length > osize) {
+                        result.warning = `Outfit list cannot hold more than ${osize} items, in selected version!`
+                        result.validity = false;
+                        break;
                     }
                 }
+            }
+            break;
+        case "outfitindices":
+            // note: outfitindices currently uses ' ' as its deliminator so it is hardcoded.
+            result.validity = true;
+            // allow empty list '', and consider undefined as an empty list also
+            if((adjustedValue!=='' && typeof(adjustedValue)!=="undefined")) {
+                // check if indices list size is valid
+                let osize = getMaxOutfitSize(version);
+                let lsize = osize + 1;
+                const arr = adjustedValue.split(' ');
+                if(osize && lsize && arr.length !== lsize) {
+                    result.warning = `Outfit clothes and skin expects ${lsize} items total (${osize} clothes and ${1} skin), in selected version!`
+                    result.validity = false;
+                    break;
+                }
+                // check every item in it for validity
+                let problemClothes = [], problemSkin = null;
+                let clothesDD = resolveDropdownFromPropInfo(propInfo, version);
+                let skinsDD = resolveDropdownFromPropInfo({...propInfo, dropdown: propInfo.dropdown2, dropdown_extra: propInfo.dropdown_extra2}, version);
+                arr.forEach((listitem, i) => {
+                    let dropdownValues = (i < osize ? clothesDD : skinsDD);
+                    if(dropdownValues && !dropdownValues.hasOwnProperty(listitem)) {
+                        if(i < osize) {
+                            problemClothes.push(listitem);
+                        } else {
+                            problemSkin = listitem;
+                        }
+                    }
+                });
+                if(problemClothes.length || problemSkin !== null) {
+                    let pluralizeClothes = problemClothes.length !== 1;
+                    let pluralizeAll = (problemClothes.length + (problemSkin !== null) !== 1);
+                    let both = problemClothes.length && problemSkin !== null;
+                    result.warning = ``;
+                    if(problemClothes.length)
+                        result.warning += `Clothing value${pluralizeClothes?'s':''} ${problemClothes.map(v=>`"${v}"`).join(', ')}`;
+                    if(both) result.warning += ' and ';
+                    if(problemSkin !== null)
+                        result.warning += `Skin value "${problemSkin}"`;
+                    result.warning += ` ${pluralizeAll?'are':'is'} not expected for selected version!`;
+                    result.validity = false;
+                    break;
+                }
+            }
+            break;
+        case "furnituretransform":
+            // note: furnituretransform currently uses ':' as its main deliminator and ',' as its inner,
+            result.validity = true;
+            //  using culture invariant float representation (i.e. always a period '.'), so it is hardcoded.
+            const _parts = editorValue.split(':');
+            if(_parts.length !== 3) {
+                result.warning = 'Expects 3 parts separated by colons (":"); The furniture id, the position, and the rotation!'
+                result.validity = false;
+                break;
+            }
+            let [fId, pos, rot] = _parts;
+            let dropdownValues = version ? resolveDropdownFromPropInfo(propInfo, version) : null;
+            if(!dropdownValues?.hasOwnProperty(fId)) {
+                result.warning = `Expects a valid furniture Id as the first item in the list! Selected save version does not expect "${fId}"`
+                result.validity = false;
+                break;
+            }
+            pos = pos.split(',');
+            if(pos.length !== 3 || pos.some(v => !isFloat(v,false))) {
+                result.warning = 'Expects a valid position as the second item in the list! Like x,y,z where x, y, and z are decimal numbers (using periods)';
+                result.validity = false;
+                break;
+            }
+            rot = rot.split(',');
+            if(rot.length !== 4 || rot.some(v => !isFloat(v,false))) {  // quaternion. x y z w
+                result.warning = 'Expects a valid rotation as the third item in the list! Like x,y,z,w where x, y, z, and w are decimal numbers (using periods). The rotation is a quaternion.';
+                result.validity = false;
+                break;
             }
             break;
         case "string":

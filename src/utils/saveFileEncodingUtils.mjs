@@ -6,13 +6,16 @@ export const listDelim = ' ';
 // Note: Unicode officially considers the regex options (\r\n|[\n\v\f\r\x85\u2028\u2029]) to be possible newlines.
 
 // decode to Map
-export function decodeSaveFile(saveDataStr, version) {
+export function decodeSaveFile(saveDataStr, version, badLineHandler) {
     // No version-specific actions; currently all game versions (supported) have the same save file format!
     return new Map(
         // .match(newline) will return an array of all NON-EMPTY lines!
         saveDataStr.match(/[^\n\v\f\r\x85\u2028\u2029]+/g).map((line) => {
             let parts = line.split('@');
-            if(parts.length !== 3) {
+            if(parts.length !== 3 || parts[0] !== '') {
+                if(badLineHandler && badLineHandler(line) !== false) {
+                    return null; // filter will remove this line
+                }
                 throw new Error('Expecting three split parts! _, prop\'s full key, and prop\'s value');
             }
             // eslint-disable-next-line no-unused-vars
@@ -21,6 +24,7 @@ export function decodeSaveFile(saveDataStr, version) {
             // will fit into the final Map as  fullKey -> value
             return [fullKey, value];
         })
+        .filter(line => line !== null)
     );
 }
 

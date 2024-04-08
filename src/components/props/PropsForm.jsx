@@ -80,9 +80,7 @@ function casedEditorsFromObj(categoryId, categoryKeysDataObj) {
             categoryId={categoryId}
             fullKeysArray={value}
           />;
-          // (new Set()).
         } else {
-          // return value;
           return regularEditorFromFullKey(categoryId, value);
         }
       });
@@ -105,6 +103,7 @@ function PropsForm() {
   // https://react.dev/reference/react/useSyncExternalStore
   //  memoizing/caching result, preventing re-renders from the getSnapshot callback having technically different objects
   const cachedStrippedData = useRef(null);
+
   function stripValsCached(/**@type Record<string,Record<string,string>>*/data) {
     let strippedData = Object.fromEntries(
       Object.entries(data)
@@ -140,7 +139,15 @@ function PropsForm() {
 
   return (
     <form id="saveForm">
-      {/* <DropdownValuesProvider></DropdownValuesProvider> */}
+      {/* debug the height of form inputs */}
+      {/* <div style={{backgroundColor:"goldenrod"}}>
+        <select style={{width:'17vw'}}>
+          <option>Hello</option>
+        </select>
+        <input type="text" style={{width:'17vw'}} placeholder="Hello"/>
+        <button type="button" style={{width:'17vw'}}>Hello</button>
+        <input type="range" style={{width:'17vw'}} min={0} max={2} value={0.5}/>
+      </div> */}
 
       {contents}
     </form>

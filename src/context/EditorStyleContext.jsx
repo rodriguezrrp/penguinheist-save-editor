@@ -7,8 +7,8 @@ const SetEditorStyleContext = createContext(null);
 
 export function EditorStyleProvider({ children }) {
   console.log('EditorStyleProvider');
-  // default to individual property editors
-  const [editorStyle, setEditorStyle] = useState('individual');
+  // default to special property editors
+  const [editorStyle, setEditorStyle] = useState('special');
 
   return (
     <EditorStyleContext.Provider value={editorStyle}>

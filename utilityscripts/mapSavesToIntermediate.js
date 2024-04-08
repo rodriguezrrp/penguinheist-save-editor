@@ -5,8 +5,8 @@ import("../src/utils/saveFileEncodingUtils.mjs").then(({ decodeSaveFile }) => {
     const saveRegex = /-([\w]+).sav$/gi;
 
     const foldersToProcess = [
-        [path.join(__dirname,'/../src/data/saves_default'),  processMappedToDefault,  'mapped-{version}-default.json' ],
-        [path.join(__dirname,'/../src/data/saves_relevant'), processMappedToRelevant, 'mapped-{version}-relevant.json']
+        [path.join(__dirname,'/../src/data/saves_default'),  processMappedToDefault,  false, 'mapped-{version}-default.json' ],
+        [path.join(__dirname,'/../src/data/saves_relevant'), processMappedToRelevant, true,  'mapped-{version}-relevant.json']
     ]
 
     function getVersionFromFileName(fileName) {
@@ -20,13 +20,22 @@ import("../src/utils/saveFileEncodingUtils.mjs").then(({ decodeSaveFile }) => {
     function processMappedToDefault(mappedDecodedData) {
         return Object.fromEntries(mappedDecodedData.entries());
     }
-    function processMappedToRelevant(mappedDecodedData) {
-        return [...mappedDecodedData.keys()];
+    function processMappedToRelevant(mappedDecodedData, regexList) {
+        // return [...mappedDecodedData.keys()];
+        return { "regex": regexList || [], "single": [...mappedDecodedData.keys()] };
+    }
+
+    // to catch regexes manually put into the save files
+    function handleBadLineIfRegex(regexList, /**@type string*/ badLine) {
+        const match = badLine.match(/\/(.*)\/([a-z]*)/);
+        if(!match) return false; // did not handle the line (it was not regex).
+        regexList.push(badLine);
+        return true;
     }
 
     // Go through the folders and process the save files, as laid out in foldersToProcess
 
-    for (const [savesFolder, processMapFunction, outFileNameFormat] of foldersToProcess) {
+    for (const [savesFolder, processMapFunction, tryRegex, outFileNameFormat] of foldersToProcess) {
         fs.readdirSync(savesFolder)
             .filter((fileName) => isFile(path.join(savesFolder, fileName)))
             .forEach((fileName) => {
@@ -43,9 +52,14 @@ import("../src/utils/saveFileEncodingUtils.mjs").then(({ decodeSaveFile }) => {
                 // process this file
                 fs.readFile(inputFilePath, { encoding: 'utf-8' }, (err, data) => {
                     if(err) throw err;
-                    let decodedDataMap = decodeSaveFile(data, version);
+                    let regexList, tryRegexFn;
+                    if(tryRegex) {
+                        regexList = [];
+                        tryRegexFn = (badLine) => handleBadLineIfRegex(regexList, badLine);
+                    }
+                    let decodedDataMap = decodeSaveFile(data, version, tryRegexFn);
                     console.info(`decoded save file "${fileName}".`);
-                    const outData = processMapFunction(decodedDataMap);
+                    const outData = processMapFunction(decodedDataMap, regexList);
                     fs.writeFile(outputFilePath, JSON.stringify(outData, null, 4), { encoding: 'utf-8' }, (err) => {
                         if(err) throw err;
                         console.info(`saved save file "${fileName}" to "${outFileName}"!`);

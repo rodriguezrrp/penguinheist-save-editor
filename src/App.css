@@ -4,6 +4,11 @@
 :-moz-focusring, :focus-visible {
   outline: revert;
 }
+/* revert modern-normalize's line-height specification on the following form elements.
+Strangely, explicitly specifying it causes height differences between the elements, and between different browsers. */
+button, input, optgroup, select, textarea {
+  line-height: normal;
+}
 
 legend {
   padding-left: 0.2em;
@@ -14,6 +19,8 @@ body {
   --flex-gap: .5rem;
   --editor-row-padding-x: 1px;
   --valid-ind-width: 1.5rem;
+  --raw-editor-width: 32%;
+  --raw-editor-minwidth: 4.5em;
 
 /* --border-color: #5555; */
   --accent: #0087ff;
@@ -35,6 +42,35 @@ body {
   background-attachment: fixed;
 }
 
+input,
+button,
+select,
+input[type="file"]::file-selector-button {
+  accent-color: var(--accent);
+
+  /* padding-top: 2px;
+  padding-bottom: 2px; */
+
+  border: solid 1px;
+  border-radius: 3px;
+  border-color: rgb(118,118,118);
+  
+  &:disabled {
+    border-color: rgb(180, 180, 180);
+  }
+}
+
+button:not(:disabled),
+select:not(:disabled),
+input[type="file"]:not(:disabled)::file-selector-button {
+  background-color: rgb(235, 235, 239);
+}
+button:not(:disabled):hover,
+select:not(:disabled):hover,
+input[type="file"]:not(:disabled)::file-selector-button:hover {
+  background-color: rgb(210, 210, 214);
+}
+
 #root {
   display: flex;
   flex-direction: column;
@@ -54,7 +90,7 @@ div.card {
 }
 .card-width {
 	width: 85vw;
-  max-width: 800px;
+  max-width: 900px;
 }
 .w-100 {
   width: 100%;
@@ -62,21 +98,6 @@ div.card {
 .w-50 {
   width: 50%;
 }
-
-/* .col {
-  flex: 1 0 0%;
-}
-.col-25 {
-  flex: 0 0 auto;
-  width: 25%;
-}
-.row {
-  display: flex;
-  flex-wrap: wrap;
-} */
-/* .row > * {
-  flex-shrink: 0;
-} */
 
 h1 {
   /* based on browser defaults for h3 */
@@ -149,6 +170,9 @@ input[type="color"] {
   padding: 2px;
   vertical-align: top;
 }
+input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
 
 input[type="range"] {
   margin-top: 0;
@@ -184,13 +208,6 @@ input[type="radio"] + label {
   }
 }
 
-input,
-button,
-select,
-input::file-selector-button {
-  accent-color: var(--accent);
-}
-
 .quick-action-button {
   grid-column: auto / span 3;
 }
@@ -203,6 +220,35 @@ input::file-selector-button {
   grid-template-columns: min-content auto;
   grid-template-rows: auto;
   grid-template-areas: "header header" "switch eraser";
+}
+
+.transform-grid {
+  /* flex: 1 0 auto; */
+  display: grid;
+  gap: var(--editor-row-padding-x) var(--flex-gap);
+  grid-template-columns: auto 1fr 1fr 1fr 1fr; /* fallback if min-content not supported */
+  grid-template-columns: min-content 1fr 1fr 1fr 1fr;
+  grid-template-rows: auto;
+  grid-template-areas:
+    ". x y z w"
+    "pe px py pz ."
+    "re rx ry rz rw";
+}
+.transform-grid > .axis-label {
+  text-align: center;
+  padding-bottom: 1px;
+}
+.transform-grid > input[type="text"] {
+	width: 100%;
+}
+.transform-part-label {
+  position: absolute;
+  transform: translate(calc(-100% - var(--flex-gap)), 0);
+  pointer-events: none;
+  display: none;
+}
+.transform-grid:hover .transform-part-label {
+  display: block;
 }
 
 summary.category-title-row {
@@ -260,7 +306,10 @@ details[open] > summary > svg.category-icon {
 }
 
 .editor-row:hover, .editor-row:has(:focus) {
-  box-shadow: 0px 0px 3px 1px var(--mid);
+  --editor-bshadow-color: var(--mid);
+  box-shadow: 0px 0px 4px 1px var(--editor-bshadow-color) !important;
+  /* bring it forward for maximal box-shadow effect */
+  position: relative;
 }
 /* .editor-row * {
   vertical-align: top;
@@ -274,7 +323,7 @@ details[open] > summary > svg.category-icon {
 
 .editor-items-container {
   /* display: inline-block; */
-  flex-basis: 50%;
+  flex-basis: 52%;
   flex-shrink: 0;
   display: inline-flex;
   gap: var(--flex-gap);
@@ -286,6 +335,16 @@ details[open] > summary > svg.category-icon {
   /* width: 50%; */
   flex-grow: 1;
   display: inline-flex;
+}
+/* .validation-ind.warning + .editor-items-container {
+  & input:not(.raw-editor), & select {
+    box-shadow: 0 0 1px 1px red;
+  }
+} */
+.editor-row:has(.validation-ind.warning) {
+  --editor-bshadow-color: red;
+  box-shadow: 0 0 1px 1px var(--editor-bshadow-color);
+  /* background-color: rgba(255, 0, 0, 0.05); */
 }
 /* .raw-editor-and-eraser-row {
   display: inline-block;
@@ -300,8 +359,9 @@ details[open] > summary > svg.category-icon {
   display: inline-block;
   /* width: 30%; */
   /* flex: 0 0 40%; */
+  min-width: var(--raw-editor-minwidth);
   flex: 0 0 auto;
-  width: 32%;
+  width: var(--raw-editor-width);
   cursor: text;
 }
 .editor-erase-button {
@@ -325,14 +385,38 @@ details[open] > summary > svg.category-icon {
     width: auto;
     flex: 1 0 auto;
   }
+  & > span {
+    padding-top: .125rem;
+  }
   & > .raw-editor {
     /* override the width */
     width: auto;
     flex: 1 0 auto;
   }
-  & > span {
-    padding-top: .125rem;
+  &.furniture-selector {
+    & > select {
+      width: 100%;
+      flex: 1 1 auto;
+    }
+    & > .raw-editor {
+      width: var(--raw-editor-width);
+      flex: 1 0;
+    }
   }
+}
+
+input[type="color"].for-color-editor {
+  /* width: 5em; */
+  height: auto;
+  /* min-width: 30px; */
+  min-width: 4.5rem;
+  /* flex: 0 0 4.5rem; */
+  flex: 0 0 22%;
+}
+input[type="text"].for-color-editor {
+  /* width: calc(100% - 5em); */
+  width: 100%;
+  flex: 1 1 auto;
 }
 
 .propname-container {
@@ -342,7 +426,7 @@ details[open] > summary > svg.category-icon {
   margin-top: calc(-1 * var(--editor-row-padding-x));
   padding-bottom: var(--editor-row-padding-x);
   margin-bottom: calc(-1 * var(--editor-row-padding-x));
-  flex-basis: 45%;
+  flex-basis: 43%;
   overflow-x: auto;
 }
 /* .propname-container:hover > .propname-fullkey {
@@ -426,19 +510,19 @@ span.validation-ind {
   white-space: nowrap;
 }
 
-.App {
+/* .App {
   text-align: center;
-}
+} */
 
-.App-logo {
+/* .App-logo {
   height: 40vmin;
   pointer-events: none;
-}
+} */
 
 @media (prefers-reduced-motion: no-preference) {
-  .App-logo {
+  /* .App-logo {
     animation: App-logo-spin infinite 20s linear;
-  }
+  } */
   input[type="checkbox"].switch {
   	transition: background-position .15s ease-in-out;
   }
@@ -459,7 +543,7 @@ span.validation-ind {
   }
 }
 
-.App-header {
+/* .App-header {
   background-color: #282c34;
   min-height: 100vh;
   display: flex;
@@ -468,17 +552,17 @@ span.validation-ind {
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
-}
+} */
 
-.App-link {
+/* .App-link {
   color: #61dafb;
-}
+} */
 
-@keyframes App-logo-spin {
+/* @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
   }
   to {
     transform: rotate(360deg);
   }
-}
+} */

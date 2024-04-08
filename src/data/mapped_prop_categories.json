@@ -39,6 +39,9 @@
     "housing": {
         "name":"Housing"
     },
+    "furnitureowned": {
+        "name":"Furniture Owned"
+    },
     "misc": {
         "name":"Miscellaneous",
         "expanded":true

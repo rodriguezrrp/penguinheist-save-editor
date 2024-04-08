@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { useStoreSetAll } from "../context/SaveDataContext";
+import { useStoreGetAll, useStoreSetAll } from "../context/SaveDataContext";
 import { useSetVersion, useVersion } from "../context/VersionContext";
-import { getCompleteCategorizedSaveDataFor } from "../utils/saveDataUtils";
+import { combineSaveValuesConditionally, getCompleteCategorizedSaveDataFor } from "../utils/saveDataUtils";
 import { useSaveFileReader } from "../utils/saveFileEventUtils";
 import { versionInfo } from "../data";
 import { useEditorStyle, useSetEditorStyle } from "../context/EditorStyleContext";
+import { object_equals } from "../utils/comparisonUtils";
 
 
 function FileAndSettingsForm({ version, setVersion }) {
@@ -42,10 +43,14 @@ function FileAndSettingsForm({ version, setVersion }) {
 function FileInput() {
   console.log('FileInput created');
   const [, setAllData] = useStoreSetAll(v => null);  // a constant return from the callback prevents React re-rendering
+  // used to check if changes will be overwritten
+  const getAllData = useStoreGetAll();
   
   const [file, setFile] = useState(null);
+  // const [prevFile, setPrevFile] = useState(file); // used for detecting if re-render was from the file changing
   
   const version = useVersion(); // creating dependency on version context
+  const [prevVersion, setPrevVersion] = useState(version); // used for detecting if re-render was from the version changing
 
   const fileInputChangeHandler = (e) => {
     console.log('file input change handler');
@@ -56,10 +61,29 @@ function FileInput() {
 
   useSaveFileReader(file, (saveDataMap) => {
     console.log('saveDataMap callback: received new saveDataMap:', saveDataMap);
-    // setAllData(categorizeSaveDataRecord(saveDataMap));
-    const categorized = getCompleteCategorizedSaveDataFor(version, saveDataMap);
-    console.log(categorized);
-    setAllData(categorized);
+    const categorizedFileData = getCompleteCategorizedSaveDataFor(version, saveDataMap);
+    console.log(categorizedFileData);
+
+    let versionChanged = (prevVersion !== version);
+    if(versionChanged) setPrevVersion(version);
+
+    if(!versionChanged) {
+      setAllData(categorizedFileData);
+    } else {
+      // version changed; check if any changes might (unexpectedly!) be overwritten, and ask the user first
+      const uneditedSaveData = getCompleteCategorizedSaveDataFor(version);
+      const curData = getAllData();
+      const isModified = !object_equals(curData, uneditedSaveData);
+      const newFileDataDifferent = !object_equals(curData, categorizedFileData);
+      // if there's modifications and new file data is different from it, ask before overwriting.
+      // Note: if there's no modifications found, then new file data WILL OVERWRITE any differences without asking.
+      const willOverwrite = newFileDataDifferent && isModified;
+      if(willOverwrite && window.confirm(
+        'Do you want to overwrite any current changes with the uploaded save file\'s original content?'
+      )) {
+        setAllData(categorizedFileData);
+      }
+    }
   }, version);
 
   return (
@@ -140,13 +164,18 @@ const versionOptions = Object.entries(versionInfo)
   });
 versionOptions.unshift(
   <option key="" value="">
-    Unknown (assume all properties)
+    Any (assume all properties)
   </option>
 )
 
 function VersionSelect() {
   const version = useVersion();
   const setVersion = useSetVersion();
+  
+  // used for preserving whatever state may be in the form currently
+  const [, setAllData] = useStoreSetAll(v => null);  // a constant return from the callback prevents React re-rendering
+  const getAllData = useStoreGetAll();
+  
   return (
   <>
     <button type="button" onClick={e => setVersion('vHH_initial')}>
@@ -159,7 +188,24 @@ function VersionSelect() {
     <br/>
     <label>
       Version:&nbsp;
-      <select value={version} onChange={e => setVersion(e.target.value)}>
+      <select value={version} onChange={e => {
+        let prevVersion = version;
+        let newVersion = e.target.value;
+        setVersion(newVersion);
+
+        let prevVersionUneditedSaveData = getCompleteCategorizedSaveDataFor(prevVersion);
+        let curData = getAllData();
+        let wasUnedited = object_equals(curData, prevVersionUneditedSaveData);
+        console.log('VersionSelect updating: wasUnedited:', wasUnedited);
+        if(wasUnedited) {
+          // ONLY if NO edits have been made, OVERWRITE save data in form with new data for this version
+          setAllData(getCompleteCategorizedSaveDataFor(newVersion));
+        } else {
+          // combine in the new data while keeping all non-empty values that already exist (ex. they may have been edits).
+          // in other words, applying the new relevants, and discarding old values including old relevants unless they contain values
+          setAllData(combineSaveValuesConditionally(getCompleteCategorizedSaveDataFor(newVersion), curData))
+        }
+      }}>
         {versionOptions}
       </select>
     </label>

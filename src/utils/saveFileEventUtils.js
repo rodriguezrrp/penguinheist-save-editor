@@ -24,14 +24,11 @@ export function useSaveFileReader(file, saveDataMapCallback, version) {
             fileReader.onload = (e) => {
                 const contents = e.target.result;
                 if(contents && !isCancel) {
-                    // const dataMap = new Map();
-                    // parseSaveInto(contents, dataMap, version);
-                    const dataMap = decodeSaveFile(contents, version);
-                    // if(!isCancel) {
-                    //     const dataObj = Object.fromEntries(dataMap.entries());
-                    //     saveDataObjCallback(dataObj);
+                    // let okay = window.confirm('Do you want to replace any edits with the original contents of the uploaded save file?');
+                    // if(okay && !isCancel) {
+                        const dataMap = decodeSaveFile(contents, version);
+                        saveDataMapCallback(dataMap);
                     // }
-                    saveDataMapCallback(dataMap);
                 }
             }
             fileReader.onerror = (e) => {

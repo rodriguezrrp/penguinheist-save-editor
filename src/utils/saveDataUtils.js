@@ -1,4 +1,4 @@
-import { defaultCategory, mappedCategoryInfo, versionDefaults, versionRelevants, getPropInfo } from '../data';
+import { defaultCategory, mappedCategoryInfo, versionDefaults, versionRelevants, getPropInfo, versionRelevantRegex } from '../data';
 
 if(!mappedCategoryInfo[defaultCategory]) {
     throw new Error(`Expecting default category "${defaultCategory}" in mapped category info!`)
@@ -40,6 +40,18 @@ export function getRelevantsFor(version) {
     let relevants = versionRelevants[version];
     if(typeof(relevants)==="undefined") throw new Error(`relevants was undefined for version ${version}!`)
     return relevants;
+}
+
+export function getRelevantRegexesFor(version) {
+    let relevantRegexes = versionRelevantRegex[version];
+    return Array.isArray(relevantRegexes) ? relevantRegexes : [];
+}
+
+export function isRelevant(fullKey, version) {
+    const relevants = getRelevantsFor(version);
+    return relevants.includes(fullKey) || getRelevantRegexesFor(version)?.some(reg => {
+        // console.log(fullKey, reg, fullKey.match(reg));
+        return fullKey.match(reg) });
 }
 
 // export function getRelevantsCategorizedFor(version) {
@@ -191,21 +203,36 @@ export function decategorizeSaveData(categorizedSaveDataRecord) {
     );
 }
 
+export function combineSaveValuesConditionally(baseSaveData, extraSaveData, entryFilter) {
+    if(!baseSaveData) return null;
+    if(!extraSaveData) return baseSaveData;
+    if(!entryFilter)
+        entryFilter = ([fk, v]) => (v !== null && typeof(v) !== "undefined");
+    return Object.fromEntries(Object.entries(baseSaveData).map(([catId, catData]) => [
+        catId,
+        {
+            ...catData,
+            ...(extraSaveData[catId] &&
+                Object.fromEntries(Object.entries(extraSaveData[catId]).filter(entryFilter))
+            )
+        }
+    ]));
+}
 
-const initialSaveDefaults = {
-    'itemOwned 0': '0',
-    'itemOwned 29': '1',
-    'money': '150',
-    'todo actuallygeneratethis': '12345test'
-};
+// const initialSaveDefaults = {
+//     'itemOwned 0': '0',
+//     'itemOwned 29': '1',
+//     'money': '150',
+//     'todo actuallygeneratethis': '12345test'
+// };
 
-const initialSaveRelevants = [
-    'itemOwned 0',
-    'itemOwned 29',
-    'itemOwned 18',
-    'money',
-    'todo actuallygeneratethis'
-]
+// const initialSaveRelevants = [
+//     'itemOwned 0',
+//     'itemOwned 29',
+//     'itemOwned 18',
+//     'money',
+//     'todo actuallygeneratethis'
+// ]
 
 // const initialSaveRelevantsCategorized = [
 //     {

@@ -1,0 +1,51 @@
+{
+    "version_dependent": true,
+    "vHH_initial": {
+        "inherit": "vCHP_latest",
+        "name_map": "furniture",
+        "values": [
+        ]
+    },
+    "vCHP_latest": {
+        "inherit": "_earliest_supported_value_list"
+    },
+    "_earliest_supported_value_list": {
+        "inherit": false,
+        "name_map": "furniture",
+        "values": [
+            "35",
+            "51",
+            "68",
+            "64",
+            "17",
+            "44",
+            "69",
+            "72",
+            "71",
+            "88",
+            "73",
+            "57",
+            "8",
+            "107",
+            "77",
+            "63",
+            "46",
+            "34",
+            "3",
+            "27",
+            "15",
+            "81",
+            "101",
+            "100",
+            "23",
+            "29",
+            "36",
+            "74",
+            "45",
+            "49",
+            "106",
+            "39",
+            "13"
+        ]
+    }
+}
