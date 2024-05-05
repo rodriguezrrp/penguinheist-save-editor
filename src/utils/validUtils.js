@@ -69,14 +69,19 @@ export function isEmptyOrNullOrUndefined(value) {
 }
 
 export function saveValStrToList(/**@type {string|null|undefined}*/saveDataStr, delim = listDelim) {
-  if(saveDataStr === null || typeof(saveDataStr) === "undefined") {
-    return saveDataStr;
-  } else {
+    if(saveDataStr === null || typeof(saveDataStr) === "undefined") {
+        return saveDataStr;
+    }
     return saveDataStr.split(delim);
-  }
 }
 export function saveValListToStr(/**@type {any[]|null|undefined}*/saveDataStrAsList, delim = listDelim) {
-  return saveDataStrAsList?.join(delim);
+    return saveDataStrAsList?.join(delim);
+}
+export function saveValListPush(/**@type {string|null|undefined}*/saveDataStr, /**@type {string}*/newValue, delim = listDelim) {
+    if(saveDataStr === null || typeof(saveDataStr) === "undefined") {
+        return saveDataStr;
+    }
+    return saveDataStr + delim + newValue;
 }
 
 export const SAVE_COL_PATTERN = /^((0(\.\d+)?|(1(\.0+)?));){3}(0(\.\d+)?|(1(\.0+)?))$/g;

@@ -1,7 +1,7 @@
 import { getKeyParts, keyStrMakeHtmlSafe, partsToHtmlSafeKey, partsToKey } from "../../utils/keyUtils";
 import { useStore, useStoreGetAll } from "../../context/SaveDataContext";
 import { useVersion } from "../../context/VersionContext";
-import { HEX_COL_PATTERN, getMaxOutfitSize, isEmptyOrNullOrUndefined, saveDataValueAdjustUsingPropInfo, saveDataValueValidate, saveToHex, saveValListToStr, saveValStrToList } from "../../utils/validUtils";
+import { HEX_COL_PATTERN, getMaxOutfitSize, isEmptyOrNullOrUndefined, saveDataValueAdjustUsingPropInfo, saveDataValueValidate, saveToHex, saveValListPush, saveValListToStr, saveValStrToList } from "../../utils/validUtils";
 import { getPropInfo, resolveDropdownFromPropInfo, resolvePropInfoName } from "../../data";
 import { listDelim } from "../../utils/saveFileEncodingUtils.mjs";
 import { handleKeyDown, handleMouseUp } from "../../utils/unityMapping";
@@ -233,24 +233,24 @@ function RichSingleValueEditor({ children, type, saveDataValue, handleValueUpdat
     case "colorlist":
       isComplexInput = true;
       inputElem = (
-        <LimitableRetainingListEditor type={type} propInfo={propInfo}
+        <ListEditorSpecial type={type} propInfo={propInfo}
           saveDataValue={saveDataValue} handleValueUpdate={handleValueUpdate}
           version={version} fixedCount={getMaxOutfitSize(version)}
         >
           {children}
-        </LimitableRetainingListEditor>
+        </ListEditorSpecial>
       );
       break;
 
     case "outfitindices":
       isComplexInput = true;
       inputElem = (
-        <LimitableRetainingListEditor type={type} propInfo={propInfo}
+        <ListEditorSpecial type={type} propInfo={propInfo}
           saveDataValue={saveDataValue} handleValueUpdate={handleValueUpdate}
           version={version} fixedCount={getMaxOutfitSize(version)}
         >
           {children}
-        </LimitableRetainingListEditor>
+        </ListEditorSpecial>
       );
       break;
 
@@ -385,7 +385,7 @@ function ListEditorItems({ children, type, propInfo, saveDataValue, handleValueU
   function handleAddItem(newValue) {
     handleValueUpdate(saveDataValue===null || typeof(saveDataValue)==="undefined"
                       ? newValue // replacing the nullish previous value with a single newValue
-                      : saveDataValue + delim + newValue);
+                      : saveValListPush(saveDataValue, newValue, delim));
   }
 
   function handleDeleteItem(ind) {
@@ -455,60 +455,29 @@ function ListEditorItems({ children, type, propInfo, saveDataValue, handleValueU
 
 
 
-function LimitableRetainingListEditor({ children, type, propInfo, saveDataValue, handleValueUpdate, version,
+function ListEditorSpecial({ children, type, propInfo, saveDataValue, handleValueUpdate, version,
                                         fixedCount=0, disableInputsWhenUnset=true }) {
-  console.log("ListEditorFixableSize created");
-  console.log("ListEditorFixableSize saveDataValue", saveDataValue);
+  console.log("ListEditorSpecial created");
+  console.log("ListEditorSpecial saveDataValue", saveDataValue);
   const defaultNewValue = String(propInfo.default ?? '');
-  const _defaultSkin = '';
+  const _defaultSkin = propInfo.default_skin ?? '';
+  const delim = listDelim;
   
   const allowAddAndRemove = !(fixedCount && fixedCount > 0);
   
-  const defaultValueWhenFalsy = allowAddAndRemove ? null : saveValListToStr(
+  const defaultFullValueWhenFalsy = allowAddAndRemove ? null : saveValListToStr(
     type === "outfitindices"
-    ? Array.from({length: fixedCount + 1}, (v, i) => i === fixedCount ? _defaultSkin : defaultNewValue)
-    : Array.from({length: fixedCount}, (v) => defaultNewValue)
-  );
+      ? Array.from({length: fixedCount + 1}, (v, i) => i === fixedCount ? _defaultSkin : defaultNewValue)
+      : Array.from({length: fixedCount}, (v) => defaultNewValue)
+  , delim);
 
-  // Retain the previous saveDataValue when the current one becomes null or undefined (by this editor!)
-  //  and use this state as an intermediary for the actual editor elements.
-  //  This is to allow retaining and possible editing of the property value while it is not in the main save data state.
-  const [retainedSaveDataValue, setRetainedSaveDataValue] = useState(null);
-  // const [retainedSaveDataValue, setRetainedSaveDataValue] = useState(defaultRetainedValue);
-  // const [dataUpdateWasFromThis, setDataUpdateWasFromThis] = useState(false);
-  const dataUpdateWasFromThis = useRef(false);
-  console.log('dataUpdateWasFromThis:', dataUpdateWasFromThis.current, ', different:', saveDataValue !== retainedSaveDataValue);
-  
-  // If new value came in, sync it up (and 'retain' it)
-  // if(saveDataValue && saveDataValue !== retainedSaveDataValue) {
-  // if((!dataUpdateWasFromThis || saveDataValue) && saveDataValue !== retainedSaveDataValue) {
-  if((!dataUpdateWasFromThis.current || saveDataValue) && saveDataValue !== retainedSaveDataValue) {
-    console.log('syncing retained from', retainedSaveDataValue, 'to', saveDataValue);
-    setRetainedSaveDataValue(saveDataValue); // TODO efficiency check: will this cause one rerender (see if-condition) or none?
-    // setDataUpdateWasFromThis(false);
-    dataUpdateWasFromThis.current = false;
-  }
-
-  function updateSaveDataValue(newValue) {
-    // setDataUpdateWasFromThis(true);
-    dataUpdateWasFromThis.current = true;
-    const validatedValue = saveDataValueAdjustUsingPropInfo(newValue, propInfo, version);
-    setRetainedSaveDataValue(validatedValue);
-    
-    if(saveDataValue) {
-      // this call may (depending on implementation) trigger a re-render, via saveDataValue changing
-      handleValueUpdate(newValue);
-    } else {
-    }
-  }
+  // function updateSaveDataValue(newValue) {
+  //   handleValueUpdate(newValue);
+  // }
   function toggleSaveDataValue(checked) {
-    // setDataUpdateWasFromThis(true);
-    dataUpdateWasFromThis.current = true;
-    // toggle the editor's retained value being transferred/synced to the main save data state.
     // Notice the direct call to handleValueUpdate, not the intermediate handleUpdateItem. This keeps the retained value.
     if(checked) {
-      // handleValueUpdate(retainedSaveDataValue);
-      handleValueUpdate(retainedSaveDataValue || defaultValueWhenFalsy);
+      handleValueUpdate(defaultFullValueWhenFalsy);
     } else {
       handleValueUpdate(undefined);
     }
@@ -545,13 +514,13 @@ function LimitableRetainingListEditor({ children, type, propInfo, saveDataValue,
   }
 
   function handleAddItem(newValue) {
-    updateSaveDataValue(retainedSaveDataValue===null || typeof(retainedSaveDataValue)==="undefined"
+    handleValueUpdate(saveDataValue===null || typeof(saveDataValue)==="undefined"
                       ? newValue // replacing the nullish previous value with a single newValue
-                      : retainedSaveDataValue + listDelim + newValue);
+                      : saveValListPush(saveDataValue, newValue, delim));
   }
 
   function handleDeleteItem(ind) {
-    let asArr = saveValStrToList(retainedSaveDataValue);
+    let asArr = saveValStrToList(saveDataValue, delim);
     if(!Array.isArray(asArr)) {
       console.error('When trying to handle delete, asArr was not an array! Performing NO ACTION.');
       return;
@@ -559,11 +528,11 @@ function LimitableRetainingListEditor({ children, type, propInfo, saveDataValue,
     if(ind >= asArr.length || ind < 0) {
       throw new Error(`index ${ind} out of bounds for save value array ${asArr}`);
     }
-    updateSaveDataValue(saveValListToStr(asArr.filter((v, i) => i !== ind)));
+    handleValueUpdate(saveValListToStr(asArr.filter((v, i) => i !== ind), delim));
   }
 
   function handleUpdateItem(ind, newValue) {
-    let asArr = saveValStrToList(retainedSaveDataValue);
+    let asArr = saveValStrToList(saveDataValue, delim);
     if(!Array.isArray(asArr)) {
       console.error('When trying to handle update, asArr was not an array! Performing NO ACTION.');
       return;
@@ -572,14 +541,14 @@ function LimitableRetainingListEditor({ children, type, propInfo, saveDataValue,
       throw new Error(`index ${ind} out of bounds for save value array ${asArr}`);
     }
     asArr[ind] = newValue;
-    updateSaveDataValue(saveValListToStr(asArr));
+    handleValueUpdate(saveValListToStr(asArr, delim));
   }
 
   return (
     <div className="list-editor-grid">
       {
       // saveValStrToList(saveDataValue)
-      saveValStrToList(retainedSaveDataValue || defaultValueWhenFalsy)
+      saveValStrToList(saveDataValue || defaultFullValueWhenFalsy, delim)
       ?.map((substr, ind) => {
 
         let inputElem;
@@ -687,7 +656,7 @@ function FurnitureTransformEditor({ children, type, propInfo, saveDataValue, han
   const defaultNewFurnitureValue = String(propInfo.default ?? '');
   const defaultNewPosRotValue = '';
   
-  const defaultValueWhenFalsy = saveValListToStr([
+  const defaultFullValueWhenFalsy = saveValListToStr([
     defaultNewFurnitureValue,
     saveValListToStr(Array.from({length: 3}, (v) => defaultNewPosRotValue), transformPosOrRotDelim),
     saveValListToStr(Array.from({length: 4}, (v) => defaultNewPosRotValue), transformPosOrRotDelim)
@@ -741,7 +710,7 @@ function FurnitureTransformEditor({ children, type, propInfo, saveDataValue, han
   }
   function toggleSaveDataValue(checked) {
     if(checked) {
-      handleValueUpdate(saveDataValue || defaultValueWhenFalsy);
+      handleValueUpdate(saveDataValue || defaultFullValueWhenFalsy);
     } else {
       handleValueUpdate(undefined);
     }

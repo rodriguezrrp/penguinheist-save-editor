@@ -1,3 +1,4 @@
+import { useResetFileUploadInput } from "../context/ResetFileUploadInputContext";
 import { useStore, useStoreMapOverCategory, useStoreSetAll } from "../context/SaveDataContext";
 import { useVersion } from "../context/VersionContext";
 import { getCompleteCategorizedSaveDataFor } from "../utils/saveDataUtils";
@@ -15,6 +16,8 @@ function QuickActions() {
   
 
   const version = useVersion(); // creating dependency on version context
+
+  const resetFileUploadInput = useResetFileUploadInput(); // creating dependency on context
   
 
   return <div className="card" style={{margin: '1em', '--border-color': 'var(--grayblue)'}}>
@@ -65,7 +68,10 @@ function QuickActions() {
         Unlock All Heists
       </button>
       <button type="button" id="quickActionReset" className="quick-action-button"
-        onClick={(e) => setAllData(getCompleteCategorizedSaveDataFor(version))}
+        onClick={(e) => {
+          setAllData(getCompleteCategorizedSaveDataFor(version));
+          resetFileUploadInput();
+        }}
       >
         ↺ Reset to Default
       </button>

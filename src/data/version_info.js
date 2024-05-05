@@ -6,9 +6,30 @@
 // }
 
 export const VERSION_INFO = {
+    'vPU_initial': {
+        'name': 'Properties Update (initial build)',
+        'supported': false,
+		'firstbuild': true,
+        'steamdb_buildid': '13340939',
+		'crc32_windows': 'D6B2C813',
+        'manifest_windows': '2384039835629061112',
+        'manifest_macos': '4358673661820340650',
+        'manifest_linux': '1456203648639762509',
+    },
+    'vHH_latest': {
+        'name': 'Heist and Housing Update',
+        'supported': false,
+        'hideindropdown': true,
+		'steamdb_buildid': '13053165',
+		'crc32_windows': 'A966B523',
+        'manifest_windows': '1212575687648547032',
+        'manifest_macos': '4917491013608979739',
+        'manifest_linux': '5558858099665908741',
+    },
     'vHH_initial': {
         'name': 'Heist and Housing Update (initial build)',
         'supported': true,
+		'firstbuild': true,
 		'steamdb_buildid': '12980251',
 		'crc32_windows': '62A657FB',
         'manifest_windows': '3897170993371959684',

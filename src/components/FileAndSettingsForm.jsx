@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useStoreGetAll, useStoreSetAll } from "../context/SaveDataContext";
 import { useSetVersion, useVersion } from "../context/VersionContext";
 import { combineSaveValuesConditionally, getCompleteCategorizedSaveDataFor } from "../utils/saveDataUtils";
@@ -6,6 +6,7 @@ import { useSaveFileReader } from "../utils/saveFileEventUtils";
 import { versionInfo } from "../data";
 import { useEditorStyle, useSetEditorStyle } from "../context/EditorStyleContext";
 import { object_equals } from "../utils/comparisonUtils";
+import { useResetFileUploadInput, useSetResetFileUploadInput } from "../context/ResetFileUploadInputContext";
 
 
 function FileAndSettingsForm({ version, setVersion }) {
@@ -48,9 +49,14 @@ function FileInput() {
   
   const [file, setFile] = useState(null);
   // const [prevFile, setPrevFile] = useState(file); // used for detecting if re-render was from the file changing
-  
+  const prevFileRef = useRef(file); // used for detecting if re-render was from the file changing
+  const fileInputRef = useRef(null);
   const version = useVersion(); // creating dependency on version context
-  const [prevVersion, setPrevVersion] = useState(version); // used for detecting if re-render was from the version changing
+  const setResetFileUploadInput = useSetResetFileUploadInput(); // creating dependency on context
+  setResetFileUploadInput(() => () => {
+    fileInputRef.current.value = "";
+  });
+  
 
   const fileInputChangeHandler = (e) => {
     console.log('file input change handler');
@@ -59,40 +65,38 @@ function FileInput() {
     setFile(newFile);
   };
 
-  useSaveFileReader(file, (saveDataMap) => {
+  useSaveFileReader(file, version, (saveDataMap) => {
+    // Note: runs only when file exists and was decoded
     console.log('saveDataMap callback: received new saveDataMap:', saveDataMap);
-    const categorizedFileData = getCompleteCategorizedSaveDataFor(version, saveDataMap);
-    console.log(categorizedFileData);
+    const categorizedDataWithFile = getCompleteCategorizedSaveDataFor(version, saveDataMap);
+    console.log(categorizedDataWithFile);
 
-    let versionChanged = (prevVersion !== version);
-    if(versionChanged) setPrevVersion(version);
+    let fileChanged = (prevFileRef.current !== file);
+    if(fileChanged) prevFileRef.current = file;
 
-    if(!versionChanged) {
-      setAllData(categorizedFileData);
+    if(fileChanged) {
+      setAllData(categorizedDataWithFile);
     } else {
-      // version changed; check if any changes might (unexpectedly!) be overwritten, and ask the user first
+      // file did not change; therefore, e.g. version changed;
+      // check if any property changes made by user might (unexpectedly!) be overwritten, and ask the user first
       const uneditedSaveData = getCompleteCategorizedSaveDataFor(version);
       const curData = getAllData();
-      const isModified = !object_equals(curData, uneditedSaveData);
-      const newFileDataDifferent = !object_equals(curData, categorizedFileData);
+      const isModifiedFromDefault = !object_equals(curData, uneditedSaveData);
+      const newFileDataDifferent = !object_equals(curData, categorizedDataWithFile);
       // if there's modifications and new file data is different from it, ask before overwriting.
       // Note: if there's no modifications found, then new file data WILL OVERWRITE any differences without asking.
-      const willOverwrite = newFileDataDifferent && isModified;
+      const willOverwrite = newFileDataDifferent && isModifiedFromDefault;
       if(willOverwrite && window.confirm(
         'Do you want to overwrite any current changes with the uploaded save file\'s original content?'
       )) {
-        setAllData(categorizedFileData);
+        setAllData(categorizedDataWithFile);
       }
     }
-  }, version);
+  });
 
   return (
     <input type="file" name="fileSelect" id="fileSelect"
-      // onChange={e => useHandleFileInputChange(e, (saveDataObj) => {
-      //   const categorizedSaveDataObj = categorizeSaveDataRecord(saveDataObj);
-      //   console.log(categorizedSaveDataObj);
-      //   setAllData(categorizedSaveDataObj);
-      // })}
+      ref={fileInputRef}
       onChange={fileInputChangeHandler}
     ></input>
   );
@@ -102,10 +106,14 @@ function FileResetBtn() {
   console.log('FileResetBtn created');
   const [, setAllData] = useStoreSetAll(v => null);  // a constant return from the callback prevents React re-rendering
   const version = useVersion(); // creating dependency on version context
+  const resetFileUploadInput = useResetFileUploadInput(); // creating dependency on context
   
   return (
     <button type="button" id="fileReset"
-      onClick={(e) => setAllData(getCompleteCategorizedSaveDataFor(version))}
+      onClick={(e) => {
+        setAllData(getCompleteCategorizedSaveDataFor(version));
+        resetFileUploadInput();
+      }}
     >
       Reset to Default
     </button>

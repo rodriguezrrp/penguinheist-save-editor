@@ -1,5 +1,11 @@
 {
     "version_dependent": true,
+    "vPU_initial": {
+        "inherit": "vHH_initial",
+        "name_map": "clothing",
+        "values": [
+        ]
+    },
     "vHH_initial": {
         "inherit": "vCHP_latest",
         "name_map": "clothing",
