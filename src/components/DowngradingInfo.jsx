@@ -459,7 +459,7 @@ export default function DowngradingInfo() {
                 If you are using the file explorer and you do not see the "<span class="mono-text">Library</span>" folder in
                 "<span class="mono-text">Users</span>" &gt; <span class="mono-text">your user name</span>,
                 then it may be hidden. Either: hold <BsOption aria-label="option" className="icon" /> key and select Finder &gt; Go &gt; Library.
-                Or, to show it, go to "View" on the menu bar and choose "Show View Options" and make sure "Show Library File" is checked. 
+                Or, to show it, go to "View" on the menu bar and choose "Show View Options" and make sure "Show Library Folder" is checked. 
               </p>
             </li>
             <li class="listicons">
@@ -573,20 +573,6 @@ export default function DowngradingInfo() {
             </thead>
 
             <tbody>
-              {/* <tr>
-                <td>Version Name Here</td>
-                <td>MANIFEST_ID</td>
-                <td>MANIFEST_ID</td>
-                <td>MANIFEST_ID</td>
-              </tr>
-              <tr>
-                <td>Version Name Here</td>
-                <td>MANIFEST_ID</td>
-                <td>MANIFEST_ID</td>
-                <td>MANIFEST_ID</td>
-              </tr>
-              <tr>
-              </tr> */}
               {Object.entries(versionInfo).map(([version, info]) => {
                 return <tr>
                   <td>{info.long_name ?? info.name ?? _unknown_manifest}</td>
