@@ -8,13 +8,14 @@ function Category({ categoryKey, children }) {
   // const [show, setShow] = useState(Boolean(categoryInfo.expanded));
   return (
     <details id={'category-'+categoryKey} className="category" open={categoryInfo.expanded}>
-      <summary className="category-title-row">
+      <summary className="title-row category-title-row">
 
         <svg className="icon category-icon" 
           xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
           {/* fill-rule changed to fillRule for React */}
           <path fillRule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708"></path>
         </svg>
+        {/* <BiChevronRight className="icon category-icon" /> */}
 
         <span>{categoryInfo.name}</span>
         {/* &nbsp; */}

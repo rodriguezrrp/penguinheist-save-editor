@@ -9,8 +9,8 @@ import { object_equals } from "../utils/comparisonUtils";
 import { useResetFileUploadInput, useSetResetFileUploadInput } from "../context/ResetFileUploadInputContext";
 
 
-function FileAndSettingsForm({ version, setVersion }) {
-  console.log('FileAndSettingsForm created, version:', version);
+function FileAndSettingsForm() {
+  console.log('FileAndSettingsForm created');
   // // eslint-disable-next-line no-unused-vars
   // const [allData, setAllData] = useStoreSetAll(v => null);  // a constant return from the callback prevents React re-rendering
   return (

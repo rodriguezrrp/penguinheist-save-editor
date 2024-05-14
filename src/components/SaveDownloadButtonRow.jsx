@@ -3,6 +3,7 @@ import { useStoreGetAll } from "../context/SaveDataContext";
 import { useVersion } from "../context/VersionContext";
 import { decategorizeSaveData } from "../utils/saveDataUtils";
 import { useSaveFileDownloader } from "../utils/saveFileEventUtils";
+import { BsFileEarmarkArrowDown } from "react-icons/bs";
 
 const filename = 'PHSaveMain.sav';
 
@@ -24,7 +25,7 @@ export default function SaveDownloadButtonRow() {
         console.log(decategorized);
         setSaveDataObjForDL(decategorized);
       }}>
-        Download as Save File
+        <BsFileEarmarkArrowDown className="icon" />&nbsp;Download as Save File
       </button>
     </div>
   );
