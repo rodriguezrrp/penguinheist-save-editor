@@ -157,6 +157,8 @@ const versionOptions = Object.entries(versionInfo)
     const isFirstSupportedFound = (!_foundSupportedVersionYet && info.supported);
     _foundSupportedVersionYet = info.supported;
     const unsupported = !info.supported;
+    let name = info.long_name || info.name;
+    if(name && info.name_suffix) { name += ' ' + info.name_suffix; }
     return (
       <option
         disabled={unsupported}
@@ -164,7 +166,7 @@ const versionOptions = Object.entries(versionInfo)
         key={version}
         value={version}
       >
-        {info.long_name || info.name}
+        {name}
         {unsupported && ' (unsupported)'}
         {isFirstSupportedFound && ' (latest supported)'}
       </option>

@@ -253,6 +253,10 @@ p.callout {
 	padding: var(--p-callout-padding-size);
 	padding-right: 0px;
 }
+span.name-suffix {
+  color: var(--mid);
+  font-size: .95em;
+}
 
 input[type="checkbox"].switch {
 	border-radius: 2em;

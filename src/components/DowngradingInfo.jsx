@@ -22,8 +22,12 @@ export default function DowngradingInfo() {
   // console.log('DowngradingInfo created');
 
   const version = useVersion();
-  const info = versionInfo[version];
-  const versionName = info.name || 'version name here';
+  const info = versionInfo[version] ?? {};
+  let versionName = info.name || info.long_name;
+  if(!versionName)
+    <span style={{color:'red'}}>unknown version name</span>;
+  else if(info.name_suffix)
+    versionName = <>{versionName} <span>{info.name_suffix}</span></>;
   const manifestWindows = info.manifest_windows || <span style={{color:'red'}}>&lt;missing Manifest ID info!&gt;</span>;
   const manifestMacOS = info.manifest_macos || <span style={{color:'red'}}>&lt;missing Manifest ID info!&gt;</span>;
   const manifestLinux = info.manifest_linux || <span style={{color:'red'}}>&lt;missing Manifest ID info!&gt;</span>;
@@ -68,8 +72,16 @@ export default function DowngradingInfo() {
         </p>
 
         <h3>Instructions to download selected version "{versionName}"</h3>
-        <p>For <em>other game versions</em>: select desired game version in Version of Save selector above, or refer to the Reference Table section below.</p>
-        <p className="form-text">Note: when copying file names and commands, <em>do NOT include</em> quotation marks ("") surrounding them.</p>
+        <p>
+          <em>For other game versions</em>: select desired game version in "Version" selector above, or refer to
+          the Reference Table section <a
+            href={window.location.origin + window.location.pathname + '#' + idManifestsSection}
+            onClick={(e) => {if(manifestsSectionRef?.current) manifestsSectionRef.current.open = true;}}
+          >
+            below
+          </a>.
+        </p>
+        <p className="form-text">Note: when copying file names and commands, <em>DO NOT include</em> quotation marks ("") surrounding them.</p>
         <ol>
           <li>
             <h3>Open Steam Console</h3>
@@ -487,7 +499,7 @@ export default function DowngradingInfo() {
       </div>
     </details>
 
-    <details id={idManifestsSection} className="downgrading"
+    <details id={idManifestsSection} className="manifeststable"
       ref={manifestsSectionRef} open={window.location.hash === '#' + idManifestsSection}
     >
       <summary className="title-row">
@@ -574,8 +586,12 @@ export default function DowngradingInfo() {
 
             <tbody>
               {Object.entries(versionInfo).map(([version, info]) => {
+                let name = info.long_name ?? info.name;
+                if(name && info.name_suffix) {
+                  name = <>{name} <span className="name-suffix">{info.name_suffix}</span></>
+                }
                 return <tr>
-                  <td>{info.long_name ?? info.name ?? _unknown_manifest}</td>
+                  <td>{name ?? _unknown_manifest}</td>
                   <td>{info.manifest_windows ?? _unknown_manifest}</td>
                   <td>{info.manifest_macos ?? _unknown_manifest}</td>
                   <td>{info.manifest_linux ?? _unknown_manifest}</td>

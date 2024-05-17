@@ -7,7 +7,8 @@
 
 export const VERSION_INFO = {
     'vPU_initial': {
-        'name': 'Properties Update (initial build)',
+        'name': 'Properties Update',
+        'name_suffix': '(initial build)',
         'supported': false,
 		'firstbuild': true,
         'steamdb_buildid': '13340939',
@@ -27,7 +28,8 @@ export const VERSION_INFO = {
         'manifest_linux': '5558858099665908741',
     },
     'vHH_initial': {
-        'name': 'Heist and Housing Update (initial build)',
+        'name': 'Heist and Housing Update',
+        'name_suffix': '(initial build)',
         'supported': true,
 		'firstbuild': true,
 		'steamdb_buildid': '12980251',
@@ -47,7 +49,8 @@ export const VERSION_INFO = {
         'manifest_linux': '994994544851264338',
     },
     'vCHP_initial': {
-        'name': 'Patch + Cosmetics + Heist Planner Update (initial build)',
+        'name': 'Patch + Cosmetics + Heist Planner Update',
+        'name_suffix': '(initial build)',
         'supported': false,
 		'hideindropdown': true,
 		'firstbuild': true,
@@ -82,7 +85,8 @@ export const VERSION_INFO = {
         'manifest_linux': undefined,
     },
     'vHR': {
-        'name': 'Heist Reworks Update Rollback (initial rollback)',
+        'name': 'Heist Reworks Update Rollback',
+        'name_suffix': '(initial rollback)',
         'supported': false,
 		'hideindropdown': true,
 		'firstbuild': true,
@@ -161,7 +165,8 @@ export const VERSION_INFO = {
     //     'manifest_linux': undefined,
     // },
     'vGMN': {
-        'name': 'Graphics+Maps+Noots Update (initial build)',
+        'name': 'Graphics+Maps+Noots Update',
+        'name_suffix': '(initial build)',
         'long_name': 'Graphics + Maps + Noot Variations Update',
         'supported': false,
 		'steamdb_buildid': undefined,
@@ -192,7 +197,8 @@ export const VERSION_INFO = {
     },
     // other old post office update backup had crc32 5E9298CF - is it the no-notes Post Office build on 7 Jan 2023 (10271308)?
     'vP': {
-        'name': 'Post Office Update (initial build)',
+        'name': 'Post Office Update',
+        'name_suffix': '(initial build)',
         'supported': false,
         'hideindropdown': true,
         'steamdb_buildid': '10259897',
