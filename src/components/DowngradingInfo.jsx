@@ -25,7 +25,7 @@ export default function DowngradingInfo() {
   const info = versionInfo[version] ?? {};
   let versionName = info.name || info.long_name;
   if(!versionName)
-    <span style={{color:'red'}}>unknown version name</span>;
+    versionName = <span style={{color:'red'}}>unknown version name</span>;
   else if(info.name_suffix)
     versionName = <>{versionName} <span>{info.name_suffix}</span></>;
   const manifestWindows = info.manifest_windows || <span style={{color:'red'}}>&lt;missing Manifest ID info!&gt;</span>;
@@ -365,7 +365,7 @@ export default function DowngradingInfo() {
               <BsExclamationTriangle className="icon" />{' '}
               IMPORTANT: See <a
                 href={window.location.origin + window.location.pathname + '#' + idSaveLocationCard}
-                onClick={(e) => {if(manifestsSectionRef?.current) manifestsSectionRef.current.open = true;}}
+                onClick={(e) => {if(downgradingSectionRef?.current) downgradingSectionRef.current.open = true;}}
               >
                 the reminder
               </a> at the bottom of these instructions
@@ -401,7 +401,7 @@ export default function DowngradingInfo() {
           
           <a className="details-link"
             href={window.location.origin + window.location.pathname + '#' + idSaveLocationCard}
-            onClick={(e) => {if(manifestsSectionRef?.current) manifestsSectionRef.current.open = true;}}
+            onClick={(e) => {if(downgradingSectionRef?.current) downgradingSectionRef.current.open = true;}}
           >
             <BsLink45Deg title="Link to this section" aria-label="Link to this section" className="icon" />
           </a>
@@ -432,18 +432,22 @@ export default function DowngradingInfo() {
           </p>
           <ul class="listicons">
             <li class="listicons">
-              <span class="listicons"><BsInfoCircle className="icon" /></span>
+              <span class="listicons"><BsInfoCircle aria-hidden="true" className="icon" /></span>
               <p>
                 If there's no save folder with the expected name ("<span class="mono-text">Penguin Heist</span>")
                 then the game will create a completely new save file and folder, with default values for that game version.
               </p>
             </li>
             <li>
-              <span className="listicons"><BsSteam className="icon" /></span>
-              <p>
-                If synced to Steam, the game may download a save existing in the Steam cloud.
-                To prevent this, run Steam in Offline mode and then launch the game, and it will generate a new save.
-              </p>
+              <ul className="listicons">
+                <li class="listicons">
+                  <span className="listicons"><BsSteam aria-hidden="true" className="icon" /></span>
+                  <p>
+                    If synced to Steam, the game may download a save existing in the Steam cloud.
+                    To prevent this, run Steam in Offline mode and then launch the game, and it will generate a new save.
+                  </p>
+                </li>
+              </ul>
             </li>
           </ul>
           

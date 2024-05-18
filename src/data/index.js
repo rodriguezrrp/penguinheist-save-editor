@@ -34,16 +34,13 @@ const mappedCategoryInfo = require('./mapped_prop_categories.json');
 const dropdownMaps = {};
 // populate dropdown maps   (false: not recursive)
 let req = require.context("./dropdowns", false, /\.json$/);
-//console.log('require.context(...).keys():', req.keys());
 req.keys().forEach(key => {
     // notice it lowercases the filename key during matching and extracting.
     const _dropdownNameRegex = /dropdown-([a-z]+)\.json$/g; // regex is inside forEach to reset the global internal pointer
     let arr = _dropdownNameRegex.exec(key.toLowerCase());
-    //console.log('require.context', key, arr);
     const dropdownName = (arr || [null,null])[1];
 
     let _reqresult = req(key);
-    //console.log(`require.context ... req(${key})`, _reqresult)
     dropdownMaps[dropdownName] = _reqresult;
 });
 console.log('data index.js: aggregated dropdownMaps from json.', dropdownMaps);
@@ -85,13 +82,18 @@ if(!versionRelevants['']) {
     });
     versionRelevants[''] = [...s];
 }
+if(!versionRelevantRegex['']) {
+    let s = new Set();
+    Object.values(versionRelevantRegex).forEach(arr => {
+        arr.forEach(v => s.add(v));
+    });
+    versionRelevantRegex[''] = [...s];
+}
 if(!versionDefaults['']) {
-    versionDefaults[''] = {};  // for the "unknown" version, have no explicit defaults. Therefore relevant takes over.
+    versionDefaults[''] = {};  // for the "unknown"/"any" version, have no explicit defaults. Therefore relevant takes over.
 }
 
 console.log('data index.js: aggregated versionDefaults and versionRelevants from json.');
-
-// const supportedVersionsInfo = Object.fromEntries(Object.entries(versionInfo).filter(([version, info]) => info.supported));
 
 function strToRegex(regexAsStr) {
     const [, pattern, flags] = regexAsStr.match(/\/(.*)\/([a-z]*)/);
@@ -119,40 +121,6 @@ function getCategoryInfo(/**@type string*/categoryId) {
 
 
 function resolvePropInfoName(propInfo, propKeyExtra, placeholder='{name}') {
-    // const propNameMap = propInfo.name_map;
-    // let propNameMapResult;
-    // // resolve name map if needed
-    // if(typeof(propNameMap) === "string") {
-    //     // it is referring to another known name map, not in the same file. could be version-dynamic.
-    //     switch (propNameMap) {
-    //         case "_self":
-    //             propNameMapResult = { 'name': propKeyExtra };
-    //             break;
-    //         case "item":
-    //             propNameMapResult = nameMapItems[propKeyExtra] ?? { 'name': propKeyExtra };
-    //             break;
-    //         case "clothing":
-    //             propNameMapResult = nameMapClothing[propKeyExtra] ?? { 'name': propKeyExtra };
-    //             break;
-    //         case "housing":
-    //             propNameMapResult = nameMapHousing[propKeyExtra] ?? { 'name': propKeyExtra };
-    //             break;
-    //         case "furniture":
-    //             propNameMapResult = nameMapFurniture[propKeyExtra] ?? { 'name': propKeyExtra };
-    //             break;
-    //         // case "structure":
-    //         //     propNameMap = NAME_MAP_STRUCTURE[propKeyExtra] ?? { 'name': propKeyExtra };
-    //         //     break;
-    //         default:
-    //             console.error(`Unknown name map "${propNameMap}" referenced! Defaulting to null.`)
-    //             propNameMapResult = null;
-    //             break;
-    //     }
-    // } else if(typeof(propNameMap) === "object") {
-    //     // console.log(propNameMap);
-    //     // console.log(propKeyExtra, propNameMap[propKeyExtra]);
-    //     propNameMapResult = propNameMap[propKeyExtra];
-    // }
     if(!propInfo.name) return propInfo.name;
     if(propInfo.keyextra_separator) {
         // recursively call for each part of the keyExtra
@@ -238,7 +206,9 @@ function resolveDropdownFromPropInfo(propInfo, /**@type string*/ version) {
     return propDropdownValues;
 }
 
-console.info('TODO: memoize the resolveDropdown results?')
+console.info('TODO: cache the resolveDropdown results?');
+
+const _VAL_MERGING_SEPARATOR = ' or ';
 
 function resolveDropdown(dropdownRefName, version) {
     // console.log('resolveDropdown');
@@ -248,33 +218,33 @@ function resolveDropdown(dropdownRefName, version) {
         return dropdownMap.values;
     }
     // handle version-dependent. Can involve inheritance, etc.
-    let vals1 = {};
-    // let vals2 = {};
+    let vals = {};
     // console.log('resolveDropdown: version:', version);
     if(version) {
-        // let version = saveType1;
-        vals1 = resolveDropdown_nameMapIfNeeded(dropdownMap[version]) ?? {};
+        vals = resolveDropdown_nameMapIfNeeded(dropdownMap[version]) ?? {};
         // add in values from the chain of inheritance
         while(dropdownMap[version].inherit) {
             version = dropdownMap[version].inherit;
             // newest should override in the inheritance chain (newest is values already found)
-            vals1 = {...resolveDropdown_nameMapIfNeeded(dropdownMap[version]) ?? {}, ...vals1};
+            vals = {...resolveDropdown_nameMapIfNeeded(dropdownMap[version]) ?? {}, ...vals};
         }
+    } else {
+        // gather all possible values
+        Object.values(dropdownMap).forEach((data) => {
+            const moreVals = resolveDropdown_nameMapIfNeeded(data);
+            if(moreVals) {
+                for(const [key, newVal] of Object.entries(moreVals)) {
+                    if(vals.hasOwnProperty(key) && vals[key] !== newVal) {
+                        // combine the values here
+                        vals[key] = vals[key] + _VAL_MERGING_SEPARATOR + newVal;
+                    } else {
+                        vals[key] = newVal;
+                    }
+                }
+            }
+        });
     }
-    // console.log('vals1', vals1);
-    // if(saveType2 && (saveType2 !== saveType1)) {  // optimization shortcut to avoid performing the same calculations for the same saveType
-    //     let version = saveType2;
-    //     vals2 = resolveDropdown_nameMapIfNeeded(dropdownMap[version]) ?? {};
-    //     // add in values from the chain of inheritance
-    //     while(dropdownMap[version].inherit) {
-    //         version = dropdownMap[version].inherit;
-    //         // newest should override in the inheritance chain (newest is values already found)
-    //         vals2 = {...resolveDropdown_nameMapIfNeeded(dropdownMap[version]) ?? {}, ...vals2};
-    //     }
-    // }
-    // console.log('vals2', vals2);
-    // return {...vals2, ...vals1}; // primary save's version overrides any duplicates from comparison's version
-    return vals1;
+    return vals;
 }
 
 /** @returns {{id: string}} */
@@ -325,7 +295,6 @@ export {
     versionDefaults,
     versionRelevants,
     versionRelevantRegex,
-    // supportedVersionsInfo,
     getPropInfo,
     getCategoryInfo,
     resolvePropInfoName,

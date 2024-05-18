@@ -253,10 +253,6 @@ p.callout {
 	padding: var(--p-callout-padding-size);
 	padding-right: 0px;
 }
-span.name-suffix {
-  color: var(--mid);
-  font-size: .95em;
-}
 
 input[type="checkbox"].switch {
 	border-radius: 2em;
@@ -338,6 +334,23 @@ input[type="radio"] + label {
     background-color: var(--accent);
     color: var(--offwhite);
   }
+}
+/* apply some nice visual spacing around form's labels and inputs */
+form > label {
+  display: inline-block;
+}
+form > label:not(:first-child),
+form > fieldset:not(:first-child) {
+  margin-top: .75em;
+}
+form > label:not(:has(input, select), :last-child) {
+  /* labels that don't have nested input children, i.e., they reference an element elsewhere (using e.g. for = "...") */
+  padding-bottom: .3em;
+}
+
+span.name-suffix {
+  color: var(--mid);
+  font-size: .95em;
 }
 
 ul, ol {
@@ -620,6 +633,10 @@ input[type="text"].for-color-editor {
 } */
 .propname {
   vertical-align: middle;
+}
+.propname-note {
+  vertical-align: middle;
+  cursor: help;
 }
 .propname-fullkey {
   /* display: none; */

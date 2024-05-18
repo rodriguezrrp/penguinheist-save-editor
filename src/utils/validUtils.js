@@ -371,11 +371,13 @@ export function saveDataValueValidate(editorValue, keyBase, keyExtra, version, c
                 break;
             }
             let [fId, pos, rot] = _parts;
-            let dropdownValues = version ? resolveDropdownFromPropInfo(propInfo, version) : null;
-            if(!dropdownValues?.hasOwnProperty(fId)) {
-                result.warning = `Expects a valid furniture Id as the first item in the list! Selected save version does not expect "${fId}"`
-                result.validity = false;
-                break;
+            if(version) {  // only validate the furniture selection dropdown if version isn't the "unknown"/"any" version
+                let dropdownValues = version ? resolveDropdownFromPropInfo(propInfo, version) : null;
+                if(!dropdownValues?.hasOwnProperty(fId)) {
+                    result.warning = `Expects a valid furniture Id as the first item in the list! Selected save version does not expect "${fId}"`
+                    result.validity = false;
+                    break;
+                }
             }
             pos = pos.split(',');
             if(pos.length !== 3 || pos.some(v => !isFloat(v,false))) {
