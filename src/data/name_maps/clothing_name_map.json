@@ -328,6 +328,11 @@
 		"imgname": "watch.png",
 		"category": "clothes"
 	},
+	"218": {
+		"name": "Robber Shirt",
+		"imgname": "robber_shirt.png",
+		"category": "clothes"
+	},
 	"22": {
 		"name": "Afro with Comb",
 		"imgname": "afro_with_comb.png",
@@ -926,6 +931,11 @@
 	"194": {
 		"name": "Wireless Earpiece",
 		"imgname": "wireless_earpiece.png",
+		"category": "facewear"
+	},
+	"219": {
+		"name": "Robber Mask",
+		"imgname": "robber_mask.png",
 		"category": "facewear"
 	}
 }

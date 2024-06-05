@@ -1,5 +1,13 @@
 {
     "version_dependent": true,
+    "vPU_initial": {
+        "inherit": "vHH_initial",
+        "name_map": "item",
+        "values": [
+            "144",
+            "145"
+        ]
+    },
     "vHH_initial": {
         "inherit": "vCHP_latest",
         "name_map": "item",

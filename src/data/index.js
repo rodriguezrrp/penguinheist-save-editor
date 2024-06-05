@@ -221,12 +221,16 @@ function resolveDropdown(dropdownRefName, version) {
     let vals = {};
     // console.log('resolveDropdown: version:', version);
     if(version) {
-        vals = resolveDropdown_nameMapIfNeeded(dropdownMap[version]) ?? {};
-        // add in values from the chain of inheritance
-        while(dropdownMap[version].inherit) {
-            version = dropdownMap[version].inherit;
-            // newest should override in the inheritance chain (newest is values already found)
-            vals = {...resolveDropdown_nameMapIfNeeded(dropdownMap[version]) ?? {}, ...vals};
+        if(dropdownMap.hasOwnProperty(version)) {
+            vals = resolveDropdown_nameMapIfNeeded(dropdownMap[version]) ?? {};
+            // add in values from the chain of inheritance
+            while(dropdownMap[version].inherit) {
+                version = dropdownMap[version].inherit;
+                // newest should override in the inheritance chain (newest is values already found)
+                vals = {...resolveDropdown_nameMapIfNeeded(dropdownMap[version]) ?? {}, ...vals};
+            }
+        } else {
+            console.info(`dropdownMap for "${dropdownRefName}" had no data for version "${version}".`);
         }
     } else {
         // gather all possible values
@@ -247,7 +251,7 @@ function resolveDropdown(dropdownRefName, version) {
     return vals;
 }
 
-/** @returns {{id: string}} */
+/** @returns {{[id: string]: string}} */
 function resolveDropdown_nameMapIfNeeded(dropdownMapResult) {
     /* If the result's .values is an array instead of an object (mapping),
         create an object (mapping) from the array using the name map to make key-value pairs.
@@ -277,8 +281,57 @@ function resolveDropdown_nameMapIfNeeded(dropdownMapResult) {
         }
         if(nameMap === null)
             return {};
-        // convert each value into a key-value pair
-        return Object.fromEntries(dropdownMapResult.values.map((value) => [value, nameMap[value].name]));
+
+        // convert each value (from .values array) into a key-value pair with name, then to object
+        let nameMapValuesObj = Object.fromEntries(dropdownMapResult.values.map((value) => [value, nameMap[value].name]));
+        // apply special remapping if applicable
+        if(dropdownMapResult.value_remapping) {
+            for(const [value, alternate] of Object.entries(dropdownMapResult.value_remapping)) {
+                if(typeof(alternate) === "undefined" || alternate === null) {
+                    // remove from resulting values
+                    delete nameMapValuesObj[value];
+                } else if(typeof(alternate) === "string" || typeof(alternate) === "number") {
+                    // replace with the name from nameMap value of alternate
+                    nameMapValuesObj[value] = nameMap[alternate].name;
+                } else if(typeof(alternate) === "object") {
+                    // alternate should contain alternate property values or possible operations to create them
+                    // replace with the name from custom operation
+                    // console.info(alternate);
+                    nameMapValuesObj[value] = Object.fromEntries(
+                        Object.entries(alternate).map((alternateEntry) => {
+                            // if the value of the key-value pair is an object, it should be an operation to generate the replacement.
+                            // else, it is just a direct 'copy-paste' replacement.
+                            if(typeof(alternateEntry[1]) !== "object") {
+                                return alternateEntry;
+                            } else {
+                                const [prop, op] = alternateEntry;
+                                let newVal = null;
+                                // apply operation to the new property for this name map result
+                                switch(op.operation) {
+                                    case "concat":
+                                        // console.info('concat op.from_namemap_values:', op.from_namemap_values);
+                                        newVal = op.from_namemap_values.map(nmkey => nameMap[nmkey][prop]).join(op.delim);
+                                        // console.info('concat newVal:', newVal);
+                                        break;
+                                    case "list":
+                                        newVal = op.from_namemap_values.map(nmkey => nameMap[nmkey][prop]);
+                                        break;
+                                    case "raw":
+                                        newVal = op.raw_value;
+                                        break;
+                                    default:
+                                        console.error(`Unknown name map value remapping operation "${op.operation}"; defaulting value to null!`)
+                                        newVal = null;
+                                        break;
+                                }
+                                return [prop, newVal];
+                            }
+                        })
+                    ).name;
+                }
+            }
+        }
+        return nameMapValuesObj;
     } else {
         return dropdownMapResult.values ?? {};
     }

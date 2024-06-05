@@ -6,8 +6,9 @@ import { getPropInfo, resolveDropdownFromPropInfo, resolvePropInfoName } from ".
 import { listDelim } from "../../utils/saveFileEncodingUtils.mjs";
 import { handleKeyDown, handleMouseUp } from "../../utils/unityMapping";
 import stopEvent from "../../utils/stopEvent";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { BsQuestionCircle } from "react-icons/bs";
+import { Popover } from "react-tiny-popover";
 
 export function Editor({ categoryId, fullKey }) {
   const [keyBase, keyExtra] = getKeyParts(fullKey);
@@ -52,6 +53,13 @@ export function Editor({ categoryId, fullKey }) {
 
   const rawEditor = <PropRawTextInput saveDataValue={saveDataValue} />;
   
+  let debugTypeDisplay = null;
+  if (process.env.NODE_ENV === 'development') {
+    debugTypeDisplay = <div className="prop-type">
+      <span className="prop-type"> {propInfo.type}</span>
+    </div>;
+  }
+
   return (
     <div id={'editorRow-'+htmlSafeKey} className="editor-row">
       <SinglePropName propName={propName} fullKey={fullKey} note={propInfo.note} />
@@ -66,9 +74,7 @@ export function Editor({ categoryId, fullKey }) {
           {rawEditor}
         </RichSingleValueEditor>
 
-        <div className="prop-type">
-          <span className="prop-type"> {propInfo.type}</span>
-        </div>
+        {debugTypeDisplay}
       </div>
     </div>
   );
@@ -79,10 +85,7 @@ function SinglePropName({ propName, fullKey, note }) {
   return (
     <div className="propname-container">
       <span className="propname">{propName}</span>
-      {note && <span className="propname-note" title={note}>
-        &nbsp;
-        <PropInfoQuestionIcon note={note} />
-      </span>}
+      <PropNameNoteIndicator note={note} />
       <div className="propname-fullkey">
         <span>@{fullKey}@</span>
       </div>
@@ -90,56 +93,114 @@ function SinglePropName({ propName, fullKey, note }) {
   );
 }
 
-function PropInfoQuestionIcon({ note }) {
-  return (
-    <BsQuestionCircle aria-label={`Note about attribute: ${note}`} className="icon propname-icon" />
+function PropNameNoteIndicator({ note }) {
+  const [isPopoverClickedOpen, setIsPopoverClickedOpen] = useState(false);
+  const [isPopoverHoveredOpen, setIsPopoverHoveredOpen] = useState(false);
+  return note && (
+    <Popover
+      isOpen={isPopoverClickedOpen || isPopoverHoveredOpen}
+      positions={['top','bottom','right','left']}
+      padding={1}
+      onClickOutside={() => { setIsPopoverClickedOpen(false); setIsPopoverHoveredOpen(false); }}
+      content={
+        <div className={"popover" + (isPopoverClickedOpen ? " popover-clicked-open" : "")}>{note}</div>
+      }
+    >
+      <span className="propname-note" title={note}
+        onMouseOver={() => setIsPopoverHoveredOpen(true)}
+        onMouseOut={() => setIsPopoverHoveredOpen(false)}
+        onClick={() => setIsPopoverClickedOpen(!isPopoverClickedOpen)}
+      >
+        <BsQuestionCircle aria-label={`Note about attribute: ${note}`} className="icon propname-icon" />
+      </span>
+    </Popover>
   );
 }
 
-function warningMsgWithKey(fullKey, warning) {
-  return fullKey + ':\n' + warning;
+
+function warningMsgWithKey(fullKey, warning, keyBasesNamingMap) {
+  if(!keyBasesNamingMap)
+    return fullKey + ':\n' + warning;
+  const [keyBase, ] = getKeyParts(fullKey);
+  return keyBasesNamingMap[keyBase] + ':\n' + warning;
 }
-function warningMsgForMultipleValidities(validities) {
+function warningMsgForMultipleValidities(validities, keyBasesNamingMap) {
   return validities.filter(([fullKey, valInfo]) => valInfo.warning)
-    .map(([fullKey, valInfo]) => warningMsgWithKey(fullKey, valInfo.warning))
+    .map(([fullKey, valInfo]) => warningMsgWithKey(fullKey, valInfo.warning, keyBasesNamingMap))
     .join('\n');
 }
 
-function ValidationIndicator({ /**@type {boolean | null}*/ validity, /**@type {string | null}*/ warning,
-  /**@type {{fullKey: {validity: boolean | null, warning: string | null}}}*/ otherIndsValidity }) {
-  // console.log('ValidationIndicator created');
-  
-  if(otherIndsValidity) {
-    const areErrored = Object.entries(otherIndsValidity).filter(([fullKey, valInfo]) => valInfo.validity !== null && !valInfo.validity);
-    const areValid = Object.entries(otherIndsValidity).filter(([fullKey, valInfo]) => valInfo.validity !== null && valInfo.validity);
-    // combined overall validity indication and overall warning messages
-    validity = areErrored.length ? false : areValid.length ? true : null;
-    warning = warningMsgForMultipleValidities(Object.entries(otherIndsValidity));
-  }
-  const others = otherIndsValidity && <div className="validation-others-container"
+// function ValidationIndicator({ /**@type {boolean | null}*/ validity, /**@type {string | null}*/ warning,
+//   /**@type {{fullKey: {validity: boolean | null, warning: string | null}}}*/ otherIndsValidity }) {
+//   // console.log('ValidationIndicator created');
+//   if(otherIndsValidity) {
+//     return <MultiValidationIndicator validity={validity} warning={warning} otherIndsValidity={otherIndsValidity} />;
+//   } else {
+//     return <SingleValidationIndicator validity={validity} warning={warning} />;
+//   }
+// }
+
+function MultiValidationIndicator({ /**@type {{fullKey: {validity: boolean | null, warning: string | null}}}*/ otherIndsValidity,
+  /**@type {{[keyBase: string]: string} | null}*/ keyBasesNamingMap }) {
+  console.log('MultiValidationIndicator created');
+
+  // const [isParentHovered, setIsParentHovered] = useState(false);
+
+  const areErrored = Object.entries(otherIndsValidity).filter(([fullKey, valInfo]) => valInfo.validity !== null && !valInfo.validity);
+  const areValid = Object.entries(otherIndsValidity).filter(([fullKey, valInfo]) => valInfo.validity !== null && valInfo.validity);
+  // combined overall validity indication and overall warning messages
+  const overallValidity = areErrored.length ? false : areValid.length ? true : null;
+  const overallWarning = warningMsgForMultipleValidities(Object.entries(otherIndsValidity), keyBasesNamingMap);
+
+  return <div className="validation-inds-container">
+    <SingleValidationIndicator validity={overallValidity} warning={overallWarning}  />
+    <div className="validation-others-container"
       style={{'--valid-inds-ct': Object.keys(otherIndsValidity).length}}
+      // onMouseOver={() => setIsParentHovered(true)}
+      // onMouseOut={() => setIsParentHovered(false)}
     >
       {Object.entries(otherIndsValidity).map(([fullKey, {validity, warning}]) => {
-        // let validity = v === 1 ? null : v === 2;
-        return <SingleValidationIndicator validity={validity} warning={warning && warningMsgWithKey(fullKey, warning)} />
+        return <SingleValidationIndicator
+          validity={validity}
+          warning={warning && warningMsgWithKey(fullKey, warning, keyBasesNamingMap)}
+          // allowPopover={isParentHovered}
+        />;
       })}
-    </div>;
-  
-  return <div className="validation-inds-container">
-    <SingleValidationIndicator validity={validity} warning={warning} />
-    {others}
+    </div>
   </div>;
 }
 
 const unusedValidityMessage = 'Ignored by selected version'
 
-function SingleValidationIndicator({ /**@type {boolean | null}*/ validity, /**@type {string | null}*/ warning }) {
+function SingleValidationIndicator({ /**@type {boolean | null}*/ validity, /**@type {string | null}*/ warning,
+  /**@type {boolean}*/ allowPopover = true }) {
+  
   const message = warning ? warning : validity === null ? unusedValidityMessage : undefined;
-  return <span className={"validation-ind"+(validity===null?" unused":validity?" accepted":" warning")}
+  const [isPopoverClickedOpen, setIsPopoverClickedOpen] = useState(false);
+  const [isPopoverHoveredOpen, setIsPopoverHoveredOpen] = useState(false);
+  return (
+  <Popover
+    isOpen={message && allowPopover && (isPopoverClickedOpen || isPopoverHoveredOpen)}
+    positions={['top','bottom','right','left']}
+    // padding={8}
+    onClickOutside={() => { setIsPopoverClickedOpen(false); setIsPopoverHoveredOpen(false); }}
+    content={
+      <div className={"popover"
+        + (isPopoverClickedOpen ? " popover-clicked-open" : "")
+        + (validity===null?" unused":validity?" accepted":" warning")
+      }>{message}</div>
+    }
+  >
+  <span className={"validation-ind"+(validity===null?" unused":validity?" accepted":" warning")}
     title={message}
+    onMouseOver={() => setIsPopoverHoveredOpen(true)}
+    onMouseOut={() => setIsPopoverHoveredOpen(false)}
+    onClick={() => setIsPopoverClickedOpen(!isPopoverClickedOpen)}
   >
     {validity===null?'∅':validity?'✔':'✘'}
-  </span>;
+  </span>
+  </Popover>
+  );
 }
 
 
@@ -157,7 +218,7 @@ function RichSingleValueEditor({ children, type, saveDataValue, handleValueUpdat
     ));
     dropdownOptions.unshift(<option value="" disabled></option>);
   }
-  const doInputRecord = (type === "int-dropdown" && propInfo.dropdown === 'keybinds');
+  const makeInputRecorder = (type === "int-dropdown" && propInfo.dropdown === 'keybinds');
 
   switch (type) {
     case "int":
@@ -174,7 +235,7 @@ function RichSingleValueEditor({ children, type, saveDataValue, handleValueUpdat
       break;
 
     case "int-dropdown":
-      if(doInputRecord) {
+      if(makeInputRecorder) {
         // const unityCodeCallback = (ucode) => handleValueUpdate(ucode);
         const unityCodeCallback = handleValueUpdate;
 
@@ -914,7 +975,8 @@ export function ItemSpecialEditor({ categoryId, fullKeysArray }) {
       keyBasesArray={relatedKeyBasesForItems}
       commonKeyExtra={commonKeyExtra}
     />
-    <ValidationIndicator otherIndsValidity={keysValidity} />
+    {/* <ValidationIndicator otherIndsValidity={keysValidity} /> */}
+    <MultiValidationIndicator otherIndsValidity={keysValidity} keyBasesNamingMap={relatedNamingMapForItems} />
     <div className="editor-items-container">
       {contents}
     </div>
@@ -960,10 +1022,7 @@ function MultiPropName({ groupName, keyBasesArray, commonKeyExtra, note }) {
   return (
     <div className="propname-container">
       <span className="propname">{groupName}</span>
-      {note && <span className="propname-note" title={note}>
-        &nbsp;
-        <PropInfoQuestionIcon note={note} />
-      </span>}
+      <PropNameNoteIndicator note={note} />
       <div className="propname-fullkey">
         {keyBasesArray.map(keyBase =>
           <div>

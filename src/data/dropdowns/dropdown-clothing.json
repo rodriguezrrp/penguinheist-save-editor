@@ -4,6 +4,8 @@
         "inherit": "vHH_initial",
         "name_map": "clothing",
         "values": [
+            "219",
+            "218"
         ]
     },
     "vHH_initial": {

@@ -1,5 +1,16 @@
 {
     "version_dependent": true,
+    "vPU_initial": {
+        "inherit": "vHH_initial",
+        "values": {
+            "23": "Midsummer Cottage",
+            "24": "Ice Plains",
+            "25": "Vineyard",
+            "26": "Western Hideout",
+            "27": "Pumpkin Ranch",
+            "28": "Cherry Sanctuary"
+        }
+    },
     "vHH_initial": {
         "inherit": "vCHP_latest",
         "values": {

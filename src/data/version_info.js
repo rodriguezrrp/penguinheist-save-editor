@@ -9,7 +9,7 @@ export const VERSION_INFO = {
     'vPU_initial': {
         'name': 'Properties Update',
         'name_suffix': '(initial build)',
-        'supported': false,
+        'supported': true,
 		'firstbuild': true,
         'steamdb_buildid': '13340939',
 		'crc32_windows': 'D6B2C813',

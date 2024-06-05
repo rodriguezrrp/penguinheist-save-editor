@@ -637,6 +637,8 @@ input[type="text"].for-color-editor {
 .propname-note {
   vertical-align: middle;
   cursor: help;
+  padding-left: 0.2em;
+  padding-right: 0.2em;
 }
 .propname-fullkey {
   /* display: none; */
@@ -647,7 +649,8 @@ input[type="text"].for-color-editor {
 svg.propname-icon {
   color: #777;
 }
-svg.propname-icon:hover {
+svg.propname-icon:hover,
+.propname-note:hover > svg.propname-icon {
   color: currentColor;
 }
 
@@ -721,6 +724,35 @@ span.validation-ind {
   height: 40vmin;
   pointer-events: none;
 } */
+
+.popover {
+	color: var(--dark);
+  --popover-bg-color: var(--light);
+	background-color: var(--popover-bg-color);
+	/* background-color: color-mix(in srgb, var(--light) 80%, transparent); */
+	/* border: 1px solid var(--light); */
+	border-radius: 2px;
+	padding: 3px;
+  max-width: 25vw;
+  opacity: 0.93;
+  box-shadow: 0 0 0 0px var(--light);
+  transition: opacity linear 0.05s,
+              box-shadow linear 0.05s;
+}
+.popover.warning {
+  color: var(--dark);
+  --popover-bg-color: #ff8888;
+}
+.popover.unused {
+  color: var(--dark);
+  --popover-bg-color: var(--light);
+  filter: grayscale(0.7);
+}
+.popover-clicked-open {
+  opacity: 1;
+  /* box-shadow: 0 0 0 1px var(--popover-bg-color); */
+  box-shadow: 0 0 0 1px var(--accent);
+}
 
 @media (prefers-reduced-motion: no-preference) {
   /* .App-logo {

@@ -1,101 +1,446 @@
 {
+    "0": {
+        "name": "Simple Table",
+        "image": "simple_table.png"
+    },
+    "1": {
+        "name": "Office Chair",
+        "image": "office_chair.png"
+    },
+    "10": {
+        "name": "Gaming Chair",
+        "image": "gaming_chair.png"
+    },
+    "100": {
+        "name": "Synthesizer",
+        "image": "synthesizer.png"
+    },
+    "101": {
+        "name": "Television",
+        "image": "television.png"
+    },
+    "102": {
+        "name": "Tent",
+        "image": "tent.png"
+    },
+    "103": {
+        "name": "Tiki Torch",
+        "image": "tiki_torch.png"
+    },
+    "104": {
+        "name": "Toaster",
+        "image": "toaster.png"
+    },
+    "105": {
+        "name": "Trampoline",
+        "image": "trampoline.png"
+    },
+    "106": {
+        "name": "Trough",
+        "image": "trough.png"
+    },
+    "107": {
+        "name": "Fat Vase",
+        "image": "fat_vase.png"
+    },
+    "108": {
+        "name": "Tall Vase",
+        "image": "tall_vase.png"
+    },
+    "109": {
+        "name": "Wine Barrel",
+        "image": "wine_barrel.png"
+    },
+    "11": {
+        "name": "Cauldron",
+        "image": "cauldron.png"
+    },
+    "12": {
+        "name": "Chest",
+        "image": "chest.png"
+    },
+    "13": {
+        "name": "Coffee Mug",
+        "image": "coffee_mug.png"
+    },
+    "14": {
+        "name": "Computer Screen",
+        "image": "computer_screen.png"
+    },
+    "15": {
+        "name": "Couch",
+        "image": "couch.png"
+    },
+    "16": {
+        "name": "Wood Counter",
+        "image": "wood_counter.png"
+    },
+    "17": {
+        "name": "Crate",
+        "image": "crate.png"
+    },
+    "18": {
+        "name": "Magical Crystals",
+        "image": "magical_crystals.png"
+    },
+    "19": {
+        "name": "Discount Penguin Vending Machine",
+        "image": "discount_penguin_vending_machine.png"
+    },
+    "2": {
+        "name": "Simple Chair",
+        "image": "simple_chair.png"
+    },
+    "20": {
+        "name": "Wine Glass",
+        "image": "wine_glass.png"
+    },
+    "21": {
+        "name": "Whiskey Glass",
+        "image": "whiskey_glass.png"
+    },
+    "22": {
+        "name": "Easel and Painting",
+        "image": "easel_and_painting.png"
+    },
+    "23": {
+        "name": "Drum Kit",
+        "image": "drum_kit.png"
+    },
+    "24": {
+        "name": "Pallet",
+        "image": "pallet.png"
+    },
+    "25": {
+        "name": "Exploding Barrel",
+        "image": "exploding_barrel.png"
+    },
+    "26": {
+        "name": "Fancy Fence",
+        "image": "fancy_fence.png"
+    },
+    "27": {
+        "name": "Fire Bowl",
+        "image": "fire_bowl.png"
+    },
+    "28": {
+        "name": "Flood Light",
+        "image": "flood_light.png"
+    },
+    "29": {
+        "name": "Food Stand",
+        "image": "food_stand.png"
+    },
+    "3": {
+        "name": "Aloe Vera Plant",
+        "image": "aloe_vera_plant.png"
+    },
+    "30": {
+        "name": "Fountain",
+        "image": "fountain.png"
+    },
+    "31": {
+        "name": "Giant Shroom",
+        "image": "giant_shroom.png"
+    },
+    "32": {
+        "name": "Huge Shroom",
+        "image": "huge_shroom.png"
+    },
+    "33": {
+        "name": "Glass Dish",
+        "image": "glass_dish.png"
+    },
+    "34": {
+        "name": "Glass Divider",
+        "image": "glass_divider.png"
+    },
     "35": {
-        "name": "Gold Bar"
+        "name": "Gold Bar",
+        "image": "gold_bar.png"
+    },
+    "36": {
+        "name": "Simple Gravestone",
+        "image": "simple_gravestone.png"
+    },
+    "37": {
+        "name": "Cross Gravestone",
+        "image": "cross_gravestone.png"
+    },
+    "38": {
+        "name": "Pillar Gravestone",
+        "image": "pillar_gravestone.png"
+    },
+    "39": {
+        "name": "Workout Bench",
+        "image": "workout_bench.png"
+    },
+    "4": {
+        "name": "Standing Flower Pot",
+        "image": "standing_flower_pot.png"
+    },
+    "40": {
+        "name": "Modern Bench",
+        "image": "modern_bench.png"
+    },
+    "41": {
+        "name": "Glass Table",
+        "image": "glass_table.png"
+    },
+    "42": {
+        "name": "Food Tray",
+        "image": "food_tray.png"
+    },
+    "43": {
+        "name": "Modern Trash Can",
+        "image": "modern_trash_can.png"
+    },
+    "44": {
+        "name": "Pumpkin on the Vine",
+        "image": "pumpkin_on_the_vine.png"
+    },
+    "45": {
+        "name": "Kitchen",
+        "image": "kitchen.png"
+    },
+    "46": {
+        "name": "Toy Train Locomotive",
+        "image": "toy_train_locomotive.png"
+    },
+    "47": {
+        "name": "Luxury Bed",
+        "image": "luxury_bed.png"
+    },
+    "48": {
+        "name": "Machine Stuff Underwater",
+        "image": "machine_stuff_underwater.png"
+    },
+    "49": {
+        "name": "Mannesquin Stand",
+        "image": "mannesquin_stand.png"
+    },
+    "5": {
+        "name": "Jacuzzi",
+        "image": "jacuzzi.png"
+    },
+    "50": {
+        "name": "Toy Train Cart",
+        "image": "toy_train_cart.png"
     },
     "51": {
-        "name": "Medieval Chair"
+        "name": "Medieval Chair",
+        "image": "medieval_chair.png"
     },
-	"68": {
-		"name": "Pongo Labs Statue"
-	},
-	"64": {
-		"name": "Plank Fence"
-	},
-	"17": {
-		"name": "Crate"
-	},
-	"44": {
-		"name": "Pumpkin on the Vine"
-	},
-	"69": {
-		"name": "Pool Table Setup"
-	},
-	"72": {
-		"name": "Pot"
-	},
-	"71": {
-		"name": "Post Office Stand"
-	},
-	"88": {
-		"name": "Side Table"
-	},
-	"73": {
-		"name": "Present Box"
-	},
-	"57": {
-		"name": "Desk"
-	},
-	"8": {
-		"name": "Bar Stool Backrest"
-	},
-	"107": {
-		"name": "Fat Vase"
-	},
-	"77": {
-		"name": "Research Cubicle"
-	},
-	"63": {
-		"name": "Pizza Oven"
-	},
-	"46": {
-		"name": "Toy Train Locomotive"
-	},
-	"34": {
-		"name": "Glass Divider"
-	},
-	"3": {
-		"name": "Aloe Vera Plant"
-	},
-	"27": {
-		"name": "Fire Bowl"
-	},
-	"15": {
-		"name": "Couch"
-	},
-	"81": {
-		"name": "Research Machine 7"
-	},
-	"101": {
-		"name": "Television"
-	},
-	"100": {
-		"name": "Synthesizer"
-	},
-	"23": {
-		"name": "Drum Kit"
-	},
-	"29": {
-		"name": "Food Stand"
-	},
-	"36": {
-		"name": "Simple Gravestone"
-	},
-	"74": {
-		"name": "Pumpkin"
-	},
-	"45": {
-		"name": "Kitchen"
-	},
-	"49": {
-		"name": "Mannesquin Stand"
-	},
-	"106": {
-		"name": "Trough"
-	},
-	"39": {
-		"name": "Workout Bench"
-	},
-	"13": {
-		"name": "Coffee Mug"
-	}
+    "52": {
+        "name": "Metal Barrel",
+        "image": "metal_barrel.png"
+    },
+    "53": {
+        "name": "Metal Fence",
+        "image": "metal_fence.png"
+    },
+    "54": {
+        "name": "Microphone Stand",
+        "image": "microphone_stand.png"
+    },
+    "55": {
+        "name": "Minecart",
+        "image": "minecart.png"
+    },
+    "56": {
+        "name": "Museum Cabinet",
+        "image": "museum_cabinet.png"
+    },
+    "57": {
+        "name": "Desk",
+        "image": "desk.png"
+    },
+    "58": {
+        "name": "Small Mushroom",
+        "image": "small_mushroom.png"
+    },
+    "59": {
+        "name": "Needle Board",
+        "image": "needle_board.png"
+    },
+    "6": {
+        "name": "Barrel",
+        "image": "barrel.png"
+    },
+    "60": {
+        "name": "Open Crate",
+        "image": "open_crate.png"
+    },
+    "61": {
+        "name": "Paint Can",
+        "image": "paint_can.png"
+    },
+    "62": {
+        "name": "Pizza",
+        "image": "pizza.png"
+    },
+    "63": {
+        "name": "Pizza Oven",
+        "image": "pizza_oven.png"
+    },
+    "64": {
+        "name": "Plank Fence",
+        "image": "plank_fence.png"
+    },
+    "65": {
+        "name": "Plant Holder",
+        "image": "plant_holder.png"
+    },
+    "66": {
+        "name": "Plate",
+        "image": "plate.png"
+    },
+    "67": {
+        "name": "Plush Penguin",
+        "image": "plush_penguin.png"
+    },
+    "68": {
+        "name": "Pongo Labs Statue",
+        "image": "pongo_labs_statue.png"
+    },
+    "69": {
+        "name": "Pool Table Setup",
+        "image": "pool_table_setup.png"
+    },
+    "7": {
+        "name": "Bar Stool",
+        "image": "bar_stool.png"
+    },
+    "70": {
+        "name": "Open Book",
+        "image": "open_book.png"
+    },
+    "71": {
+        "name": "Post Office Stand",
+        "image": "post_office_stand.png"
+    },
+    "72": {
+        "name": "Pot",
+        "image": "pot.png"
+    },
+    "73": {
+        "name": "Present Box",
+        "image": "present_box.png"
+    },
+    "74": {
+        "name": "Pumpkin",
+        "image": "pumpkin.png"
+    },
+    "75": {
+        "name": "Noot O' Lantern",
+        "image": "noot_o_lantern.png"
+    },
+    "76": {
+        "name": "Radio",
+        "image": "radio.png"
+    },
+    "77": {
+        "name": "Research Cubicle",
+        "image": "research_cubicle.png"
+    },
+    "78": {
+        "name": "Research Machine 2",
+        "image": "research_machine_2.png"
+    },
+    "79": {
+        "name": "Research Machine 4",
+        "image": "research_machine_4.png"
+    },
+    "8": {
+        "name": "Bar Stool Backrest",
+        "image": "bar_stool_backrest.png"
+    },
+    "_8_duplicate": {
+        "name": "Lantern",
+        "image": "lantern.png"
+    },
+    "80": {
+        "name": "Research Machine 6",
+        "image": "research_machine_6.png"
+    },
+    "81": {
+        "name": "Research Machine 7",
+        "image": "research_machine_7.png"
+    },
+    "82": {
+        "name": "Research Table",
+        "image": "research_table.png"
+    },
+    "83": {
+        "name": "Rum Jar",
+        "image": "rum_jar.png"
+    },
+    "84": {
+        "name": "Safe",
+        "image": "safe.png"
+    },
+    "85": {
+        "name": "Scroll",
+        "image": "scroll.png"
+    },
+    "86": {
+        "name": "Separator Wall",
+        "image": "separator_wall.png"
+    },
+    "87": {
+        "name": "Shelf",
+        "image": "shelf.png"
+    },
+    "88": {
+        "name": "Side Table",
+        "image": "side_table.png"
+    },
+    "89": {
+        "name": "Small Fancy Table",
+        "image": "small_fancy_table.png"
+    },
+    "9": {
+        "name": "Bucket",
+        "image": "bucket.png"
+    },
+    "90": {
+        "name": "Snowman",
+        "image": "snowman.png"
+    },
+    "91": {
+        "name": "Soda Can",
+        "image": "soda_can.png"
+    },
+    "92": {
+        "name": "Soda Machine",
+        "image": "soda_machine.png"
+    },
+    "93": {
+        "name": "Sound Screen",
+        "image": "sound_screen.png"
+    },
+    "94": {
+        "name": "Statue Fish",
+        "image": "statue_fish.png"
+    },
+    "95": {
+        "name": "Statue Flame",
+        "image": "statue_flame.png"
+    },
+    "96": {
+        "name": "Statue Sword",
+        "image": "statue_sword.png"
+    },
+    "97": {
+        "name": "Still",
+        "image": "still.png"
+    },
+    "98": {
+        "name": "Sunchair",
+        "image": "sunchair.png"
+    },
+    "99": {
+        "name": "Sunscreen",
+        "image": "sunscreen.png"
+    }
 }

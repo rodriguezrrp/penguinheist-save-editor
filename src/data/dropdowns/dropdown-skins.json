@@ -1,5 +1,8 @@
 {
     "version_dependent": true,
+    "vPU_initial": {
+        "inherit": "vHH_initial"
+    },
     "vHH_initial": {
         "inherit": "vCHP_latest"
     },

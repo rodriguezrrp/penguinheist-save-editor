@@ -7,24 +7,15 @@ import { versionInfo } from "../data";
 import { useEditorStyle, useSetEditorStyle } from "../context/EditorStyleContext";
 import { object_equals } from "../utils/comparisonUtils";
 import { useResetFileUploadInput, useSetResetFileUploadInput } from "../context/ResetFileUploadInputContext";
+import { SaveFolderLocationsList } from "./DowngradingInfo";
+import { BsQuestionCircle } from "react-icons/bs";
 
 
 function FileAndSettingsForm() {
   console.log('FileAndSettingsForm created');
-  // // eslint-disable-next-line no-unused-vars
-  // const [allData, setAllData] = useStoreSetAll(v => null);  // a constant return from the callback prevents React re-rendering
   return (
     <form id="fileForm"
-    // onChange={e => handleFileInputChange(e, (saveDataObj) => {
-    //   console.log(categorizeSaveDataRecord(saveDataObj));
-    //   setAllData(categorizeSaveDataRecord(saveDataObj));
-    // })}
     >
-      {/* <input type="file" name="fileSelect" id="fileSelect"
-          value="Upload Save" class="btn btn-outline-secondary --form-control w-100 h-100 file-select fw-600"
-          aria-describedby="fileSelectDesc"
-      ></input> */}
-
       <label htmlFor="fileSelect">
         Upload Save File
       </label>
@@ -33,11 +24,27 @@ function FileAndSettingsForm() {
         <FileResetBtn />
       </div>
 
+      <SaveLocationsDisplay />
+
       <VersionSelect />
       <PropertiesEditorOptions />
       {/* <SaveDownloadButtonRow /> */}
     </form>
   );
+}
+
+function SaveLocationsDisplay() {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return <div style={{marginTop: '0.75em'}}>
+    <span onClick={(e) => setIsOpen(!isOpen)} style={{cursor: 'pointer', textDecoration: 'underline'}}>
+      <BsQuestionCircle aria-hidden="true" className="icon" />
+      {' '}Where are my save files?
+    </span>
+    <div className="text-container">
+      {isOpen && <SaveFolderLocationsList />}
+    </div>
+  </div>;
 }
 
 
@@ -48,11 +55,11 @@ function FileInput() {
   const getAllData = useStoreGetAll();
   
   const [file, setFile] = useState(null);
-  // const [prevFile, setPrevFile] = useState(file); // used for detecting if re-render was from the file changing
-  const prevFileRef = useRef(file); // used for detecting if re-render was from the file changing
+  // const [prevFile, setPrevFile] = useState(file);  // used for detecting if re-render was from the file changing
+  const prevFileRef = useRef(file);  // used for detecting if re-render was from the file changing
   const fileInputRef = useRef(null);
-  const version = useVersion(); // creating dependency on version context
-  const setResetFileUploadInput = useSetResetFileUploadInput(); // creating dependency on context
+  const version = useVersion();  // creating dependency on version context
+  const setResetFileUploadInput = useSetResetFileUploadInput();  // creating dependency on context
   setResetFileUploadInput(() => () => {
     fileInputRef.current.value = "";
   });
@@ -186,16 +193,13 @@ function VersionSelect() {
   const [, setAllData] = useStoreSetAll(v => null);  // a constant return from the callback prevents React re-rendering
   const getAllData = useStoreGetAll();
   
+  let debugDisplay = null;
+  if(process.env.NODE_ENV === 'development') {
+    debugDisplay = <span>(debug: current version: {version})</span>;
+  }
+
   return (
   <>
-    <button type="button" onClick={e => setVersion('vHH_initial')}>
-      set version vHH_initial
-    </button>
-    <button type="button" onClick={e => setVersion('vCHP_latest')}>
-      set version vCHP_latest
-    </button>
-    <span>(current version: {version})</span>
-    <br/>
     <label>
       Version:&nbsp;
       <select value={version} onChange={e => {
@@ -218,6 +222,7 @@ function VersionSelect() {
       }}>
         {versionOptions}
       </select>
+      {debugDisplay}
     </label>
   </>
   );

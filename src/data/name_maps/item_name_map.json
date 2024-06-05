@@ -737,7 +737,7 @@
     },
     "132": {
         "name": "Strapped-On Explosive",
-        "imgname": "strapped-on_explosive.png",
+        "imgname": "strapped-on_explosives.png",
         "post_office": false,
         "group": "items"
     },
@@ -806,5 +806,15 @@
         "imgname": "ranged_drone.png",
         "post_office": false,
         "group": "items"
+    },
+    "144": {
+        "name": "Pongus Fresh",
+        "imgname": "pongus_fresh.png",
+        "post_office": true
+    },
+    "145": {
+        "name": "Pongus Sour",
+        "imgname": "pongus_sour.png",
+        "post_office": true
     }
 }
