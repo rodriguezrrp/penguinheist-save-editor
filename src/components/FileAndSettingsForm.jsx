@@ -202,24 +202,26 @@ function VersionSelect() {
   <>
     <label>
       Version:&nbsp;
-      <select value={version} onChange={e => {
-        let prevVersion = version;
-        let newVersion = e.target.value;
-        setVersion(newVersion);
+      <select id="versionSelect" value={version}
+        onChange={e => {
+          let prevVersion = version;
+          let newVersion = e.target.value;
+          setVersion(newVersion);
 
-        let prevVersionUneditedSaveData = getCompleteCategorizedSaveDataFor(prevVersion);
-        let curData = getAllData();
-        let wasUnedited = object_equals(curData, prevVersionUneditedSaveData);
-        console.log('VersionSelect updating: wasUnedited:', wasUnedited);
-        if(wasUnedited) {
-          // ONLY if NO edits have been made, OVERWRITE save data in form with new data for this version
-          setAllData(getCompleteCategorizedSaveDataFor(newVersion));
-        } else {
-          // combine in the new data while keeping all non-empty values that already exist (ex. they may have been edits).
-          // in other words, applying the new relevants, and discarding old values including old relevants unless they contain values
-          setAllData(combineSaveValuesConditionally(getCompleteCategorizedSaveDataFor(newVersion), curData))
-        }
-      }}>
+          let prevVersionUneditedSaveData = getCompleteCategorizedSaveDataFor(prevVersion);
+          let curData = getAllData();
+          let wasUnedited = object_equals(curData, prevVersionUneditedSaveData);
+          console.log('VersionSelect updating: wasUnedited:', wasUnedited);
+          if(wasUnedited) {
+            // ONLY if NO edits have been made, OVERWRITE save data in form with new data for this version
+            setAllData(getCompleteCategorizedSaveDataFor(newVersion));
+          } else {
+            // combine in the new data while keeping all non-empty values that already exist (ex. they may have been edits).
+            // in other words, applying the new relevants, and discarding old values including old relevants unless they contain values
+            setAllData(combineSaveValuesConditionally(getCompleteCategorizedSaveDataFor(newVersion), curData))
+          }
+        }}
+      >
         {versionOptions}
       </select>
       {debugDisplay}

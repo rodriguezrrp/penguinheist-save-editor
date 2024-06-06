@@ -323,6 +323,11 @@ input[type="radio"] + label {
     flex: 1 1 50%;
   }
 }
+#versionSelect {
+  max-width: 100%;
+  width: 32em;
+  width: min(32em, 100%);
+}
 #fileSelect {
   border: 2px dashed var(--accent);
   border-radius: 2px;
@@ -708,12 +713,63 @@ span.validation-ind {
   padding: .7rem;
 }
 
+td:has(> .cmd-copy-buttons-container) {
+  position: relative;
+}
+.cmd-copy-buttons-container {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  padding-right: 2px;
+}
+/* .cmd-copy-buttons-container:hover > button.cmd-copy-button,
+.cmd-copy-buttons-container:has(:focus) > button.cmd-copy-button, */
+tr:hover button.cmd-copy-button,
+tr:has(:focus) button.cmd-copy-button,
+.cmd-copy-container-icon:focus + button.cmd-copy-button,
+button.cmd-copy-button:focus {
+  display: inline-block;
+}
+button.cmd-copy-button {
+  display: none;
+	appearance: none;
+	-moz-appearance: none;
+	-webkit-appearance: none;
+	background-color: white;
+  border-color: var(--dark);
+  padding: 0 2px 0 2px;
+  margin-left: 2px;
+}
+
 /* for testing only - the span is displaying the type of the property */
 .editor-row:not(:hover) > .editor-items-container > .prop-type {
   display: none;
 }
 .prop-type {
   white-space: nowrap;
+}
+
+.clipboard-success-popover {
+  color: var(--offwhite);
+  background-color: darkgreen;
+  /* border: 1px solid var(--dark); */
+  border-width: 0px;
+  border-radius: 2px;
+  padding: 2px;
+  font-size: 0.95em;
+  pointer-events: none;
+  opacity: 0;
+  animation: 1s 1 linear fadeout;
+}
+
+@keyframes fadeout {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
 }
 
 /* .App {

@@ -1,12 +1,12 @@
 import { getKeyParts, keyStrMakeHtmlSafe, partsToHtmlSafeKey, partsToKey } from "../../utils/keyUtils";
 import { useStore, useStoreGetAll } from "../../context/SaveDataContext";
 import { useVersion } from "../../context/VersionContext";
-import { HEX_COL_PATTERN, getMaxOutfitSize, isEmptyOrNullOrUndefined, saveDataValueAdjustUsingPropInfo, saveDataValueValidate, saveToHex, saveValListPush, saveValListToStr, saveValStrToList } from "../../utils/validUtils";
+import { HEX_COL_PATTERN, getMaxOutfitSize, saveDataValueValidate, saveToHex, saveValListPush, saveValListToStr, saveValStrToList } from "../../utils/validUtils";
 import { getPropInfo, resolveDropdownFromPropInfo, resolvePropInfoName } from "../../data";
 import { listDelim } from "../../utils/saveFileEncodingUtils.mjs";
 import { handleKeyDown, handleMouseUp } from "../../utils/unityMapping";
 import stopEvent from "../../utils/stopEvent";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { BsQuestionCircle } from "react-icons/bs";
 import { Popover } from "react-tiny-popover";
 

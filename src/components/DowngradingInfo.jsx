@@ -2,8 +2,10 @@ import { BiCommand, BiLogoApple, BiLogoWindows } from "react-icons/bi";
 import { FaLinux } from "react-icons/fa";
 import { useVersion } from "../context/VersionContext";
 import { depotsInfo, versionInfo } from "../data";
-import { BsCheckLg, BsExclamationCircle, BsExclamationOctagon, BsExclamationTriangle, BsInfoCircle, BsLink45Deg, BsOption, BsSteam } from "react-icons/bs";
-import { useRef } from "react";
+import { BsCheckLg, BsCopy, BsExclamationCircle, BsExclamationOctagon, BsExclamationTriangle, BsInfoCircle, BsLink45Deg, BsOption, BsSteam } from "react-icons/bs";
+import { useEffect, useRef, useState } from "react";
+import { Popover } from "react-tiny-popover";
+import { copy } from "@stianlarsen/copy-to-clipboard";
 
 const idDowngradingSection = "downgrading";
 const idSaveLocationCard = "savelocation";
@@ -567,11 +569,51 @@ export default function DowngradingInfo() {
               if(name && info.name_suffix) {
                 name = <>{name} <span className="name-suffix">{info.name_suffix}</span></>
               }
+              let _manifestWindows = info.manifest_windows;
+              let _manifestMac = info.manifest_macos;
+              let _manifestLinux = info.manifest_linux;
+              let commandCopyButtons = null;
+              if(_manifestWindows || _manifestMac || _manifestLinux) {
+                commandCopyButtons = <div className="cmd-copy-buttons-container">
+                  <BsCopy className="icon cmd-copy-container-icon"
+                    // tabIndex="0"
+                    title="Show depot command copy buttons"
+                    aria-label="Show depot command copy buttons"
+                  />
+                  {_manifestWindows && <ClipboardButtonWithPopover
+                    className="cmd-copy-button"
+                    text={`download_depot 1451480 ${depotsInfo.depot_windows} ${_manifestWindows}`}
+                    title="Copy download depot command for Windows"
+                    aria-label="Copy download depot command for Windows"
+                  >
+                    <BiLogoWindows className="icon" aria-hidden="true"
+                    />
+                  </ClipboardButtonWithPopover>}
+                  {_manifestMac && <ClipboardButtonWithPopover
+                    className="cmd-copy-button"
+                    text={`download_depot 1451480 ${depotsInfo.depot_macos} ${_manifestMac}`}
+                    title="Copy download depot command for Mac OS"
+                    aria-label="Copy download depot command for Mac OS"
+                  >
+                    <BiLogoApple className="icon" aria-hidden="true"
+                    />
+                  </ClipboardButtonWithPopover>}
+                  {_manifestLinux && <ClipboardButtonWithPopover
+                    className="cmd-copy-button"
+                    text={`download_depot 1451480 ${depotsInfo.depot_linux} ${_manifestLinux}`}
+                    title="Copy download depot command for Linux"
+                    aria-label="Copy download depot command for Linux"
+                  >
+                    <FaLinux className="icon" aria-hidden="true"
+                    />
+                  </ClipboardButtonWithPopover>}
+                </div>;
+              }
               return <tr>
-                <td>{name ?? _unknown_manifest}</td>
-                <td>{info.manifest_windows ?? _unknown_manifest}</td>
-                <td>{info.manifest_macos ?? _unknown_manifest}</td>
-                <td>{info.manifest_linux ?? _unknown_manifest}</td>
+                <td>{name ?? _unknown_manifest}{commandCopyButtons}</td>
+                <td>{_manifestWindows ?? _unknown_manifest}</td>
+                <td>{_manifestMac ?? _unknown_manifest}</td>
+                <td>{_manifestLinux ?? _unknown_manifest}</td>
               </tr>
             })}
           </tbody>
@@ -621,4 +663,50 @@ export function SaveFolderLocationsList() {
       </li>
     </ul>
   );
+}
+
+// const nothingFunction = () => {};
+
+function ClipboardButtonWithPopover(props) {
+  const { text } = props;
+
+  const [justCopied, setJustCopied] = useState(false);
+  useEffect(() => {
+    if(!justCopied) return;
+    let timer = setTimeout(() => {
+      setJustCopied(false);
+    }, 1000);
+    return () => {
+      clearTimeout(timer);
+    }
+  }, [justCopied]);
+
+  const clickHandler = async () => {
+    let result;
+    try {
+      result = await copy(text);
+    } catch (err) {
+      console.error("Error thrown by copy function", err);
+    }
+    if(result)
+      setJustCopied(true);
+    else
+      alert(`Failed to copy text "${text}" to clipboard`);
+  }
+
+  return (
+    <Popover isOpen={justCopied}
+      positions={['top']}
+      padding={1}
+      // onClickOutside={nothingFunction}
+      content={<div className="clipboard-success-popover">Copied!</div>}
+    >
+      {/* <div style={{display:'inline'}} onClick={(e)=>setJustCopied(true)}>
+        {children}
+      </div> */}
+      <button {...props} onClick={clickHandler}>
+          {props.children}
+      </button>
+    </Popover>
+  )
 }
