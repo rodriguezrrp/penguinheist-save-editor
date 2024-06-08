@@ -352,6 +352,9 @@ form > label:not(:has(input, select), :last-child) {
   /* labels that don't have nested input children, i.e., they reference an element elsewhere (using e.g. for = "...") */
   padding-bottom: .3em;
 }
+form > fieldset {
+  border: 1px solid var(--grayblue);
+}
 
 span.name-suffix {
   color: var(--mid);

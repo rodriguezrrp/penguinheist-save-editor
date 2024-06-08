@@ -171,8 +171,6 @@ function _lookupPropInfoName(propInfo, propKeyExtra) {
                 break;
         }
     } else if(typeof(propNameMap) === "object") {
-        // console.log(propNameMap);
-        // console.log(propKeyExtra, propNameMap[propKeyExtra]);
         propNameMapResult = propNameMap[propKeyExtra];
     }
     return propNameMapResult
@@ -186,23 +184,27 @@ function _lookupPropInfoName(propInfo, propKeyExtra) {
 
 
 
-function resolveDropdownFromPropInfo(propInfo, /**@type string*/ version) {
+function resolveDropdownFromPropInfo(/**@type any?*/ propInfo, /**@type string?*/ version) {
     let propDropdownValues;
     if(!propInfo) return propDropdownValues;
-    const type = propInfo.type;
-    // if(type === 'int-dropdown' || type === 'intlist') {
-        // get the dropdown's values
-        if(typeof(propInfo.dropdown) === "string") {
-            // resolve a possibly version-specific result
-            propDropdownValues = resolveDropdown(propInfo.dropdown, version);
-            console.log('propDropdownValues:', propDropdownValues);
-        } else if(typeof(propInfo.dropdown) === "object") {
-            propDropdownValues = propInfo.dropdown;
-        }
-        // add any extra values for this property
-        if(typeof(propInfo.dropdown_extra) === "object")
-            propDropdownValues = {...propDropdownValues, ...propInfo.dropdown_extra};
-    // }
+
+    const shouldSort = propInfo.sort !== false; // sort by default (i.e., if sort not specified);
+
+    // get the dropdown's values
+    if(typeof(propInfo.dropdown) === "string") {
+        // resolve a possibly version-specific result
+        propDropdownValues = resolveDropdown(propInfo.dropdown, version, shouldSort);
+    } else if(typeof(propInfo.dropdown) === "object") {
+        propDropdownValues = Object.entries(propInfo.dropdown);
+    }
+    // add any extra values for this property
+    if(typeof(propInfo.dropdown_extra) === "object") {
+        let tmp = propDropdownValues || [];
+        // NOTE: This will put a DUPLICATE KEY pair IF propInfo.dropdown_extra has
+        //   a key that already exists in propDropdownValues entry array; NO override is performed.
+        tmp = tmp.concat(Object.entries(propInfo.dropdown_extra));
+        propDropdownValues = tmp;
+    }
     return propDropdownValues;
 }
 
@@ -210,16 +212,28 @@ console.info('TODO: cache the resolveDropdown results?');
 
 const _VAL_MERGING_SEPARATOR = ' or ';
 
-function resolveDropdown(dropdownRefName, version) {
-    // console.log('resolveDropdown');
-    let dropdownMap = dropdownMaps[dropdownRefName];
-    if(!dropdownMap) return {};
-    if(!dropdownMap.version_dependent) {
-        return dropdownMap.values;
+function resolveDropdown(/**@type string*/ dropdownRefName, /**@type string?*/ version, /**@type boolean?*/ sort) {
+    let dropdownValues = resolveDropdown_resolveChain(dropdownRefName, version);
+    if(sort) {
+        if(Array.isArray(dropdownValues))
+            // sort by the entries' values
+            return dropdownValues.sort((e1,e2)=>e1[1].localeCompare(e2[1]));
+        console.error('Did not know how to handle sorting dropdownValues', dropdownValues);
+        return dropdownValues;
+    } else {
+        return dropdownValues;
     }
+}
+
+function resolveDropdown_resolveChain(/**@type string*/ dropdownRefName, /**@type string?*/ version) {
+    let dropdownMap = dropdownMaps[dropdownRefName];
+    if(!dropdownMap) return [];
+    if(!dropdownMap.version_dependent) {
+        return Object.entries(dropdownMap.values);
+    }
+    
     // handle version-dependent. Can involve inheritance, etc.
     let vals = {};
-    // console.log('resolveDropdown: version:', version);
     if(version) {
         if(dropdownMap.hasOwnProperty(version)) {
             vals = resolveDropdown_nameMapIfNeeded(dropdownMap[version]) ?? {};
@@ -248,7 +262,7 @@ function resolveDropdown(dropdownRefName, version) {
             }
         });
     }
-    return vals;
+    return Object.entries(vals);
 }
 
 /** @returns {{[id: string]: string}} */
@@ -296,10 +310,9 @@ function resolveDropdown_nameMapIfNeeded(dropdownMapResult) {
                 } else if(typeof(alternate) === "object") {
                     // alternate should contain alternate property values or possible operations to create them
                     // replace with the name from custom operation
-                    // console.info(alternate);
                     nameMapValuesObj[value] = Object.fromEntries(
                         Object.entries(alternate).map((alternateEntry) => {
-                            // if the value of the key-value pair is an object, it should be an operation to generate the replacement.
+                            // if the key-value entry's value is an object, it should be an operation to generate the replacement.
                             // else, it is just a direct 'copy-paste' replacement.
                             if(typeof(alternateEntry[1]) !== "object") {
                                 return alternateEntry;
@@ -309,9 +322,7 @@ function resolveDropdown_nameMapIfNeeded(dropdownMapResult) {
                                 // apply operation to the new property for this name map result
                                 switch(op.operation) {
                                     case "concat":
-                                        // console.info('concat op.from_namemap_values:', op.from_namemap_values);
                                         newVal = op.from_namemap_values.map(nmkey => nameMap[nmkey][prop]).join(op.delim);
-                                        // console.info('concat newVal:', newVal);
                                         break;
                                     case "list":
                                         newVal = op.from_namemap_values.map(nmkey => nameMap[nmkey][prop]);
@@ -351,6 +362,5 @@ export {
     getPropInfo,
     getCategoryInfo,
     resolvePropInfoName,
-    resolveDropdownFromPropInfo,
-    resolveDropdown
+    resolveDropdownFromPropInfo
 }

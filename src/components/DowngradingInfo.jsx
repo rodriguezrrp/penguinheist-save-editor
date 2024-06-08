@@ -586,8 +586,7 @@ export default function DowngradingInfo() {
                     title="Copy download depot command for Windows"
                     aria-label="Copy download depot command for Windows"
                   >
-                    <BiLogoWindows className="icon" aria-hidden="true"
-                    />
+                    <BiLogoWindows className="icon" aria-hidden="true" />
                   </ClipboardButtonWithPopover>}
                   {_manifestMac && <ClipboardButtonWithPopover
                     className="cmd-copy-button"
@@ -595,8 +594,7 @@ export default function DowngradingInfo() {
                     title="Copy download depot command for Mac OS"
                     aria-label="Copy download depot command for Mac OS"
                   >
-                    <BiLogoApple className="icon" aria-hidden="true"
-                    />
+                    <BiLogoApple className="icon" aria-hidden="true" />
                   </ClipboardButtonWithPopover>}
                   {_manifestLinux && <ClipboardButtonWithPopover
                     className="cmd-copy-button"
@@ -604,8 +602,7 @@ export default function DowngradingInfo() {
                     title="Copy download depot command for Linux"
                     aria-label="Copy download depot command for Linux"
                   >
-                    <FaLinux className="icon" aria-hidden="true"
-                    />
+                    <FaLinux className="icon" aria-hidden="true" />
                   </ClipboardButtonWithPopover>}
                 </div>;
               }

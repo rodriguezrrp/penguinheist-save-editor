@@ -109,7 +109,7 @@ export function hexToSave(hexCol) {
 }
 
 function preparePropInfoMinMax(propInfo, fullKey) {
-    if(typeof(propInfo.range)!=="undefined") {
+    if(typeof(propInfo.range) !== "undefined") {
         if(Array.isArray(propInfo.range) && propInfo.range.length === 2) {
             propInfo.min = Number(propInfo.range[0]);
             propInfo.max = Number(propInfo.range[1]);
@@ -159,7 +159,7 @@ export function saveDataValueAdjustUsingPropInfo(editorValue, propInfo, version)
                 adjustedValue = hexToSave(editorValue);
             break;
         case "colorlist":
-            if((editorValue!=='' && typeof(editorValue)!=="undefined")) {
+            if((editorValue !== '' && typeof(editorValue) !== "undefined")) {
                 // convert any hex color values to their proper save file representation
                 adjustedValue = editorValue?.split(customDelim).map(c => c.match(HEX_COL_PATTERN) ? hexToSave(c) : c).join(customDelim);
             }
@@ -252,7 +252,9 @@ export function saveDataValueValidate(editorValue, keyBase, keyExtra, version, c
             result.validity = true;
             if(version) {
                 let dropdownValuesForVersion = resolveDropdownFromPropInfo(propInfo, version);
-                if(!dropdownValuesForVersion[editorValue]) {
+                // if no dropdown entry exists for the key value expected
+                const _editorValueAsString = String(editorValue);
+                if(!dropdownValuesForVersion.some(([k,]) => String(k) === _editorValueAsString)) {
                     result.warning = `Selected save version does not expect the value "${editorValue}"`;
                     result.validity = false;
                 }
@@ -261,7 +263,7 @@ export function saveDataValueValidate(editorValue, keyBase, keyExtra, version, c
         case "intlist":
             result.validity = true;
             // allow empty list '', and consider undefined as an empty list also
-            if((editorValue!=='' && typeof(editorValue)!=="undefined")) {
+            if((editorValue !== '' && typeof(editorValue) !== "undefined")) {
                 if (editorValue.split(customDelim).some(v=>!isInt(v))) {
                     result.warning = `Expects whole numbers in every position in the list ${delimMsg}!`
                     result.validity = false;
@@ -276,15 +278,12 @@ export function saveDataValueValidate(editorValue, keyBase, keyExtra, version, c
                     }
                     // check if all values in the list are allowed
                     if(propInfo.dropdown) {
-                        // console.error('TODO: check if all values from dropdowns in intlist are allowed');
-                        // console.log('editorValue:', editorValue);
                         let dropdownValues = version ? resolveDropdownFromPropInfo(propInfo, version) : null;
-                        // combine into two arrays, one array for each saveType, reduced by concatenating missing elems elementwise.
-                        // each saveType's array contains all keys that were not in its accepted dropdown values.
-                        let keysMissing = editorValue.split(customDelim).map((listitem) => (
-                            dropdownValues && !dropdownValues.hasOwnProperty(listitem)
-                                ? listitem : undefined
-                        )).filter(v => v !== undefined);
+                        let keysMissing = editorValue.split(customDelim).filter((listitem) => {
+                            // if no dropdown entry exists for the key value expected
+                            return !dropdownValues?.some(([k,]) => String(k) === listitem);  // listitem is always string, due to split() above
+                        });
+
                         // provide validation messages
                         if(dropdownValues && keysMissing.length > 0) {
                             let pluralize = keysMissing.length !== 1;
@@ -299,8 +298,8 @@ export function saveDataValueValidate(editorValue, keyBase, keyExtra, version, c
             // note: colorlist currently uses ' ' as its deliminator so it is hardcoded.
             result.validity = true;
             // allow empty list '', and consider undefined as an empty list also
-            if((adjustedValue!=='' && typeof(adjustedValue)!=="undefined")) {
-                if (adjustedValue.split(' ').some(c=>!c.match(SAVE_COL_PATTERN))) {
+            if((adjustedValue !== '' && typeof(adjustedValue) !== "undefined")) {
+                if (adjustedValue.split(' ').some(c => !c.match(SAVE_COL_PATTERN))) {
                     result.warning = `Expects valid colors in every position in the list ${delimMsg}! Colors are like R;G;B;A and each value is a decimal 0-1`
                     result.validity = false;
                     break;
@@ -320,7 +319,7 @@ export function saveDataValueValidate(editorValue, keyBase, keyExtra, version, c
             // note: outfitindices currently uses ' ' as its deliminator so it is hardcoded.
             result.validity = true;
             // allow empty list '', and consider undefined as an empty list also
-            if((adjustedValue!=='' && typeof(adjustedValue)!=="undefined")) {
+            if((adjustedValue !== '' && typeof(adjustedValue) !== "undefined")) {
                 // check if indices list size is valid
                 let osize = getMaxOutfitSize(version);
                 let lsize = osize + 1;
@@ -336,7 +335,8 @@ export function saveDataValueValidate(editorValue, keyBase, keyExtra, version, c
                 let skinsDD = resolveDropdownFromPropInfo({...propInfo, dropdown: propInfo.dropdown2, dropdown_extra: propInfo.dropdown_extra2}, version);
                 arr.forEach((listitem, i) => {
                     let dropdownValues = (i < osize ? clothesDD : skinsDD);
-                    if(dropdownValues && !dropdownValues.hasOwnProperty(listitem)) {
+                    // if no dropdown entry exists for the list item (as the key id)
+                    if(!dropdownValues?.some(([k,]) => String(k) === listitem)) {  // listitem is always string, due to split() above
                         if(i < osize) {
                             problemClothes.push(listitem);
                         } else {
@@ -373,7 +373,8 @@ export function saveDataValueValidate(editorValue, keyBase, keyExtra, version, c
             let [fId, pos, rot] = _parts;
             if(version) {  // only validate the furniture selection dropdown if version isn't the "unknown"/"any" version
                 let dropdownValues = version ? resolveDropdownFromPropInfo(propInfo, version) : null;
-                if(!dropdownValues?.hasOwnProperty(fId)) {
+                // if no dropdown entry exists for the key value expected
+                if(!dropdownValues?.some(([k,]) => String(k) === fId)) {  // fId is always string, due to split() above
                     result.warning = `Expects a valid furniture Id as the first item in the list! Selected save version does not expect "${fId}"`
                     result.validity = false;
                     break;

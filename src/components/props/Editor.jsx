@@ -213,7 +213,7 @@ function RichSingleValueEditor({ children, type, saveDataValue, handleValueUpdat
   if(type === "int-dropdown") {
     // TODO: useMemo on resolveDropdownFromPropInfo, or its resolveDropdown function call inside it?
     let dropdownValues = resolveDropdownFromPropInfo(propInfo, version);
-    dropdownOptions = Object.entries(dropdownValues || {}).map(([optValue, optContents]) => (
+    dropdownOptions = (dropdownValues || []).map(([optValue, optContents]) => (
       <option value={optValue}>{optContents}</option>
     ));
     dropdownOptions.unshift(<option value="" disabled></option>);
@@ -439,8 +439,8 @@ function ListEditorItems({ children, type, propInfo, saveDataValue, handleValueU
   // let dropdownValues;
   let dropdownValues = resolveDropdownFromPropInfo(propInfo, version);
   // TODO optimization idea: useMemo around the code that generates the dropdownOptions list!
-  if(typeof(dropdownValues) === "object") {
-    itemDropdownOptions = Object.entries(dropdownValues).map(([optValue, optContents]) => (
+  if(Array.isArray(dropdownValues)) {
+    itemDropdownOptions = dropdownValues.map(([optValue, optContents]) => (
       <option value={optValue}>{optContents}</option>
     ));
     itemDropdownOptions.unshift(<option value="" disabled></option>);
@@ -555,8 +555,8 @@ function ListEditorSpecial({ children, type, propInfo, saveDataValue, handleValu
   // TODO optimization idea: useMemo on resolveDropdownFromPropInfo, or its resolveDropdown function call inside it?
   let dropdownValues = resolveDropdownFromPropInfo(propInfoDd1, version);
   // TODO optimization idea: useMemo around the code that generates the dropdownOptions list!
-  if(typeof(dropdownValues) === "object") {
-    dropdownOptions = Object.entries(dropdownValues).map(([optValue, optContents]) => (
+  if(Array.isArray(dropdownValues)) {
+    dropdownOptions = dropdownValues.map(([optValue, optContents]) => (
       <option value={optValue}>{optContents}</option>
     ));
     dropdownOptions.unshift(<option value="" disabled></option>);
@@ -569,8 +569,8 @@ function ListEditorSpecial({ children, type, propInfo, saveDataValue, handleValu
     clothesDropdownOptions = dropdownOptions; dropdownOptions = undefined;
     // TODO optimization idea: useMemo on resolveDropdownFromPropInfo, or its resolveDropdown function call inside it?
     dropdownSkinsValues = resolveDropdownFromPropInfo(propInfoDd2, version);
-    if(typeof(dropdownSkinsValues) === "object") {
-      skinsDropdownOptions = Object.entries(dropdownSkinsValues).map(([optValue, optContents]) => (
+    if(Array.isArray(dropdownSkinsValues)) {
+      skinsDropdownOptions = dropdownSkinsValues.map(([optValue, optContents]) => (
         <option value={optValue}>{optContents}</option>
       ));
       skinsDropdownOptions.unshift(<option value="" disabled></option>);
@@ -731,8 +731,8 @@ function FurnitureTransformEditor({ children, type, propInfo, saveDataValue, han
   // let dropdownValues;
   let dropdownValues = resolveDropdownFromPropInfo(propInfo, version);
   // TODO optimization idea: useMemo around the code that generates the dropdownOptions list!
-  if(typeof(dropdownValues) === "object") {
-    furnitureDropdownOptions = Object.entries(dropdownValues).map(([optValue, optContents]) => (
+  if(Array.isArray(dropdownValues)) {
+    furnitureDropdownOptions = dropdownValues.map(([optValue, optContents]) => (
       <option value={optValue}>{optContents}</option>
     ));
     furnitureDropdownOptions.unshift(<option value="" disabled></option>);
