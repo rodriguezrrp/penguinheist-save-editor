@@ -1,75 +1,59 @@
-## Currently master branch is getting ported to React framework!
-Apologies for the mess -- I am porting as quick as I can, and I will continue new feature development and maintenance after the port is moved to master.
+# 🐧 Penguin Heist save file editor
+Custom tool to inspect and edit save files of [The Greatest Penguin Heist of All Time](https://store.steampowered.com/app/1451480/The_Greatest_Penguin_Heist_of_All_Time/).
 
-### Bonus note: When porting is done, the editor should be in a functional beta state!
+Live version can be found at https://rodriguezrrp.github.io/penguinheist-save-editor/
 
-<!--- # Getting Started with Create React App
+⭐🎮⚙️ Additionally comes with a guide on how to _downgrade_ your Penguin Heist game to an _older version!_  
+Includes a table of Steam build & manifest info for significant game versions for Windows, Mac OS, and Linux.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Rebuilt with React :)
 
-## Available Scripts
+## Current Features
+- Upload a save file (e.g. `PHSaveMain.sav`) to inspect or edit
+  - or create your own from a game version's default values
+- Download the modified save file
+- View which save data values are valid in different game versions
+- Display unreadable lines found in save files
+  - should help troubleshooting "corrupted" saves
+- Allow rich editing of most complex save properties
+  - Dropdowns for selecting current loadout, equipped clothing, heists, difficulties, and more
+  - Color pickers for clothing colors
+  - Key press / mouse input listeners for changing keybinds
+  - Plenty of toggles for editing which items and clothing you own
+  - And much more!
+- All save file properties recognized by the game should be supported and editable.
+- Quick action buttons if you just want to give yourself a lot of money and unlock everything. (If you're that type of player 👀)
 
-In the project directory, you can run:
+## Planned Features
+- Number format locale detection and specification
+  - (the game supports commas in place of periods for certain properties)
+- Improved select dropdowns with item / clothing icons
+  - (looking at [react-dropdown](https://npmjs.org/package/react-dropdown))
+- Find the missing manifest IDs for the older game versions
+- Fill in support for older game versions
+- Richer furniture transform editors
+- Dark theme? ;)
 
-### `npm start`
+## Bugs or Suggestions
+Found something wrong? Have a suggestion? You can mention it in [Issues](https://github.com/rodriguezrrp/penguinheist-save-editor/issues).
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Running Locally
+1. Install [Node.js](https://nodejs.org/) (I recommend 18.18.0 or higher)
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+2. [Download](https://github.com/rodriguezrrp/penguinheist-save-editor/archive/refs/heads/master.zip) or clone repository (e.g. `git clone https://github.com/rodriguezrrp/penguinheist-save-editor.git`)
 
-### `npm test`
+3. Navigate into the project directory using your terminal.
+    ```bash
+    cd penguinheist-save-editor
+    ```
+4. Install the required packages.
+    ```bash
+    npm install
+    ```
+5. Run the web app.
+    ```bash
+    npm start
+    ```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify) --->
+## Contributing
+Contributions are welcome! Feel free to submit a pull request with your features or bugfixes.
