@@ -1,9 +1,13 @@
-import Category from "./Category";
+import { Category, BadSaveDataCategory } from "./Category";
 import { Editor, ItemSpecialEditor } from "./Editor";
 import { useStoreSetAll } from "../../context/SaveDataContext";
 import { useRef } from "react";
 import { useEditorStyle } from "../../context/EditorStyleContext";
 import { getKeyParts, partsToKey } from "../../utils/keyUtils";
+import { useBadSaveData } from "../../context/BadSaveDataContext";
+import { BadSaveDataRow } from "./BadSaveDataRow";
+import { useVersion } from "../../context/VersionContext";
+import { versionInfo } from "../../data";
 
 //Partition function
 //https://stackoverflow.com/questions/11731072/dividing-an-array-by-filter-function
@@ -100,8 +104,16 @@ function casedEditorsFromObj(categoryId, categoryKeysDataObj) {
 function PropsForm() {
   console.log('PropsForm created');
 
+  const version = useVersion(); // creating dependency on VersionContext
+  const info = versionInfo[version];
+  let versionName;
+  if(info) { versionName = info.long_name || info.name; }
+  if(versionName && info.name_suffix) { versionName += ' ' + info.name_suffix; }
+
+  const badSaveData = useBadSaveData(); // creating dependency on BadSaveDataContext
+
   // https://react.dev/reference/react/useSyncExternalStore
-  //  memoizing/caching result, preventing re-renders from the getSnapshot callback having technically different objects
+  //  memoizing/caching function's result, preventing re-renders from the getSnapshot callback having technically different objects
   const cachedStrippedData = useRef(null);
 
   function stripValsCached(/**@type Record<string,Record<string,string>>*/data) {
@@ -122,15 +134,15 @@ function PropsForm() {
   const [saveDataStrippedVals, ] = useStoreSetAll((data) => stripValsCached(data));
   console.log('PropsForm: saveDataStrippedVals:', saveDataStrippedVals);
   
-  let contents;
+  let normalCategories;
   if(editorStyle === 'special') {
-    contents = Object.entries(saveDataStrippedVals).map(([categoryId, categoryKeysDataObj]) => (
+    normalCategories = Object.entries(saveDataStrippedVals).map(([categoryId, categoryKeysDataObj]) => (
       <Category key={categoryId} categoryKey={categoryId}>
         {casedEditorsFromObj(categoryId, categoryKeysDataObj)}
       </Category>
     ));
   } else {
-    contents = Object.entries(saveDataStrippedVals).map(([categoryId, categoryKeysDataObj]) => (
+    normalCategories = Object.entries(saveDataStrippedVals).map(([categoryId, categoryKeysDataObj]) => (
       <Category key={categoryId} categoryKey={categoryId}>
         {regularEditorsFromObj(categoryId, categoryKeysDataObj)}
       </Category>
@@ -148,8 +160,13 @@ function PropsForm() {
         <button type="button" style={{width:'17vw'}}>Hello</button>
         <input type="range" style={{width:'17vw'}} min={0} max={2} value={0.5}/>
       </div> */}
-
-      {contents}
+      {badSaveData.length > 0 && <BadSaveDataCategory>
+        {/* {<span>debug: badSaveData: {badSaveData.map((badLineData,i)=><><br/>{i}: {`${badLineData}`}</>)}</span>} */}
+        <div style={{paddingTop: '2px', paddingBottom: '2px'}}><span>When reading save file as game version "{versionName}",
+          {' '}{badSaveData.length} unreadable lines of data were found.</span></div>
+        {badSaveData.map((badLineData, i) => <BadSaveDataRow key={i} ind={i} badLineData={badLineData} />)}
+      </BadSaveDataCategory>}
+      {normalCategories}
     </form>
   );
 }

@@ -1,13 +1,29 @@
 // import { useState } from "react";
+import { BsExclamationTriangle } from "react-icons/bs";
 import { getCategoryInfo } from "../../data";
 
 
-function Category({ categoryKey, children }) {
+export function Category({ children, categoryKey }) {
   console.log('Category created categoryKey ' + categoryKey);
   const categoryInfo = getCategoryInfo(categoryKey);
   // const [show, setShow] = useState(Boolean(categoryInfo.expanded));
+  return <CategoryInternal categoryKey={categoryKey} categoryName={categoryInfo.name} open={categoryInfo.expanded}>
+    {children}
+  </CategoryInternal>;
+}
+
+export function BadSaveDataCategory({ children }) {
+  console.log('BadSaveDataCategory created');
+  return <CategoryInternal categoryKey={'_badSaveDataCategory'} open
+    categoryName={<><BsExclamationTriangle className="icon" /> Unreadable Save Data Encountered</>}
+  >
+    {children}
+  </CategoryInternal>;
+}
+
+function CategoryInternal({ children, categoryKey, categoryName, open }) {
   return (
-    <details id={'category-'+categoryKey} className="category" open={categoryInfo.expanded}>
+    <details id={'category-'+categoryKey} className="category" open={open}>
       <summary className="title-row category-title-row">
 
         <svg className="icon category-icon" 
@@ -17,7 +33,7 @@ function Category({ categoryKey, children }) {
         </svg>
         {/* <BiChevronRight className="icon category-icon" /> */}
 
-        <span>{categoryInfo.name}</span>
+        <span>{categoryName}</span>
         {/* &nbsp; */}
         {/* <button type="button" onClick={(e) => setShow(!show)}>{show ? 'hide' : 'show'}</button> */}
       </summary>
@@ -27,5 +43,3 @@ function Category({ categoryKey, children }) {
     </details>
   );
 }
-
-export default Category;

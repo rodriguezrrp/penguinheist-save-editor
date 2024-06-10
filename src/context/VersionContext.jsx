@@ -1,5 +1,5 @@
 import { useState, createContext, useContext } from 'react';
-import { getInitialVersion } from '../utils/saveDataUtils';
+import { getLatestSupportedVersion } from '../data';
 
 /** @type {React.Context<string>} */
 const VersionContext = createContext(null);
@@ -8,7 +8,7 @@ const SetVersionContext = createContext(null);
 
 export function VersionProvider({ children }) {
   console.log('VersionProvider');
-  const [version, setVersion] = useState(getInitialVersion());
+  const [version, setVersion] = useState(getLatestSupportedVersion());
 
   return (
     <VersionContext.Provider value={version}>

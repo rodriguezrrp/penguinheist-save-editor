@@ -1,6 +1,7 @@
 import { createContext, useContext, useRef, useCallback, useSyncExternalStore } from 'react';
-import { getCompleteCategorizedSaveDataFor, getInitialVersion } from '../utils/saveDataUtils';
+import { getCompleteCategorizedSaveDataFor } from '../utils/saveDataUtils';
 import { useVersion } from './VersionContext';
+import { getLatestSupportedVersion } from '../data';
 // import { VersionProvider } from './VersionContext';
 
 // const PropListContext = createContext(null);
@@ -29,7 +30,7 @@ const SaveDataContext = createContext(null);
 function useStoreData(version) {
   // const store = useRef(getInitialDefaults());
   // const store = useRef(getDefaultsCategorizedFor(version ?? getInitialVersion()));
-  version = version ?? getInitialVersion();
+  version = version ?? getLatestSupportedVersion();
   const store = useRef(getCompleteCategorizedSaveDataFor(version));
 
   const getAll = useCallback(() => store.current, []);

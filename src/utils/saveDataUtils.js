@@ -4,11 +4,6 @@ if(!mappedCategoryInfo[defaultCategory]) {
     throw new Error(`Expecting default category "${defaultCategory}" in mapped category info!`)
 }
 
-export function getInitialVersion() {  // todo: could potentially read version from window.location.search get params (i.e. ?version=...)
-    // return 'vHH_initial';
-    return 'vCHP_latest';
-}
-
 // /**
 //  * @returns {Record<string, string>}
 //  */

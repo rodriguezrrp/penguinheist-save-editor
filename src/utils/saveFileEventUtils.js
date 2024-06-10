@@ -9,6 +9,12 @@ import fileDownload from "js-file-download";
 //     console.log('handleFileFormChange: e.target.files:', e.target.files);
 // }
 
+/**
+ * 
+ * @param {any} file
+ * @param {string?} version
+ * @param {(dataMap: Map<string, string>, badLines: {badline: (string|any), parts?: string[]}[]) => void} saveDataMapCallback 
+ */
 export function useSaveFileReader(file, version, saveDataMapCallback) {
     //
     // console.log('handleFileFormChange: e:', e);
@@ -24,15 +30,21 @@ export function useSaveFileReader(file, version, saveDataMapCallback) {
             fileReader.onload = (e) => {
                 const contents = e.target.result;
                 if(contents && !isCancel) {
-                    // let okay = window.confirm('Do you want to replace any edits with the original contents of the uploaded save file?');
-                    // if(okay && !isCancel) {
-                        const dataMap = decodeSaveFile(contents, version);
-                        saveDataMapCallback(dataMap);
-                    // }
+                    const badLines = [];
+                    const badLineHandler = (badLine, parts) => {
+                        console.error('Bad line found:', badLine);
+                        badLines.push({badline: badLine, parts: parts});
+                        return true;
+                    }
+                    const dataMap = decodeSaveFile(contents, version, badLineHandler);
+                    if(badLines.length !== 0) {
+                        alert(`Warning: ${badLines.length} unreadable lines found in save file!`);
+                    }
+                    saveDataMapCallback(dataMap, badLines);
                 }
             }
             fileReader.onerror = (e) => {
-                // console.error(`error encountered reading file: ${e.target.error.name}`);
+                console.error(`error encountered reading file: ${e.target.error.name}`);
                 alert(`error encountered reading file: ${e.target.error.name}`);
                 console.error(e.target.error);
             }

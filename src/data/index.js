@@ -349,6 +349,13 @@ function resolveDropdown_nameMapIfNeeded(dropdownMapResult) {
 }
 
 
+// todo note: could potentially read version from window.location.search get params (i.e. ?version=...)
+export function getLatestSupportedVersion() {
+    // initially supported version
+    return Object.entries(versionInfo).find(([,info])=>info.supported)[0];
+}
+
+
 
 export {
     defaultCategory,

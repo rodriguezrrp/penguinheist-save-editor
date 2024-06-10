@@ -11,6 +11,7 @@ import QuickActions from './components/QuickActions';
 import SaveDownloadButtonRow from './components/SaveDownloadButtonRow';
 import { ResetFileUploadInputProvider } from './context/ResetFileUploadInputContext';
 import { BsArrowCounterclockwise, BsController, BsFileEarmarkArrowUp, BsSliders } from 'react-icons/bs';
+import { BadSaveDataProvider } from './context/BadSaveDataContext';
 
 function App() {
   // const [ version, setVersion ] = useState('');
@@ -40,33 +41,35 @@ function App() {
           {/* <PropListProvider> */}
           <EditorStyleProvider>
             <ResetFileUploadInputProvider>
+              <BadSaveDataProvider>
 
-              <Card>
-                <h1>
-                  <BsFileEarmarkArrowUp className="icon" />
-                  &nbsp;Upload Save File
-                </h1>
-                {/* <FileAndSettingsForm version={version} setVersion={setVersion}/> */}
-                <FileAndSettingsForm />
-              </Card>
-              <Card>
-                <h1>
-                  <BsController className="icon" />&nbsp;<BsArrowCounterclockwise className="icon" />
-                  &nbsp;How to Download Older Versions
-                </h1>
-                <DowngradingInfo />
-              </Card>
-              <Card>
-                <h1>
-                  <BsSliders className="icon" />
-                  &nbsp;Edit Properties
-                </h1>
-                <QuickActions />
-                <SaveDownloadButtonRow />
-                <PropsForm />
-                <SaveDownloadButtonRow />
-              </Card>
+                <Card>
+                  <h1>
+                    <BsFileEarmarkArrowUp className="icon" />
+                    &nbsp;Upload Save File
+                  </h1>
+                  {/* <FileAndSettingsForm version={version} setVersion={setVersion}/> */}
+                  <FileAndSettingsForm />
+                </Card>
+                <Card>
+                  <h1>
+                    <BsController className="icon" />&nbsp;<BsArrowCounterclockwise className="icon" />
+                    &nbsp;How to Download Older Versions
+                  </h1>
+                  <DowngradingInfo />
+                </Card>
+                <Card>
+                  <h1>
+                    <BsSliders className="icon" />
+                    &nbsp;Edit Properties
+                  </h1>
+                  <QuickActions />
+                  <SaveDownloadButtonRow />
+                  <PropsForm />
+                  <SaveDownloadButtonRow />
+                </Card>
               
+              </BadSaveDataProvider>
             </ResetFileUploadInputProvider>
           </EditorStyleProvider>
           {/* </PropListProvider> */}

@@ -537,11 +537,14 @@ export default function DowngradingInfo() {
           The Manifest ID depends on both the Depot and the game version. Refer to the table below:
         </p>
         
-        <table id="tableManifests" className="table table-bordered table-sm border-dark">
+        <table id="tableManifests" className="table">
+          <col />
+          <colgroup span={3}>
+          </colgroup>
           <thead>
             <tr>
               <th rowSpan="2" scope="col">Version Name</th>
-              <th colSpan="3" scope="col">Manifest ID for:</th>
+              <th colSpan="3" scope="colgroup">Manifest ID for:</th>
             </tr>
             <tr>
               <th scope="col">
@@ -607,7 +610,7 @@ export default function DowngradingInfo() {
                 </div>;
               }
               return <tr>
-                <td>{name ?? _unknown_manifest}{commandCopyButtons}</td>
+                <th scope="row" className="fw-normal" style={{textAlign:'start'}}>{name ?? _unknown_manifest}{commandCopyButtons}</th>
                 <td>{_manifestWindows ?? _unknown_manifest}</td>
                 <td>{_manifestMac ?? _unknown_manifest}</td>
                 <td>{_manifestLinux ?? _unknown_manifest}</td>

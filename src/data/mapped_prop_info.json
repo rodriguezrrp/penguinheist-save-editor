@@ -121,7 +121,7 @@
         "name":"Highest Difficulty Completed for {name}",
         "name_map":"_self",
         "type":"int-dropdown",
-        "dropdown":{"0":"Easy","1":"Medium","2":"Hard","3":"Hardcore"},
+        "dropdown":{"-1":"None","0":"Easy","1":"Medium","2":"Hard","3":"Hardcore"},
         "sort":false
     },
     "money": {

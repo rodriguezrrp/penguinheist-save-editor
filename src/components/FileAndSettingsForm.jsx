@@ -9,6 +9,7 @@ import { object_equals } from "../utils/comparisonUtils";
 import { useResetFileUploadInput, useSetResetFileUploadInput } from "../context/ResetFileUploadInputContext";
 import { SaveFolderLocationsList } from "./DowngradingInfo";
 import { BsQuestionCircle } from "react-icons/bs";
+import { useSetBadSaveData } from "../context/BadSaveDataContext";
 
 
 function FileAndSettingsForm() {
@@ -64,6 +65,8 @@ function FileInput() {
     fileInputRef.current.value = "";
   });
   
+  const setBadSaveData = useSetBadSaveData(); // creates dependency on BadSaveDataContext
+  
 
   const fileInputChangeHandler = (e) => {
     console.log('file input change handler');
@@ -72,17 +75,19 @@ function FileInput() {
     setFile(newFile);
   };
 
-  useSaveFileReader(file, version, (saveDataMap) => {
+  useSaveFileReader(file, version, (saveDataMap, badLinesArr) => {
     // Note: runs only when file exists and was decoded
+
     console.log('saveDataMap callback: received new saveDataMap:', saveDataMap);
     const categorizedDataWithFile = getCompleteCategorizedSaveDataFor(version, saveDataMap);
-    console.log(categorizedDataWithFile);
+    // console.log(categorizedDataWithFile);
 
     let fileChanged = (prevFileRef.current !== file);
     if(fileChanged) prevFileRef.current = file;
 
     if(fileChanged) {
       setAllData(categorizedDataWithFile);
+      setBadSaveData(badLinesArr);
     } else {
       // file did not change; therefore, e.g. version changed;
       // check if any property changes made by user might (unexpectedly!) be overwritten, and ask the user first
@@ -97,6 +102,7 @@ function FileInput() {
         'Do you want to overwrite any current changes with the uploaded save file\'s original content?'
       )) {
         setAllData(categorizedDataWithFile);
+        setBadSaveData(badLinesArr);
       }
     }
   });
