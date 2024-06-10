@@ -142,6 +142,11 @@ function PropertiesEditorOptions() {
   const editorStyle = useEditorStyle();
   const setEditorStyle = useSetEditorStyle();
 
+  let debugDisplay = null;
+  if(process.env.NODE_ENV === 'development') {
+    debugDisplay = <span>(debug: current style: {editorStyle})</span>;
+  }
+
   return <fieldset onChange={(e) => {setEditorStyle(e.target.value)}}>
     <legend>Property Editors Options:</legend>
     <div>
@@ -164,7 +169,7 @@ function PropertiesEditorOptions() {
       />
       <label htmlFor="optSpecial">Show Specialized Editors</label>
     </div>
-    <span>(debug: current style: {editorStyle})</span>
+    {debugDisplay}
   </fieldset>;
 }
 
