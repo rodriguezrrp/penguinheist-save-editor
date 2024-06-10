@@ -4,7 +4,7 @@ import { getCategoryInfo } from "../../data";
 
 
 export function Category({ children, categoryKey }) {
-  console.log('Category created categoryKey ' + categoryKey);
+  // console.log('Category created categoryKey ' + categoryKey);
   const categoryInfo = getCategoryInfo(categoryKey);
   // const [show, setShow] = useState(Boolean(categoryInfo.expanded));
   return <CategoryInternal categoryKey={categoryKey} categoryName={categoryInfo.name} open={categoryInfo.expanded}>
@@ -13,7 +13,6 @@ export function Category({ children, categoryKey }) {
 }
 
 export function BadSaveDataCategory({ children }) {
-  console.log('BadSaveDataCategory created');
   return <CategoryInternal categoryKey={'_badSaveDataCategory'} open
     categoryName={<><BsExclamationTriangle className="icon" /> Unreadable Save Data Encountered</>}
   >

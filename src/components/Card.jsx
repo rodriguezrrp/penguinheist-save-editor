@@ -1,7 +1,7 @@
 
 
 function Card({ children }) {
-  console.log('Card created');
+  // console.log('Card created');
   return (
     <div className="card card-width">
       { children }

@@ -144,7 +144,6 @@ mc(4, 327); // Mouse4   ()
 
 function keyToUnity(e) {
     let key = e.code;
-    console.log('keyToUnity: e.code:', key);
 
     if (key.indexOf("Numpad") >= 0 && /^[0-9]$/g.test(key.slice(-1))) {
         // Numpad0 through Numpad9 are special when the numlock is on.
@@ -157,7 +156,7 @@ function keyToUnity(e) {
         //      if yes numlock, ex. Numpad4 -> 'Numpad' + 'ArrowLeft' -> NumpadArrowLeft
         key = key.slice(0, -1) + e.key;
     }
-    console.log('keyToUnity: mapped:', UNITY_MAPPING_KEYBOARD[key]);
+    // console.log('keyToUnity: mapped:', UNITY_MAPPING_KEYBOARD[key]);
     if (UNITY_MAPPING_KEYBOARD.hasOwnProperty(key))
         return UNITY_MAPPING_KEYBOARD[key];
     else
@@ -166,9 +165,7 @@ function keyToUnity(e) {
 
 function mouseToUnity(e) {
     let button = e.button;
-    // Note: Browser Back (3) and Browser Forward (4) may not be captured in all browsers
-    console.log('mouseToUnity: e.button:', button);
-    console.log('mouseToUnity: mapped:', UNITY_MAPPING_MOUSE[button]);
+    // Note: Browser Back (3) and Browser Forward (4) may not be captured (and/or prevented) in all browsers
     if (UNITY_MAPPING_MOUSE.hasOwnProperty(button))
         return UNITY_MAPPING_MOUSE[button];
     else

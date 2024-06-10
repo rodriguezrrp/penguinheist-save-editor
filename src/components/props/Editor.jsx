@@ -12,14 +12,14 @@ import { Popover } from "react-tiny-popover";
 
 export function Editor({ categoryId, fullKey }) {
   const [keyBase, keyExtra] = getKeyParts(fullKey);
-  console.log(`Editor created "${keyBase}" "${keyExtra}"`);
+  // console.log(`Editor created "${keyBase}" "${keyExtra}"`);
 
   const htmlSafeKey = partsToHtmlSafeKey(keyBase, keyExtra);
 
   const [saveDataValue, setSaveData] = useStore((store) => {//console.log('key: '+spacedKey+' store:',store);
                                                             // return store[spacedKey]});
                                                             return store[categoryId][fullKey]});
-  console.log('here right after useStore (Editor). value '+saveDataValue);
+  // console.log('here right after useStore (Editor). value '+saveDataValue);
 
   const propInfo = getPropInfo(fullKey);
   
@@ -142,7 +142,7 @@ function warningMsgForMultipleValidities(validities, keyBasesNamingMap) {
 
 function MultiValidationIndicator({ /**@type {{fullKey: {validity: boolean | null, warning: string | null}}}*/ otherIndsValidity,
   /**@type {{[keyBase: string]: string} | null}*/ keyBasesNamingMap }) {
-  console.log('MultiValidationIndicator created');
+  // console.log('MultiValidationIndicator created');
 
   // const [isParentHovered, setIsParentHovered] = useState(false);
 
@@ -161,6 +161,7 @@ function MultiValidationIndicator({ /**@type {{fullKey: {validity: boolean | nul
     >
       {Object.entries(otherIndsValidity).map(([fullKey, {validity, warning}]) => {
         return <SingleValidationIndicator
+          key={fullKey}
           validity={validity}
           warning={warning && warningMsgWithKey(fullKey, warning, keyBasesNamingMap)}
           // allowPopover={isParentHovered}
@@ -206,7 +207,7 @@ function SingleValidationIndicator({ /**@type {boolean | null}*/ validity, /**@t
 
 
 function RichSingleValueEditor({ children, type, saveDataValue, handleValueUpdate, propInfo, version }) {
-  console.log(`RichSingleValueEditor created ${type}`);
+  // console.log(`RichSingleValueEditor created ${type}`);
   let inputElem = null;
   let isComplexInput = false;
   let dropdownOptions = [];
@@ -429,8 +430,8 @@ function PropRawTextInput({ saveDataValue }) {
 
 
 function ListEditorItems({ children, type, propInfo, saveDataValue, handleValueUpdate, version, delim = listDelim }) {
-  console.log("ListEditorItems created");
-  console.log("ListEditorItems saveDataValue", saveDataValue);
+  // console.log("ListEditorItems created");
+  // console.log("ListEditorItems saveDataValue", saveDataValue);
   const defaultNewValue = String(propInfo.default ?? '');
   if(propInfo.delim) delim = propInfo.delim;
 
@@ -521,8 +522,8 @@ function ListEditorItems({ children, type, propInfo, saveDataValue, handleValueU
 
 function ListEditorSpecial({ children, type, propInfo, saveDataValue, handleValueUpdate, version,
                                         fixedCount=0, disableInputsWhenUnset=true }) {
-  console.log("ListEditorSpecial created");
-  console.log("ListEditorSpecial saveDataValue", saveDataValue);
+  // console.log("ListEditorSpecial created");
+  // console.log("ListEditorSpecial saveDataValue", saveDataValue);
   const defaultNewValue = String(propInfo.default ?? '');
   const _defaultSkin = propInfo.default_skin ?? '';
   const delim = listDelim;
@@ -715,8 +716,8 @@ const furnitureTransformDelim = ':';
 const transformPosOrRotDelim = ',';
 
 function FurnitureTransformEditor({ children, type, propInfo, saveDataValue, handleValueUpdate, version }) {
-  console.log("FurnitureTransformEditor created");
-  console.log("FurnitureTransformEditor saveDataValue", saveDataValue);
+  // console.log("FurnitureTransformEditor created");
+  // console.log("FurnitureTransformEditor saveDataValue", saveDataValue);
   const defaultNewFurnitureValue = String(propInfo.default ?? '');
   const defaultNewPosRotValue = '';
   
@@ -930,8 +931,7 @@ export const relatedKeyBasesForItems = Object.keys(propInfoForItems.keybasesmap)
 export const relatedNamingMapForItems = propInfoForItems.keybasesmap;
 
 export function ItemSpecialEditor({ categoryId, fullKeysArray }) {
-  console.log('ItemSpecialEditor created ', fullKeysArray);
-  // return <div style={{border:'1px steelblue solid'}}>{fullKeysArray.map(k=><div key={k}>{k}</div>)}</div>;
+  // console.log('ItemSpecialEditor created ', fullKeysArray);
   const commonKeyExtra = getKeyParts(fullKeysArray[0])[1]; // get keyExtra
 
   const groupPropInfo = propInfoForItems;
@@ -939,10 +939,6 @@ export function ItemSpecialEditor({ categoryId, fullKeysArray }) {
 
   const version = useVersion();
 
-  // const [saveDataValue, setSaveData] = useStore((store) => {//console.log('key: '+spacedKey+' store:',store);
-  //   // return store[spacedKey]});
-  //   return store[categoryId][fullKey]}
-  // );
   const getAllData = useStoreGetAll();
 
   const _initialDataOfCategory = getAllData()[categoryId];
@@ -1025,7 +1021,7 @@ function MultiPropName({ groupName, keyBasesArray, commonKeyExtra, note }) {
       <PropNameNoteIndicator note={note} />
       <div className="propname-fullkey">
         {keyBasesArray.map(keyBase =>
-          <div>
+          <div key={keyBase}>
             <span key={keyBase}>@{partsToKey(keyBase, commonKeyExtra)}@</span>
           </div>
         )}

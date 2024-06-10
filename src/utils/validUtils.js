@@ -181,7 +181,7 @@ export function saveDataValueAdjustUsingPropInfo(editorValue, propInfo, version)
 export function saveDataValueValidate(editorValue, keyBase, keyExtra, version, customDelim) {
     if(!customDelim) customDelim = listDelim;
     
-    console.log('saveDataValueValidate called for', editorValue);
+    // console.log('saveDataValueValidate called for', editorValue);
     const fullKey = partsToKey(keyBase, keyExtra);
     
     const adjustedValue = saveDataValueAdjust(editorValue, keyBase, keyExtra, version, customDelim);

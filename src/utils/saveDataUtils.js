@@ -96,7 +96,7 @@ function categorizeSaveDataRecord(saveData) {
     const categorized = new Map(Object.keys(mappedCategoryInfo).map(
         (catId) => [catId, new Map()]
     ));
-    console.log('categorize: categorized initially:', categorized);
+    // console.log('categorize: categorized initially:', categorized);
     // Set keeps insertion-order sorting by their nature in JS
     const deDupedDefaultsKeys = new Set(Object.keys(saveData));
     for(const fullKey of deDupedDefaultsKeys) {
@@ -119,7 +119,7 @@ function categorizeSaveDataRecord(saveData) {
         let value = saveData[fullKey];
         keysDataMap.set(fullKey, value);
     }
-    console.log('categorize: categorized:', categorized);
+    // console.log('categorize: categorized:', categorized);
 
     // now restructure this into the desired "React-friendly" format
     // const restructured = Array.from(categorized).map(([keyCatId, valKeyMap]) => (
@@ -136,7 +136,7 @@ function categorizeSaveDataRecord(saveData) {
     const restructured = Object.fromEntries(Array.from(categorized).map(([keyCatId, valKeyMap]) => (
         [keyCatId, Object.fromEntries(valKeyMap.entries())]
     )));
-    console.log('categorize: restructured:', restructured);
+    // console.log('categorize: restructured:', restructured);
     return restructured;
 }
 

@@ -7,7 +7,7 @@ const VersionContext = createContext(null);
 const SetVersionContext = createContext(null);
 
 export function VersionProvider({ children }) {
-  console.log('VersionProvider');
+  // console.log('VersionProvider');
   const [version, setVersion] = useState(getLatestSupportedVersion());
 
   return (

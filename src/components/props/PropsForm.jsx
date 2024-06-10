@@ -9,13 +9,13 @@ import { BadSaveDataRow } from "./BadSaveDataRow";
 import { useVersion } from "../../context/VersionContext";
 import { versionInfo } from "../../data";
 
-//Partition function
-//https://stackoverflow.com/questions/11731072/dividing-an-array-by-filter-function
-function partition(array, filter) {
-  let pass = [], fail = [];
-  array.forEach((e, idx, arr) => (filter(e, idx, arr) ? pass : fail).push(e));
-  return [pass, fail];
-}
+// //Partition function
+// //https://stackoverflow.com/questions/11731072/dividing-an-array-by-filter-function
+// function partition(array, filter) {
+//   let pass = [], fail = [];
+//   array.forEach((e, idx, arr) => (filter(e, idx, arr) ? pass : fail).push(e));
+//   return [pass, fail];
+// }
 
 function regularEditorsFromObj(categoryId, categoryKeysDataObj) {
   return regularEditorsFromEntries(categoryId, Object.entries(categoryKeysDataObj));
@@ -102,7 +102,7 @@ function casedEditorsFromObj(categoryId, categoryKeysDataObj) {
 
 
 function PropsForm() {
-  console.log('PropsForm created');
+  // console.log('PropsForm created');
 
   const version = useVersion(); // creating dependency on VersionContext
   const info = versionInfo[version];
@@ -132,7 +132,7 @@ function PropsForm() {
 
   const editorStyle = useEditorStyle();
   const [saveDataStrippedVals, ] = useStoreSetAll((data) => stripValsCached(data));
-  console.log('PropsForm: saveDataStrippedVals:', saveDataStrippedVals);
+  // console.log('PropsForm: saveDataStrippedVals:', saveDataStrippedVals);
   
   let normalCategories;
   if(editorStyle === 'special') {

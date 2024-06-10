@@ -76,9 +76,9 @@ export function useSaveFileReader(file, version, saveDataMapCallback) {
 
 export function useSaveFileDownloader(saveDataObj, filename, version) {
     useEffect(() => {
-        console.log('in dl useEffect: filename:', filename);
-        console.log('in dl useEffect: version:', version);
-        console.log('in dl useEffect: saveDataObj:', saveDataObj);
+        // console.log('in dl useEffect: filename:', filename);
+        // console.log('in dl useEffect: version:', version);
+        // console.log('in dl useEffect: saveDataObj:', saveDataObj);
         // let isCancel = false;
         // let blob, elem, url;
         if(saveDataObj) {

@@ -2,7 +2,6 @@
 const _nbspElem = <>&nbsp;</>;
 
 export function BadSaveDataRow({ badLineData, ind }) {
-  console.log(badLineData);
   const line = badLineData.badline;
   const formatWithNbsps = (str) => Array.from(str).map(c => c === ' ' ? _nbspElem : c);
   const parts = badLineData.parts ?? [];

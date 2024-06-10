@@ -13,7 +13,7 @@ import { useSetBadSaveData } from "../context/BadSaveDataContext";
 
 
 function FileAndSettingsForm() {
-  console.log('FileAndSettingsForm created');
+  // console.log('FileAndSettingsForm created');
   return (
     <form id="fileForm"
     >
@@ -69,8 +69,8 @@ function FileInput() {
   
 
   const fileInputChangeHandler = (e) => {
-    console.log('file input change handler');
-    console.log(e.target.files[0]);
+    // console.log('file input change handler');
+    // console.log(e.target.files[0]);
     const newFile = e.target.files[0];
     setFile(newFile);
   };
@@ -78,7 +78,7 @@ function FileInput() {
   useSaveFileReader(file, version, (saveDataMap, badLinesArr) => {
     // Note: runs only when file exists and was decoded
 
-    console.log('saveDataMap callback: received new saveDataMap:', saveDataMap);
+    // console.log('saveDataMap callback: received new saveDataMap:', saveDataMap);
     const categorizedDataWithFile = getCompleteCategorizedSaveDataFor(version, saveDataMap);
     // console.log(categorizedDataWithFile);
 
@@ -133,8 +133,12 @@ function FileResetBtn() {
   );
 }
 
+
+function suppressMissingOnChangeHandlerWarning() {}
+
+
 function PropertiesEditorOptions() {
-  console.log('PropertiesEditorOptions created');
+  // console.log('PropertiesEditorOptions created');
   const editorStyle = useEditorStyle();
   const setEditorStyle = useSetEditorStyle();
 
@@ -146,6 +150,7 @@ function PropertiesEditorOptions() {
         id="optIndividual"
         value="individual"
         checked={editorStyle === "individual"}
+        onChange={suppressMissingOnChangeHandlerWarning}
       />
       <label htmlFor="optIndividual">Show Individual Editors Only</label>
     </div>
@@ -155,6 +160,7 @@ function PropertiesEditorOptions() {
         id="optSpecial"
         value="special"
         checked={editorStyle === "special"}
+        onChange={suppressMissingOnChangeHandlerWarning}
       />
       <label htmlFor="optSpecial">Show Specialized Editors</label>
     </div>
@@ -217,7 +223,7 @@ function VersionSelect() {
           let prevVersionUneditedSaveData = getCompleteCategorizedSaveDataFor(prevVersion);
           let curData = getAllData();
           let wasUnedited = object_equals(curData, prevVersionUneditedSaveData);
-          console.log('VersionSelect updating: wasUnedited:', wasUnedited);
+          // console.log('VersionSelect updating: wasUnedited:', wasUnedited);
           if(wasUnedited) {
             // ONLY if NO edits have been made, OVERWRITE save data in form with new data for this version
             setAllData(getCompleteCategorizedSaveDataFor(newVersion));

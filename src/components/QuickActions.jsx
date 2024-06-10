@@ -6,7 +6,7 @@ import { versionHasBlueprints, versionHasLockableHeists, versionHasStructures } 
 
 
 function QuickActions() {
-  console.log('QuickActions created');
+  // console.log('QuickActions created');
   
   const [, mapOverCategory] = useStoreMapOverCategory(v => null);  // a constant return from the callback prevents React re-rendering
   const [, setSaveData] = useStore(v => null);  // a constant return from the callback prevents React re-rendering

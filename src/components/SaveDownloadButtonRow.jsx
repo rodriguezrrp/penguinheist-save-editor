@@ -8,7 +8,7 @@ import { BsFileEarmarkArrowDown } from "react-icons/bs";
 const filename = 'PHSaveMain.sav';
 
 export default function SaveDownloadButtonRow() {
-  console.log('TestGetSaveDataButton created');
+  // console.log('TestGetSaveDataButton created');
   const getAllData = useStoreGetAll();
   const [saveDataObjForDL, setSaveDataObjForDL] = useState(null);
 
@@ -20,9 +20,9 @@ export default function SaveDownloadButtonRow() {
     <div className="download-button-row">
       <button type="button" style={{height: "2em"}} onClick={e => {
         const allData = getAllData();
-        console.log(allData);
+        // console.log(allData);
         const decategorized = decategorizeSaveData(allData);
-        console.log(decategorized);
+        // console.log(decategorized);
         setSaveDataObjForDL(decategorized);
       }}>
         <BsFileEarmarkArrowDown className="icon" />&nbsp;Download as Save File
