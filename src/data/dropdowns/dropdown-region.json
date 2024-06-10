@@ -1,0 +1,35 @@
+{
+    "version_dependent": true,
+    "vPU_initial": {
+        "inherit": false,
+        "values": {
+            "0": "USA, East",
+            "1": "USA, West",
+            "2": "Europe",
+            "3": "Asia, East",
+            "4": "South America",
+            "5": "Australia",
+            "6": "Africa, South"
+        }
+    },
+    "vHH_initial": {
+        "inherit": "_earliest_supported_value_list"
+    },
+    "vCHP_latest": {
+        "inherit": "_earliest_supported_value_list"
+    },
+    "_earliest_supported_value_list": {
+        "inherit": false,
+        "values": {
+            "0": "USA, East",
+            "1": "USA, West",
+            "2": "Japan",
+            "3": "Europe",
+            "4": "South America",
+            "5": "Africa",
+            "6": "Australia",
+            "7": "Singapore",
+            "8": "Singapore"
+        }
+    }
+}

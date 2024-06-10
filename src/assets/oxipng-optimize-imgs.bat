@@ -1,0 +1,2 @@
+.\oxipng-9.1.1-x86_64-pc-windows-msvc\oxipng.exe -o 4 --strip safe --alpha --dir imgs/item_previews_optimized imgs/item_previews/*.png
+.\oxipng-9.1.1-x86_64-pc-windows-msvc\oxipng.exe -o 4 --strip safe --alpha --dir imgs/furniture_previews_optimized imgs/furniture_previews/*.png

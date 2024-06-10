@@ -1,25 +1,59 @@
 # 🐧 Penguin Heist save file editor
-Custom tool to inspect and edit save files of the Penguin Heist game.
+Custom tool to inspect and edit save files of [The Greatest Penguin Heist of All Time](https://store.steampowered.com/app/1451480/The_Greatest_Penguin_Heist_of_All_Time/).
 
-Minimal: Built into one webpage with local dependencies so you can download the page and use it offline at your convenience!
+Live version can be found at https://rodriguezrrp.github.io/penguinheist-save-editor/
 
-⭐🎮⚙️ Additionally comes with a whole guide on how to _downgrade_ your Penguin Heist game to an _older version!_  
-Table of common Steam build & manifest info for Windows, Apple OS, and Linux is included.
+⭐🎮⚙️ Additionally comes with a guide on how to _downgrade_ your Penguin Heist game to an _older version!_  
+Includes a table of Steam build & manifest info for significant game versions for Windows, Mac OS, and Linux.
 
-# **🛠️ CURRENTLY in BETA! 🛠️ Prototyping, fixing dynamic form generation based on scraped and gathered game version data.**
-The main page itself is `docs/index.html`. The `docs/` folder will become the GitHub pages source once out of this Beta prototyping phase.
+Rebuilt with React :)
 
-Most data about versions, their properties, the types of values the properties can hold, the allowed ranges of those values, etc. are in `.json` files throughout `saves/`.
+## Current Features
+- Upload a save file (e.g. `PHSaveMain.sav`) to inspect or edit
+  - or create your own from a game version's default values
+- Download the modified save file
+- View which save data values are valid in different game versions
+- Display unreadable lines found in save files
+  - should help troubleshooting "corrupted" saves
+- Allow rich editing of most complex save properties
+  - Dropdowns for selecting current loadout, equipped clothing, heists, difficulties, and more
+  - Color pickers for clothing colors
+  - Key press / mouse input listeners for changing keybinds
+  - Plenty of toggles for editing which items and clothing you own
+  - And much more!
+- All save file properties recognized by the game should be supported and editable.
+- Quick action buttons if you just want to give yourself a lot of money and unlock everything. (If you're that type of player 👀)
 
-Next steps:
-- ✔️ Utilize generated `.js` files (from the python script and data in `saves/`) to populate custom-tailored property editors into the `docs/index.html` form
-- ✔️ Download button generate an end-result save file for the user
-- 🛠️ Consider bringing out of beta at this point! it should be minimally up-to-date functional
-- Gather manifest IDs for all missing versions, and default saves, to support those formats :)
-- GitHub action to run the `.js`-generating python script upon push/etc. into the `docs/` folder. (Note to self: refer to my other repository where I tested this exact capability already)
-- Fix icons and background breaking upon right-click downloading:
-  - Convert all icons to inlined SVGs to prevent dependencies on svg files?
-  - Convert the default background
+## Planned Features
+- Number format locale detection and specification
+  - (the game supports commas in place of periods for certain properties)
+- Improved select dropdowns with item / clothing icons
+  - (looking at [react-dropdown](https://npmjs.org/package/react-dropdown))
+- Find the missing manifest IDs for the older game versions
+- Fill in support for older game versions
+- Richer furniture transform editors
 - Dark theme? ;)
 
-Eventually rewrite in React. Ensure a minimalistic and fully downloadable webpage can still be built
+## Bugs or Suggestions
+Found something wrong? Have a suggestion? You can mention it in [Issues](https://github.com/rodriguezrrp/penguinheist-save-editor/issues).
+
+## Running Locally
+1. Install [Node.js](https://nodejs.org/) (I recommend 18.18.0 or higher)
+
+2. [Download](https://github.com/rodriguezrrp/penguinheist-save-editor/archive/refs/heads/master.zip) or clone repository (e.g. `git clone https://github.com/rodriguezrrp/penguinheist-save-editor.git`)
+
+3. Navigate into the project directory using your terminal.
+    ```bash
+    cd penguinheist-save-editor
+    ```
+4. Install the required packages.
+    ```bash
+    npm install
+    ```
+5. Run the web app.
+    ```bash
+    npm start
+    ```
+
+## Contributing
+Contributions are welcome! Feel free to submit a pull request with your features or bugfixes.
