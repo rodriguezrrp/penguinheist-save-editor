@@ -582,29 +582,29 @@ export default function DowngradingInfo() {
                   <BsCopy className="icon cmd-copy-container-icon"
                     // tabIndex="0"
                     title="Show depot command copy buttons"
-                    aria-label="Show depot command copy buttons"
+                    aria-label="Hover to show depot command copy buttons"
                   />
                   {_manifestWindows && <ClipboardButtonWithPopover
                     className="cmd-copy-button"
                     text={`download_depot 1451480 ${depotsInfo.depot_windows} ${_manifestWindows}`}
-                    title="Copy download depot command for Windows"
-                    aria-label="Copy download depot command for Windows"
+                    title="Copy download depot command for Windows to clipboard"
+                    aria-label="Copy download depot command for Windows to clipboard"
                   >
                     <BiLogoWindows className="icon" aria-hidden="true" />
                   </ClipboardButtonWithPopover>}
                   {_manifestMac && <ClipboardButtonWithPopover
                     className="cmd-copy-button"
                     text={`download_depot 1451480 ${depotsInfo.depot_macos} ${_manifestMac}`}
-                    title="Copy download depot command for Mac OS"
-                    aria-label="Copy download depot command for Mac OS"
+                    title="Copy download depot command for Mac OS to clipboard"
+                    aria-label="Copy download depot command for Mac OS to clipboard"
                   >
                     <BiLogoApple className="icon" aria-hidden="true" />
                   </ClipboardButtonWithPopover>}
                   {_manifestLinux && <ClipboardButtonWithPopover
                     className="cmd-copy-button"
                     text={`download_depot 1451480 ${depotsInfo.depot_linux} ${_manifestLinux}`}
-                    title="Copy download depot command for Linux"
-                    aria-label="Copy download depot command for Linux"
+                    title="Copy download depot command for Linux to clipboard"
+                    aria-label="Copy download depot command for Linux to clipboard"
                   >
                     <FaLinux className="icon" aria-hidden="true" />
                   </ClipboardButtonWithPopover>}

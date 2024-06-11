@@ -19,14 +19,12 @@ Rebuilt with React :)
   - Dropdowns for selecting current loadout, equipped clothing, heists, difficulties, and more
   - Color pickers for clothing colors
   - Key press / mouse input listeners for changing keybinds
-  - Plenty of toggles for editing which items and clothing you own
+  - Toggles for all the items, clothing, and furniture you can own
   - And much more!
 - All save file properties recognized by the game should be supported and editable.
 - Quick action buttons if you just want to give yourself a lot of money and unlock everything. (If you're that type of player 👀)
 
 ## Planned Features
-- Number format locale detection and specification
-  - (the game supports commas in place of periods for certain properties)
 - Improved select dropdowns with item / clothing icons
   - (looking at [react-dropdown](https://npmjs.org/package/react-dropdown))
 - Find the missing manifest IDs for the older game versions
