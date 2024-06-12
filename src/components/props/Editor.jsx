@@ -9,6 +9,7 @@ import stopEvent from "../../utils/stopEvent";
 import { useState } from "react";
 import { BsQuestionCircle } from "react-icons/bs";
 import { Popover } from "react-tiny-popover";
+import { resolveDropdownOptionDataCached } from "./special/dropdownCaching";
 
 export function Editor({ categoryId, fullKey }) {
   const [keyBase, keyExtra] = getKeyParts(fullKey);
@@ -48,6 +49,8 @@ export function Editor({ categoryId, fullKey }) {
     // setWarning(result.warning);
     setSaveData(categoryId, fullKey, validatedValue);
   };
+
+  // console.log('saveDataValue:', typeof(saveDataValue)==="string" ? `"${saveDataValue}"` : saveDataValue);
 
   const eraseBtn = <PropEraseButton saveDataValue={saveDataValue} handleValueUpdate={handleValueUpdate} />;
 
@@ -210,14 +213,21 @@ function RichSingleValueEditor({ children, type, saveDataValue, handleValueUpdat
   // console.log(`RichSingleValueEditor created ${type}`);
   let inputElem = null;
   let isComplexInput = false;
+  
   let dropdownOptions = [];
+  const dropdownType = "plain";
   if(type === "int-dropdown") {
     // TODO: useMemo on resolveDropdownFromPropInfo, or its resolveDropdown function call inside it?
-    let dropdownValues = resolveDropdownFromPropInfo(propInfo, version);
-    dropdownOptions = (dropdownValues || []).map(([optValue, optContents]) => (
-      <option value={optValue}>{optContents}</option>
-    ));
-    dropdownOptions.unshift(<option value="" disabled></option>);
+    // console.time('resolve dropdown');
+    // let dropdownValues = resolveDropdownFromPropInfo(propInfo, version);
+    // console.timeEnd('resolve dropdown');
+    // console.time('prepare dropdownValues');
+    // dropdownOptions = (dropdownValues || []).map(([optValue, optContents]) => (
+    //   <option value={optValue}>{optContents}</option>
+    // ));
+    // dropdownOptions.unshift(<option value="" disabled></option>);
+    // console.timeEnd('prepare dropdownValues');
+    dropdownOptions = resolveDropdownOptionDataCached(propInfo, version, dropdownType);
   }
   const makeInputRecorder = (type === "int-dropdown" && propInfo.dropdown === 'keybinds');
 
@@ -393,10 +403,17 @@ function ColorEditor({ saveDataValue, handleValueUpdate, disabled=false }) {
 }
 
 function SelectEditor({ saveDataValue, handleValueUpdate, dropdownOptions, className="", disabled=false }) {
-  let hasSaveDataValue = typeof(dropdownOptions?.find((v) => String(v.props.value) === String(saveDataValue))) !== "undefined";
+  // console.log('SelectEditor created');
+  // let hasSaveDataValue = typeof(dropdownOptions?.find((v) => String(v.props.value) === String(saveDataValue))) !== "undefined";
+  const _saveDataValueToString = String(saveDataValue);
+  let hasSaveDataValue = dropdownOptions?.some((v) => String(v.props.value) === _saveDataValueToString);
+  // console.log(saveDataValue, _saveDataValueToString, hasSaveDataValue);
   return <select
     className={className}
-    onChange={e => handleValueUpdate(e.target.value)}
+    onChange={e => {
+      // console.log('pre handleValueUpdate:', saveDataValue, e); console.log('e.target.value:', e.target.value);
+      handleValueUpdate(e.target.value)
+    }}
     value={hasSaveDataValue ? saveDataValue : ''}
     disabled={disabled}
   >
@@ -487,7 +504,7 @@ function ListEditorItems({ children, type, propInfo, saveDataValue, handleValueU
         let inputElem;
         if(itemDropdownOptions) {
           inputElem = <SelectEditor
-            saveDataValue={dropdownValues?.hasOwnProperty(substr) && substr}
+            saveDataValue={dropdownValues?.some(([k,]) => String(k) === substr) && substr}
             handleValueUpdate={val => handleUpdateItem(ind, val)}
             dropdownOptions={itemDropdownOptions}
           />;
@@ -618,8 +635,11 @@ function ListEditorSpecial({ children, type, propInfo, saveDataValue, handleValu
 
         let inputElem;
         if(dropdownOptions) {
+          // console.log(dropdownValues);
+          // console.log(substr);
+          // console.log(dropdownValues?.some(([k,]) => String(k) === substr));
           inputElem = <SelectEditor
-            saveDataValue={dropdownValues?.hasOwnProperty(substr) && substr}
+            saveDataValue={dropdownValues?.some(([k,]) => String(k) === substr) && substr}
             handleValueUpdate={val => handleUpdateItem(ind, val)}
             dropdownOptions={dropdownOptions}
             disabled={Boolean(disableInputsWhenUnset && !saveDataValue)}
@@ -637,7 +657,7 @@ function ListEditorSpecial({ children, type, propInfo, saveDataValue, handleValu
             let _ddvals = _doSkins ? dropdownSkinsValues : dropdownClothesValues;
             let _ddopts = _doSkins ? skinsDropdownOptions : clothesDropdownOptions;
             let _selectEditor = <SelectEditor
-              saveDataValue={_ddvals?.hasOwnProperty(substr) && substr}
+              saveDataValue={_ddvals?.some(([k,]) => String(k) === substr) && substr}
               handleValueUpdate={val => handleUpdateItem(ind, val)}
               dropdownOptions={_ddopts}
               disabled={Boolean(disableInputsWhenUnset && !saveDataValue)}
@@ -645,21 +665,9 @@ function ListEditorSpecial({ children, type, propInfo, saveDataValue, handleValu
             if(_doSkins) {
               inputElem = <>
                 <span>Skin:</span>
-                {/* <SelectEditor
-                  saveDataValue={dropdownSkinsValues?.hasOwnProperty(substr) && substr}
-                  handleValueUpdate={val => handleUpdateItem(ind, val)}
-                  dropdownOptions={skinsDropdownOptions}
-                  disabled={Boolean(disableInputsWhenUnset && !saveDataValue)}
-                />; */}
                 {_selectEditor}
               </>
             } else {
-              // inputElem = <SelectEditor
-              //   saveDataValue={dropdownClothesValues?.hasOwnProperty(substr) && substr}
-              //   handleValueUpdate={val => handleUpdateItem(ind, val)}
-              //   dropdownOptions={clothesDropdownOptions}
-              //   disabled={Boolean(disableInputsWhenUnset && !saveDataValue)}
-              // />;
               inputElem = _selectEditor;
             }
           } else {
@@ -794,7 +802,7 @@ function FurnitureTransformEditor({ children, type, propInfo, saveDataValue, han
       <div className="list-editor-grid-row furniture-selector">
         <span>Furniture:</span>
         <SelectEditor
-          saveDataValue={dropdownValues?.hasOwnProperty(saveValAsList[0]) && saveValAsList[0]}
+          saveDataValue={dropdownValues?.some(([k,]) => String(k) === saveValAsList[0]) && saveValAsList[0]}
           handleValueUpdate={val => handleUpdateItem(0, val)}
           dropdownOptions={furnitureDropdownOptions}
         />

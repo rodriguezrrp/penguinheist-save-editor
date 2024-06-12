@@ -182,6 +182,7 @@ export function saveDataValueValidate(editorValue, keyBase, keyExtra, version, c
     if(!customDelim) customDelim = listDelim;
     
     // console.log('saveDataValueValidate called for', editorValue);
+    // console.log('key:', keyBase, keyExtra);
     const fullKey = partsToKey(keyBase, keyExtra);
     
     const adjustedValue = saveDataValueAdjust(editorValue, keyBase, keyExtra, version, customDelim);
@@ -224,11 +225,11 @@ export function saveDataValueValidate(editorValue, keyBase, keyExtra, version, c
             break;
         case "float-range":
             preparePropInfoMinMax(propInfo, fullKey);
-            if(propInfo.min && Number(editorValue) < propInfo.min) {
+            if(typeof(propInfo.min) === "number" && Number(editorValue) < propInfo.min) {
                 result.warning = `Expects the value to be > ${propInfo.min}!`;
                 result.validity = false;
             }
-            else if(propInfo.max && Number(editorValue) > propInfo.max) {
+            else if(typeof(propInfo.max) === "number" && Number(editorValue) > propInfo.max) {
                 result.warning = `Expects the value to be < ${propInfo.max}!`;
                 result.validity = false;
             }
@@ -356,6 +357,7 @@ export function saveDataValueValidate(editorValue, keyBase, keyExtra, version, c
                         result.warning += `Skin value "${problemSkin}"`;
                     result.warning += ` ${pluralizeAll?'are':'is'} not expected for selected version!`;
                     result.validity = false;
+                    // console.log('arr:', arr, 'result:', result);
                     break;
                 }
             }

@@ -10,9 +10,12 @@ import { useResetFileUploadInput, useSetResetFileUploadInput } from "../context/
 import { SaveFolderLocationsList } from "./DowngradingInfo";
 import { BsQuestionCircle } from "react-icons/bs";
 import { useSetBadSaveData } from "../context/BadSaveDataContext";
+// import Select from "react-select";
+
+// import "./props/special/select.scss";
 
 
-function FileAndSettingsForm() {
+export default function FileAndSettingsForm() {
   // console.log('FileAndSettingsForm created');
   return (
     <form id="fileForm"
@@ -28,7 +31,10 @@ function FileAndSettingsForm() {
       <SaveLocationsDisplay />
 
       <VersionSelect />
-      <PropertiesEditorOptions />
+      <div className="fieldset-row">
+        <PropertiesEditorOptions />
+        {/* <SelectDropdownTypeOptions /> */}
+      </div>
       {/* <SaveDownloadButtonRow /> */}
     </form>
   );
@@ -173,6 +179,72 @@ function PropertiesEditorOptions() {
   </fieldset>;
 }
 
+// function SelectDropdownTypeOptions() {
+//   // console.log('SelectDropdownTypeOptions created');
+//   const editorStyle = useEditorStyle();
+//   const setEditorStyle = useSetEditorStyle();
+
+//   let debugDisplay = null;
+//   if(process.env.NODE_ENV === 'development') {
+//     debugDisplay = <span>(debug: current style: {editorStyle})</span>;
+//   }
+
+//   const customSelectTheming = (theme) => ({
+//     ...theme,
+//     // borderRadius: 0,
+//     // borderRadius: 3,
+//     colors: {
+//       ...theme.colors,
+//       primary25: 'var(--react-select-primary25)',
+//       primary: 'var(--react-select-primary)',
+//     },
+//   });
+
+//   return <div>
+//     <select>
+//       <option value={'1'}>1. The quick brown fox</option>
+//       <option value={'2'}>2. Jumps over</option>
+//       <option value={'3'}>3. The lazy dog</option>
+//     </select>
+//     <Select
+//       options={[
+//         { value: 'chocolate', label: 'Chocolate', disabled: true },
+//         { value: 'strawberry', label: 'Strawberry' },
+//         { value: 'vanilla', label: 'Vanilla' }
+//       ]}
+//       classNamePrefix="sel"
+//       className="sel-container w-100"
+//       theme={customSelectTheming}
+//       isOptionDisabled={opt => opt.disabled}
+//     />
+//   </div>
+
+//   return <fieldset onChange={(e) => {setEditorStyle(e.target.value)}}>
+//     <legend>Property Editors Options:</legend>
+//     <div>
+//       <input
+//         type="radio" name="propFormOpts"
+//         id="optIndividual"
+//         value="individual"
+//         checked={editorStyle === "individual"}
+//         onChange={suppressMissingOnChangeHandlerWarning}
+//       />
+//       <label htmlFor="optIndividual">Show Individual Editors Only</label>
+//     </div>
+//     <div>
+//       <input
+//         type="radio" name="propFormOpts"
+//         id="optSpecial"
+//         value="special"
+//         checked={editorStyle === "special"}
+//         onChange={suppressMissingOnChangeHandlerWarning}
+//       />
+//       <label htmlFor="optSpecial">Show Specialized Editors</label>
+//     </div>
+//     {debugDisplay}
+//   </fieldset>;
+// }
+
 
 let _foundSupportedVersionYet = false;
 const versionOptions = Object.entries(versionInfo)
@@ -246,6 +318,3 @@ function VersionSelect() {
   </>
   );
 }
-
-
-export default FileAndSettingsForm;

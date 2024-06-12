@@ -6,7 +6,7 @@
 }
 /* revert modern-normalize's line-height specification on the following form elements.
 Strangely, explicitly specifying it causes height differences between the elements, and between different browsers. */
-button, input, optgroup, select, textarea {
+button, input, optgroup, select, textarea, div.sel-container {
   line-height: normal;
 }
 
@@ -46,6 +46,8 @@ body {
 input,
 button,
 select,
+div.sel__control,
+div.sel__control:hover,
 input[type="file"]::file-selector-button {
   accent-color: var(--accent);
 
@@ -63,11 +65,13 @@ input[type="file"]::file-selector-button {
 
 button:not(:disabled),
 select:not(:disabled),
+div.sel__dropdown-indicator:not(:disabled),
 input[type="file"]:not(:disabled)::file-selector-button {
   background-color: rgb(235, 235, 239);
-}
-button:not(:disabled):hover,
+  }
+  button:not(:disabled):hover,
 select:not(:disabled):hover,
+div.sel__dropdown-indicator:not(:disabled):hover,
 input[type="file"]:not(:disabled)::file-selector-button:hover {
   background-color: rgb(210, 210, 214);
 }
@@ -369,15 +373,20 @@ form > label {
   display: inline-block;
 }
 form > label:not(:first-child),
-form > fieldset:not(:first-child) {
+form > fieldset:not(:first-child),
+form > div.fieldset-row:not(:first-child) {
   margin-top: .75em;
 }
 form > label:not(:has(input, select), :last-child) {
   /* labels that don't have nested input children, i.e., they reference an element elsewhere (using e.g. for = "...") */
   padding-bottom: .3em;
 }
-form > fieldset {
+fieldset {
   border: 1px solid var(--grayblue);
+  div.fieldset-row > & {
+    flex-grow: 1;
+    flex-basis: 200px;
+  }
 }
 
 span.name-suffix {

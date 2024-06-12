@@ -1,0 +1,98 @@
+// @import url('../../../App.css');
+
+body {
+    --react-select-primary: var(--accent);
+    --react-select-primary25: var(--light);
+
+    // sel-imgw: 2em;
+    // sel-imgw: 23px;
+    --sel-imgw: 1.43em;
+}
+
+// div.sel-container {
+//     transition: none;
+// }
+
+img.sel-preview-img {
+    height: var(--sel-imgw);
+    width: var(--sel-imgw);
+    // paddding-left:4px;
+}
+
+div.sel__single-value > div.sel-option-with-preview > img.sel-preview-img {
+    // paddding-left:6px;
+    padding-left: 0px;
+}
+
+div.sel__value-container:has(div.sel-option-with-preview) {
+    padding-left: 0px;
+
+    & > div.sel__input-container {
+        // margin-left:2.7em;
+        margin-left: calc(var(--sel-imgw) + 0.55em)
+        // background-color:#cccc;
+    }
+}
+
+div.sel-option-with-preview {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    & > span {
+        padding-left: 0.55em;
+    }
+}
+
+div.sel__option {
+    padding: 2px;
+}
+
+div.sel__dropdown-indicator {
+    height: 100%;
+    padding: 0px 2px;
+    background-color: #ddd;
+    &, &:hover {
+        color: #333;
+    }
+
+    & > svg {
+        margin-top: auto;
+        margin-bottom: auto;
+        height: 1em;
+        width: 20px;
+    }
+}
+
+div.sel__control {
+    // min-height: unset;
+    min-height: 1em;
+    // min-height: 2em;
+    transition: none;
+}
+div.sel__control--is-focused {
+  accent-color: var(--accent);
+  box-shadow:0 0 0 2px var(--accent);
+}
+
+div.sel__value-container {
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+
+div.sel__input-container {
+    margin-top: 0px;
+    margin-bottom: 0px;
+    padding-top: 1px;
+    padding-bottom: 1px;
+}
+
+div.sel__menu-list {
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+
+div.sel__menu {
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
