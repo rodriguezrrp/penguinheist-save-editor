@@ -1,16 +1,16 @@
 {
   "files": {
-    "main.css": "/penguinheist-save-editor/static/css/main.5def32d8.css",
-    "main.js": "/penguinheist-save-editor/static/js/main.55665f7c.js",
+    "main.css": "/penguinheist-save-editor/static/css/main.b2f84476.css",
+    "main.js": "/penguinheist-save-editor/static/js/main.365ad8d2.js",
     "static/js/787.a181d0e1.chunk.js": "/penguinheist-save-editor/static/js/787.a181d0e1.chunk.js",
     "static/media/NI-7.png": "/penguinheist-save-editor/static/media/NI-7.8729f27ab0e0cfdb0d51.png",
     "index.html": "/penguinheist-save-editor/index.html",
-    "main.5def32d8.css.map": "/penguinheist-save-editor/static/css/main.5def32d8.css.map",
-    "main.55665f7c.js.map": "/penguinheist-save-editor/static/js/main.55665f7c.js.map",
+    "main.b2f84476.css.map": "/penguinheist-save-editor/static/css/main.b2f84476.css.map",
+    "main.365ad8d2.js.map": "/penguinheist-save-editor/static/js/main.365ad8d2.js.map",
     "787.a181d0e1.chunk.js.map": "/penguinheist-save-editor/static/js/787.a181d0e1.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.5def32d8.css",
-    "static/js/main.55665f7c.js"
+    "static/css/main.b2f84476.css",
+    "static/js/main.365ad8d2.js"
   ]
 }
