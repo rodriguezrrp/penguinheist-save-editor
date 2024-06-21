@@ -705,7 +705,7 @@ function ClipboardButtonWithPopover(props) {
       {/* <div style={{display:'inline'}} onClick={(e)=>setJustCopied(true)}>
         {children}
       </div> */}
-      <button {...props} onClick={clickHandler}>
+      <button {...props} type="button" onClick={clickHandler}>
           {props.children}
       </button>
     </Popover>

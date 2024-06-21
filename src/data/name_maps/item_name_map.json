@@ -7,7 +7,7 @@
     },
     "3": {
         "name": "Banana Gun",
-        "imgname": "banana_gun.png",
+        "imgname": "banana.png",
         "post_office": false,
         "group": "ranged"
     },
@@ -187,7 +187,7 @@
     },
     "34": {
         "name": "Flamethrower",
-        "imgname": "flamethrower.png",
+        "imgname": "flame_thrower.png",
         "post_office": false,
         "group": "ranged"
     },
@@ -409,7 +409,7 @@
     },
     "71": {
         "name": "Can of Sardines",
-        "imgname": "can_of_sardines.png",
+        "imgname": "sardines.png",
         "post_office": false,
         "group": "items"
     },
@@ -511,7 +511,7 @@
     },
     "88": {
         "name": "Firecrackers",
-        "imgname": "firecrackers.png",
+        "imgname": "firecracker.png",
         "post_office": false,
         "group": "ranged"
     },

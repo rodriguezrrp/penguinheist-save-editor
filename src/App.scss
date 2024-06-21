@@ -34,9 +34,13 @@ body {
   --focus-outline-color: var(--accent);
   color: var(--dark);
 
+  --disabled-input-bg-color: rgba(255, 255, 255, 0.5);
+  --disabled-input-border-color: rgb(180, 180, 180);
+
   /* background-color: lightcyan; */
   background-color: var(--mid);
-  background-image: url('./assets/imgs/ThatOtherFish-scrots/NI-7.png');
+  /* background-image: url('./assets/imgs/ThatOtherFish-scrots/NI-7.png'); */
+  background-image: url('./assets/imgs/ThatOtherFish-scrots-optimized/NI-7.png');
   background-repeat: no-repeat;
   background-size: cover;
   background-position-x: center;
@@ -56,11 +60,17 @@ input[type="file"]::file-selector-button {
 
   border: solid 1px;
   border-radius: 3px;
-  border-color: rgb(118,118,118);
+  border-color: rgb(118, 118, 118);
   
   &:disabled {
-    border-color: rgb(180, 180, 180);
+    border-color: var(--disabled-input-border-color);
   }
+}
+
+input:disabled,
+div.sel__control--is-disabled {
+  background-color: var(--disabled-input-bg-color);
+  border-color: var(--disabled-input-border-color);
 }
 
 button:not(:disabled),
@@ -68,8 +78,8 @@ select:not(:disabled),
 div.sel__dropdown-indicator:not(:disabled),
 input[type="file"]:not(:disabled)::file-selector-button {
   background-color: rgb(235, 235, 239);
-  }
-  button:not(:disabled):hover,
+}
+button:not(:disabled):hover,
 select:not(:disabled):hover,
 div.sel__dropdown-indicator:not(:disabled):hover,
 input[type="file"]:not(:disabled)::file-selector-button:hover {
@@ -104,6 +114,12 @@ div.card {
 .card-width {
   width: 85vw;
   max-width: 900px;
+}
+@media screen and (min-width: 1600px) {
+  .card-width {
+    width:88vw;
+    max-width: 1080px;
+  }
 }
 .w-100 {
   width: 100%;
@@ -377,9 +393,12 @@ form > fieldset:not(:first-child),
 form > div.fieldset-row:not(:first-child) {
   margin-top: .75em;
 }
-form > label:not(:has(input, select), :last-child) {
+form > label:not(:has(input, select, div.sel-container), :last-child) {
   /* labels that don't have nested input children, i.e., they reference an element elsewhere (using e.g. for = "...") */
   padding-bottom: .3em;
+}
+div.fieldset-row {
+  display: flex;
 }
 fieldset {
   border: 1px solid var(--grayblue);
@@ -421,9 +440,88 @@ span.listicons:has(> .icon:nth-child(3)) {
   width: 3em;
 }
 
-.quick-action-button {
-  grid-column: auto / span 3;
+.quick-action-grid {
+	display: grid;
+	grid-template-rows: repeat(1, 1fr);
+	grid-template-columns: repeat(12, 1fr);
+	gap: 0.5rem;
+	margin: 0.5rem;
 }
+.quick-action-button {
+  /* fit 3 per row */
+  grid-column: auto / span 4;
+}
+
+// /* if the last row has only 1 */
+// .quick-action-button:nth-child(3n + 1):last-child {
+//   /* center that last child */
+//   grid-column: 5 / span 4;
+// }
+// /* if the last row has only 2 */
+// .quick-action-grid:has(:nth-child(3n + 2):last-child) {
+//   & > .quick-action-button {
+//     /* center those two */
+//     &:nth-last-child(2) {
+//       grid-column: 3 / span 4;
+//     }
+//     &:last-child {
+//       grid-column: 7 / span 4;
+//     }
+//   }
+// }
+
+#quickActionReset {
+  /* always "right align" the reset button */
+  grid-column: 9 / span 4;
+}
+
+@media screen and (min-width: 1600px) {
+
+  .quick-action-button {
+    /* fit 4 per row */
+    grid-column: auto / span 3;
+  }
+
+  #quickActionReset {
+    /* always "right align" the reset button */
+    grid-column: 10 / span 3;
+  }
+
+  // /* if the last row has only 1 */
+  // .quick-action-button:nth-child(4n + 1):last-child {
+  //   /* center that last child (also making it 4 wide) */
+  //   grid-column: 5 / span 4;
+  // }
+  // /* if the last row has only 2 */
+  // .quick-action-grid:has(:nth-child(4n + 2):last-child) {
+  //   & > .quick-action-button {
+  //     /* center those two */
+  //     &:nth-last-child(2) {
+  //       grid-column: 4 / span 3;
+  //     }
+  //     &:last-child {
+  //       grid-column: 7 / span 3;
+  //     }
+  //   }
+  // }
+  /* if the last row has only 3 */
+  .quick-action-grid:has(:nth-child(4n + 3):last-child) {
+    & > .quick-action-button:nth-last-child(-n + 3) {
+      /* center by making all of them 4 wide */
+      grid-column: auto / span 4;
+    }
+    & > #quickActionReset {
+      /* re-adjust the width of the right-aligned reset button */
+      grid-column: 9 / span 4;
+    }
+  }
+}
+/* :nth-child(9 of .quick-action-button) {
+  grid-column: 5 / span 4;
+} */
+/* .quick-action-button:nth-child(9) {
+  grid-column: 5 / span 4;
+} */
 
 .switch-grid {
   flex: 1 0 auto;
@@ -640,7 +738,7 @@ details[open] > summary svg.category-icon {
   /* & > button {
     height: 100%;
   } */
-  & > select {
+  & > select, & > div.sel-container {
     width: auto;
     flex: 1 0 auto;
   }
@@ -653,7 +751,7 @@ details[open] > summary svg.category-icon {
     flex: 1 0 auto;
   }
   &.furniture-selector {
-    & > select {
+    & > select, & > div.sel-container {
       width: 100%;
       flex: 1 1 auto;
     }
@@ -827,14 +925,6 @@ button.cmd-copy-button {
   }
 }
 
-/* .App {
-  text-align: center;
-} */
-
-/* .App-logo {
-  height: 40vmin;
-  pointer-events: none;
-} */
 
 .popover {
   color: var(--dark);
@@ -888,27 +978,3 @@ button.cmd-copy-button {
     transition: all .1s linear;
   }
 }
-
-/* .App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-} */
-
-/* .App-link {
-  color: #61dafb;
-} */
-
-/* @keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-} */

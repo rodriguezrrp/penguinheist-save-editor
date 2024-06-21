@@ -1,17 +1,50 @@
-import { resolveDropdownFromPropInfo } from "../../../data";
+import { propInfoHasDropdown, resolveDropdownFromPropInfo } from "../../../data";
 
-// // regarding lazy and lazy-once, see https://webpack.js.org/api/module-methods/#webpackmode
-// const imagesCtx = require.context(/* webpackModule: "preview-imgs-chunk-[index]" */ '../../../assets/imgs/furniture_previews_resized',
-//     false, /\.(png|jpe?g|svg|webp)$/, 'lazy-once');// 'lazy');
-// const imagesCache = {};
-// imagesCtx.keys().forEach(filePath => {
-//   // load the image
-//   imagesCtx(filePath).then(module => {
-//     console.log('filePath:', filePath);
-//     console.log('module.default:', module.default);
-//     imagesCache[filePath] = module.default;
-//   });
-// });
+let imagesCtxCaches = {};
+let srcCaches = {};
+export function getPreviewImagePromise(cacheType, imgnameNoExt) {
+    if(!imagesCtxCaches[cacheType]) {
+        // regarding lazy and lazy-once, see https://webpack.js.org/api/module-methods/#webpackmode
+        if(cacheType === "furniture") {
+            imagesCtxCaches.furniture = require.context(/* webpackModule: "preview-imgs-chunk-[index]" */ '../../../assets/imgs/furniture_previews_resized',
+                false, /\.(png|jpe?g|svg|webp)$/i, 'lazy-once');
+            srcCaches.furniture = new Map(imagesCtxCaches.furniture.keys().map(v => [v, null]));
+        }
+        else if(cacheType === "items") {
+            imagesCtxCaches.items = require.context(/* webpackModule: "preview-imgs-chunk-[index]" */ '../../../assets/imgs/item_previews_resized',
+                false, /\.(png|jpe?g|svg|webp)$/i, 'lazy-once');
+            srcCaches.items = new Map(imagesCtxCaches.items.keys().map(v => [v, null]));
+        }
+        else {
+            // preview images cache does not exist for this type :/
+            console.log(`info: no preview images cache exists for cacheType ${cacheType}`);
+            return undefined;
+        }
+    }
+
+    let cache = imagesCtxCaches[cacheType];
+    // console.log('getting preview image from cache:', imgnameNoExt);
+    let fname = `./${imgnameNoExt}_50x50.webp`;
+    let cachedSrc = srcCaches[cacheType].get(fname);
+
+    if(typeof(cachedSrc) === "undefined") {  // mapping does not exist in the context
+        return null;
+    }
+    else if(cachedSrc === null) {  // mapping exists in the context but was not retrieved yet
+        // console.log('resolving preview image from webpack context cache:', imgnameNoExt);
+        
+        // returning a Promise (creating async situation)
+        return cache(fname).then(src => {
+            // automatically cache the resolved value before any other handling.
+            srcCaches[cacheType].set(fname, src);
+            return src;  // pass it along
+        });
+    }
+    else {
+        // mapping already was retrieved; return it directly (not async)
+        return cachedSrc;
+    }
+}
 
 /**
  * @typedef {string} DropdownType
@@ -20,24 +53,26 @@ import { resolveDropdownFromPropInfo } from "../../../data";
 
 
 let previousVersion = null;
-// const memoizationCache = new LRUCache({max:10});  <-- some kind of size-limited LRU map implementation?
 
 /** @type {Map<DropdownType, Map<PropInfo, DropdownOptionsResult>>} */
 let memoizationCache = new Map();
 
 
-// export function getCacheTestImage() {
-//     return imagesCache['minecart.webp'];
-// }
+export function getCacheTestImagePromise() {
+    // return imagesCache['./minecart_50x50.webp'];
+    return getPreviewImagePromise('minecart');
+}
 
 
 /**
  * @param {PropInfo} propInfo
  * @param {string?} version
  * @param {DropdownType} dropdownType
- * @returns {DropdownOptionsResult}
+ * @returns {DropdownOptionsResult | undefined}
  */
 export function resolveDropdownOptionDataCached(propInfo, version, dropdownType) {
+
+    if(!propInfoHasDropdown(propInfo)) return undefined;
     
     if(version !== previousVersion) {
         // purge all old version's cached data
@@ -69,10 +104,18 @@ export function resolveDropdownOptionDataCached(propInfo, version, dropdownType)
             break;
         };
         case "searchablewithimages": {
-            let dropdownValues = resolveDropdownFromPropInfo(propInfo, version);
+            let dropdownValues = resolveDropdownFromPropInfo(propInfo, version, true);  // include all nameMap info
             optionData = (dropdownValues || []).map(([optValue, optContents]) => {
                 // return { value: optValue, label: optContents, image: imagesCache['minecart.webp'] }
-                return { value: optValue, label: optContents, image: null }
+                // return { value: optValue, label: optContents, image: null }
+                return {
+                    value: optValue,
+                    label: optContents.name,
+                    group: optContents.group || optContents.category,
+                    imgname: optContents.imgname || optContents.image,
+                    imgcachetype: propInfo.dropdown,  // e.g. "items" or "furniture"
+                    ispostoffice: optContents.post_office
+                };
             });
             optionData.unshift({ value: '', label: '', disabled: true });
             break;
@@ -106,3 +149,11 @@ export function resolveDropdownOptionDataCached(propInfo, version, dropdownType)
     return optionData;
 }
 
+
+/** @returns {boolean | undefined} */
+export function dropdownOptionsDataContainsValue(dropdownOptionsData, /**@type string*/ value) {
+    return dropdownOptionsData?.some((opt => {
+        if(opt.props) return String(opt.props?.value) === value;
+        else return opt.value === value;
+    }));
+}

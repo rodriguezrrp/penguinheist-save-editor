@@ -10,11 +10,11 @@ const pathsInOut = [
 const newSize = 50;
 
 // any filename which ends in .png and which doesn't have a forward slash or backslash in it
-const fileRegex = /([a-z0-9_]*)\.png/gi;
+const fileRegex = /([a-z0-9_-]*)\.png/gi;
 const fileRegexNot = /_[0-9]+x[0-9]+\.png$/gi;  // skip ones that have size denoted at the end
 
 // same but extracting the file name (cutting off any size at the end)
-const fileNameNoExtRegex = /([a-z0-9_]*?)(?:_[0-9]+x[0-9]+)?\.png$/gi;
+const fileNameNoExtRegex = /([a-z0-9_-]*?)(?:_[0-9]+x[0-9]+)?\.png$/gi;
 
 function getFileNameNoExt(fileName) {
     return fileName.matchAll(fileNameNoExtRegex).next().value?.[1];

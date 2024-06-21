@@ -498,3 +498,11 @@ export function versionHasLockableHeists(version) {
     // heists became progression-locked in the Heist Planner patch update
     return compareVersion(version, 'vCHP_initial') >= 0;
 }
+
+export function versionHasFurniture(version) {
+    if(typeof(version) === "undefined" || version === null) {
+        return null;
+    }
+    // furniture became available since Heist and Housing update
+    return compareVersion(version, 'vHH_initial') >= 0;
+}

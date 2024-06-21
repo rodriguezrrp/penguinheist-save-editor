@@ -10,9 +10,11 @@ import { useResetFileUploadInput, useSetResetFileUploadInput } from "../context/
 import { SaveFolderLocationsList } from "./DowngradingInfo";
 import { BsQuestionCircle } from "react-icons/bs";
 import { useSetBadSaveData } from "../context/BadSaveDataContext";
+import { possibleSelectDropdownTypes, useSelectDropdownType, useSetSelectDropdownType } from "../context/SelectDropdownTypeContext";
 // import Select from "react-select";
-
 // import "./props/special/select.scss";
+// import { getCacheTestImagePromise } from "./props/special/dropdownCaching";
+// import AsyncImage from "./AsyncImage";
 
 
 export default function FileAndSettingsForm() {
@@ -33,7 +35,7 @@ export default function FileAndSettingsForm() {
       <VersionSelect />
       <div className="fieldset-row">
         <PropertiesEditorOptions />
-        {/* <SelectDropdownTypeOptions /> */}
+        <SelectDropdownTypeOptions />
       </div>
       {/* <SaveDownloadButtonRow /> */}
     </form>
@@ -179,71 +181,88 @@ function PropertiesEditorOptions() {
   </fieldset>;
 }
 
-// function SelectDropdownTypeOptions() {
-//   // console.log('SelectDropdownTypeOptions created');
-//   const editorStyle = useEditorStyle();
-//   const setEditorStyle = useSetEditorStyle();
+function SelectDropdownTypeOptions() {
+  console.log('SelectDropdownTypeOptions created');
+  const selectDropdownType = useSelectDropdownType();
+  const setSelectDropdownType = useSetSelectDropdownType();
 
-//   let debugDisplay = null;
-//   if(process.env.NODE_ENV === 'development') {
-//     debugDisplay = <span>(debug: current style: {editorStyle})</span>;
-//   }
+  let debugDisplay = null;
+  if(process.env.NODE_ENV === 'development') {
+    debugDisplay = <span>(debug: current style: {selectDropdownType})</span>;
+  }
 
-//   const customSelectTheming = (theme) => ({
-//     ...theme,
-//     // borderRadius: 0,
-//     // borderRadius: 3,
-//     colors: {
-//       ...theme.colors,
-//       primary25: 'var(--react-select-primary25)',
-//       primary: 'var(--react-select-primary)',
-//     },
-//   });
+  // const customSelectTheming = (theme) => ({
+  //   ...theme,
+  //   // borderRadius: 0,
+  //   // borderRadius: 3,
+  //   colors: {
+  //     ...theme.colors,
+  //     primary25: 'var(--react-select-primary25)',
+  //     primary: 'var(--react-select-primary)',
+  //   },
+  // });
 
-//   return <div>
-//     <select>
-//       <option value={'1'}>1. The quick brown fox</option>
-//       <option value={'2'}>2. Jumps over</option>
-//       <option value={'3'}>3. The lazy dog</option>
-//     </select>
-//     <Select
-//       options={[
-//         { value: 'chocolate', label: 'Chocolate', disabled: true },
-//         { value: 'strawberry', label: 'Strawberry' },
-//         { value: 'vanilla', label: 'Vanilla' }
-//       ]}
-//       classNamePrefix="sel"
-//       className="sel-container w-100"
-//       theme={customSelectTheming}
-//       isOptionDisabled={opt => opt.disabled}
-//     />
-//   </div>
+  // const [a, setA] = useState(false);
 
-//   return <fieldset onChange={(e) => {setEditorStyle(e.target.value)}}>
-//     <legend>Property Editors Options:</legend>
-//     <div>
-//       <input
-//         type="radio" name="propFormOpts"
-//         id="optIndividual"
-//         value="individual"
-//         checked={editorStyle === "individual"}
-//         onChange={suppressMissingOnChangeHandlerWarning}
-//       />
-//       <label htmlFor="optIndividual">Show Individual Editors Only</label>
-//     </div>
-//     <div>
-//       <input
-//         type="radio" name="propFormOpts"
-//         id="optSpecial"
-//         value="special"
-//         checked={editorStyle === "special"}
-//         onChange={suppressMissingOnChangeHandlerWarning}
-//       />
-//       <label htmlFor="optSpecial">Show Specialized Editors</label>
-//     </div>
-//     {debugDisplay}
-//   </fieldset>;
-// }
+  // return <div>
+  //   <select>
+  //     <option value={'1'}>1. The quick brown fox</option>
+  //     <option value={'2'}>2. Jumps over</option>
+  //     <option value={'3'}>3. The lazy dog</option>
+  //   </select>
+  //   <Select
+  //     options={[
+  //       { value: 'chocolate', label: 'Chocolate', disabled: true },
+  //       { value: 'strawberry', label: 'Strawberry' },
+  //       { value: 'vanilla', label: 'Vanilla' }
+  //     ]}
+  //     classNamePrefix="sel"
+  //     className="sel-container w-100"
+  //     theme={customSelectTheming}
+  //     isOptionDisabled={opt => opt.disabled}
+  //   />
+  //   {/* <img src={getCacheTestImagePromise()} alt="abc" /> */}
+  //   <button type="button" onClick={(e)=>setA(!a)}>
+  //     toggle AsyncImage
+  //   </button>
+  //   {a && <AsyncImage src={getCacheTestImagePromise()} className="sel-preview-img" />}
+  // </div>
+
+  return <fieldset onChange={(e) => {setSelectDropdownType(e.target.value)}}>
+    <legend>Dropdowns Style:</legend>
+    <div>
+      <input
+        type="radio" name="propFormSelectStyle"
+        id="optSdtPlain"
+        value="plain"
+        checked={selectDropdownType === "plain"}
+        onChange={suppressMissingOnChangeHandlerWarning}
+      />
+      <label htmlFor="optSdtPlain">{possibleSelectDropdownTypes["plain"]}</label>
+    </div>
+    <div>
+      <input
+        type="radio" name="propFormSelectStyle"
+        id="optSdtSearchable"
+        value="searchable"
+        checked={selectDropdownType === "searchable"}
+        onChange={suppressMissingOnChangeHandlerWarning}
+      />
+      <label htmlFor="optSdtSearchable">{possibleSelectDropdownTypes["searchable"]}</label>
+    </div>
+    <div>
+      <input
+        type="radio" name="propFormSelectStyle"
+        id="optSdtSearchableImages"
+        value="searchablewithimages"
+        checked={selectDropdownType === "searchablewithimages"}
+        onChange={suppressMissingOnChangeHandlerWarning}
+      />
+      <label htmlFor="optSdtSearchableImages">{possibleSelectDropdownTypes["searchablewithimages"]}</label>
+    </div>
+    {debugDisplay}
+  </fieldset>;
+}
 
 
 let _foundSupportedVersionYet = false;

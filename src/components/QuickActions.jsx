@@ -2,7 +2,7 @@ import { useResetFileUploadInput } from "../context/ResetFileUploadInputContext"
 import { useStore, useStoreMapOverCategory, useStoreSetAll } from "../context/SaveDataContext";
 import { useVersion } from "../context/VersionContext";
 import { getCompleteCategorizedSaveDataFor } from "../utils/saveDataUtils";
-import { versionHasBlueprints, versionHasLockableHeists, versionHasStructures } from "../utils/validUtils";
+import { isInt, versionHasBlueprints, versionHasFurniture, versionHasLockableHeists, versionHasStructures } from "../utils/validUtils";
 
 
 function QuickActions() {
@@ -22,8 +22,7 @@ function QuickActions() {
 
   return <div className="card" style={{margin: '1em', '--border-color': 'var(--grayblue)'}}>
     <h2>Quick Actions</h2>
-    <div style={{display: 'grid', gridTemplateRows: 'repeat(1, 1fr)', gridTemplateColumns: 'repeat(12, 1fr)'
-                , gap: '.5rem', margin: '.5rem'}}>
+    <div className="quick-action-grid">
       <button type="button" id="quickActionMoney" className="quick-action-button"
         onClick={(e) => setSaveData('money', 'money', 1000000)}
       >
@@ -66,6 +65,13 @@ function QuickActions() {
         disabled={!versionHasLockableHeists(version)}
       >
         Unlock All Heists
+      </button>
+      <button type="button" id="quickActionStructures" className="quick-action-button"
+        // adding 10 to the existing value
+        onClick={(e) => mapOverCategory('furnitureowned', (kv) => kv[0].startsWith('furnitureAmountOwned') ? [kv[0], String((isInt(kv[1]) ? parseInt(kv[1]) : 0) + 10)] : kv)}
+        disabled={!versionHasFurniture(version)}
+      >
+        +10 of All Furniture
       </button>
       <button type="button" id="quickActionReset" className="quick-action-button"
         onClick={(e) => {

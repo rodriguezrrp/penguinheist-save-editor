@@ -122,6 +122,7 @@
         "name_map":"_self",
         "type":"int-dropdown",
         "dropdown":{"-1":"None","0":"Easy","1":"Medium","2":"Hard","3":"Hardcore"},
+        "dropdown_type":"plain",
         "sort":false
     },
     "money": {
@@ -152,7 +153,8 @@
         "category":"graphics",
         "name":"VSync",
         "type":"int-dropdown",
-        "dropdown":{"0":"Off","1":"On"}
+        "dropdown":{"0":"Off","1":"On"},
+        "dropdown_type":"plain"
     },
     "bloomEnabled": {
         "category":"graphics",
@@ -195,6 +197,7 @@
         "name":"Difficulty",
         "type":"int-dropdown",
         "dropdown":{"0":"Easy","1":"Medium","2":"Hard","3":"Hardcore"},
+        "dropdown_type":"plain",
         "sort":false
     },
     "invertY": {

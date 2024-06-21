@@ -9,7 +9,9 @@ import stopEvent from "../../utils/stopEvent";
 import { useState } from "react";
 import { BsQuestionCircle } from "react-icons/bs";
 import { Popover } from "react-tiny-popover";
-import { resolveDropdownOptionDataCached } from "./special/dropdownCaching";
+import { dropdownOptionsDataContainsValue, resolveDropdownOptionDataCached } from "./special/dropdownCaching";
+import { SelectEditor } from "./special/SelectEditor";
+import { useSelectDropdownType } from "../../context/SelectDropdownTypeContext";
 
 export function Editor({ categoryId, fullKey }) {
   const [keyBase, keyExtra] = getKeyParts(fullKey);
@@ -215,7 +217,7 @@ function RichSingleValueEditor({ children, type, saveDataValue, handleValueUpdat
   let isComplexInput = false;
   
   let dropdownOptions = [];
-  const dropdownType = "plain";
+  const dropdownType = useSelectDropdownType();  // creates a dependency on SelectDropdownTypeContext
   if(type === "int-dropdown") {
     // TODO: useMemo on resolveDropdownFromPropInfo, or its resolveDropdown function call inside it?
     // console.time('resolve dropdown');
@@ -229,7 +231,7 @@ function RichSingleValueEditor({ children, type, saveDataValue, handleValueUpdat
     // console.timeEnd('prepare dropdownValues');
     dropdownOptions = resolveDropdownOptionDataCached(propInfo, version, dropdownType);
   }
-  const makeInputRecorder = (type === "int-dropdown" && propInfo.dropdown === 'keybinds');
+  const makeInputRecorder = (type === "int-dropdown" && propInfo.dropdown === "keybinds");
 
   switch (type) {
     case "int":
@@ -263,7 +265,7 @@ function RichSingleValueEditor({ children, type, saveDataValue, handleValueUpdat
             className="w-50"
           />
           <SelectEditor saveDataValue={saveDataValue} handleValueUpdate={handleValueUpdate}
-            dropdownOptions={dropdownOptions} className={"w-50"}
+            dropdownOptions={dropdownOptions} dropdownType={dropdownType} className={"w-50"}
           />
         {/* </div> */}
         </>
@@ -272,7 +274,7 @@ function RichSingleValueEditor({ children, type, saveDataValue, handleValueUpdat
         inputElem = 
         // <div style={{width: "18vw", display: "inline-block"}}>
           <SelectEditor saveDataValue={saveDataValue} handleValueUpdate={handleValueUpdate}
-            dropdownOptions={dropdownOptions} className={"w-100"}
+            dropdownOptions={dropdownOptions} dropdownType={dropdownType} className={"w-100"}
           />
         // </div>;
       }
@@ -402,24 +404,24 @@ function ColorEditor({ saveDataValue, handleValueUpdate, disabled=false }) {
   </>;
 }
 
-function SelectEditor({ saveDataValue, handleValueUpdate, dropdownOptions, className="", disabled=false }) {
-  // console.log('SelectEditor created');
-  // let hasSaveDataValue = typeof(dropdownOptions?.find((v) => String(v.props.value) === String(saveDataValue))) !== "undefined";
-  const _saveDataValueToString = String(saveDataValue);
-  let hasSaveDataValue = dropdownOptions?.some((v) => String(v.props.value) === _saveDataValueToString);
-  // console.log(saveDataValue, _saveDataValueToString, hasSaveDataValue);
-  return <select
-    className={className}
-    onChange={e => {
-      // console.log('pre handleValueUpdate:', saveDataValue, e); console.log('e.target.value:', e.target.value);
-      handleValueUpdate(e.target.value)
-    }}
-    value={hasSaveDataValue ? saveDataValue : ''}
-    disabled={disabled}
-  >
-    {dropdownOptions}
-  </select>;
-}
+// function SelectEditor({ saveDataValue, handleValueUpdate, dropdownOptions, className="", disabled=false }) {
+//   // console.log('SelectEditor created');
+//   // let hasSaveDataValue = typeof(dropdownOptions?.find((v) => String(v.props.value) === String(saveDataValue))) !== "undefined";
+//   const _saveDataValueToString = String(saveDataValue);
+//   let hasSaveDataValue = dropdownOptions?.some((v) => String(v.props.value) === _saveDataValueToString);
+//   // console.log(saveDataValue, _saveDataValueToString, hasSaveDataValue);
+//   return <select
+//     className={className}
+//     onChange={e => {
+//       // console.log('pre handleValueUpdate:', saveDataValue, e); console.log('e.target.value:', e.target.value);
+//       handleValueUpdate(e.target.value)
+//     }}
+//     value={hasSaveDataValue ? saveDataValue : ''}
+//     disabled={disabled}
+//   >
+//     {dropdownOptions}
+//   </select>;
+// }
 
 function PropEraseButton({ saveDataValue, handleValueUpdate }) {
   // Note: does not disable when saveDataValue is an empty string ('')
@@ -452,17 +454,20 @@ function ListEditorItems({ children, type, propInfo, saveDataValue, handleValueU
   const defaultNewValue = String(propInfo.default ?? '');
   if(propInfo.delim) delim = propInfo.delim;
 
+  const dropdownType = useSelectDropdownType();  // creates a dependency on SelectDropdownTypeContext
+
   let itemDropdownOptions;
   // TODO: useMemo on resolveDropdownFromPropInfo, or its resolveDropdown function call inside it?
   // let dropdownValues;
-  let dropdownValues = resolveDropdownFromPropInfo(propInfo, version);
-  // TODO optimization idea: useMemo around the code that generates the dropdownOptions list!
-  if(Array.isArray(dropdownValues)) {
-    itemDropdownOptions = dropdownValues.map(([optValue, optContents]) => (
-      <option value={optValue}>{optContents}</option>
-    ));
-    itemDropdownOptions.unshift(<option value="" disabled></option>);
-  }
+  // let dropdownValues = resolveDropdownFromPropInfo(propInfo, version);
+  // // TODO optimization idea: useMemo around the code that generates the dropdownOptions list!
+  // if(Array.isArray(dropdownValues)) {
+  //   itemDropdownOptions = dropdownValues.map(([optValue, optContents]) => (
+  //     <option value={optValue}>{optContents}</option>
+  //   ));
+  //   itemDropdownOptions.unshift(<option value="" disabled></option>);
+  // }
+  itemDropdownOptions = resolveDropdownOptionDataCached(propInfo, version, dropdownType);
 
   function handleAddItem(newValue) {
     handleValueUpdate(saveDataValue===null || typeof(saveDataValue)==="undefined"
@@ -492,6 +497,7 @@ function ListEditorItems({ children, type, propInfo, saveDataValue, handleValueU
       throw new Error(`index ${ind} out of bounds for save value array ${asArr}`);
     }
     asArr[ind] = newValue;
+    // console.log(ind, ',', newValue, ',', saveDataValue, ',', asArr);
     handleValueUpdate(saveValListToStr(asArr, delim));
   }
 
@@ -500,13 +506,19 @@ function ListEditorItems({ children, type, propInfo, saveDataValue, handleValueU
       {
       saveValStrToList(saveDataValue, delim)
       ?.map((substr, ind) => {
+        // if(!dropdownOptionsDataContainsValue(itemDropdownOptions, substr)) {
+        //   console.log('existence problem:', substr, 'in', itemDropdownOptions,
+        //     'was', dropdownOptionsDataContainsValue(itemDropdownOptions, substr)
+        //   );
+        // }
 
         let inputElem;
         if(itemDropdownOptions) {
           inputElem = <SelectEditor
-            saveDataValue={dropdownValues?.some(([k,]) => String(k) === substr) && substr}
+            // saveDataValue={dropdownValues?.some(([k,]) => k === substr) && substr}
+            saveDataValue={dropdownOptionsDataContainsValue(itemDropdownOptions, substr) && substr}
             handleValueUpdate={val => handleUpdateItem(ind, val)}
-            dropdownOptions={itemDropdownOptions}
+            dropdownOptions={itemDropdownOptions} dropdownType={dropdownType}
           />;
         } else {
           inputElem = <input className="w-100"
@@ -565,34 +577,41 @@ function ListEditorSpecial({ children, type, propInfo, saveDataValue, handleValu
     }
   }
 
+  // dropdowns' propInfo
   let propInfoDd1 = (type !== "outfitindices") ? propInfo : {...propInfo, type: "int-dropdown"};
   let propInfoDd2 = (type !== "outfitindices") ? null : {...propInfo, type: "int-dropdown",
     dropdown: propInfo.dropdown2, dropdown_extra: propInfo.dropdown2_extra};
 
+  const dropdownType = useSelectDropdownType();  // creates a dependency on SelectDropdownTypeContext
+
   let dropdownOptions;
   // TODO optimization idea: useMemo on resolveDropdownFromPropInfo, or its resolveDropdown function call inside it?
-  let dropdownValues = resolveDropdownFromPropInfo(propInfoDd1, version);
-  // TODO optimization idea: useMemo around the code that generates the dropdownOptions list!
-  if(Array.isArray(dropdownValues)) {
-    dropdownOptions = dropdownValues.map(([optValue, optContents]) => (
-      <option value={optValue}>{optContents}</option>
-    ));
-    dropdownOptions.unshift(<option value="" disabled></option>);
-  }
+  // let dropdownValues = resolveDropdownFromPropInfo(propInfoDd1, version);
+  // // TODO optimization idea: useMemo around the code that generates the dropdownOptions list!
+  // if(Array.isArray(dropdownValues)) {
+  //   dropdownOptions = dropdownValues.map(([optValue, optContents]) => (
+  //     <option value={optValue}>{optContents}</option>
+  //   ));
+  //   dropdownOptions.unshift(<option value="" disabled></option>);
+  // }
+  dropdownOptions = resolveDropdownOptionDataCached(propInfoDd1, version, dropdownType);
   
-  let dropdownClothesValues, clothesDropdownOptions;
-  let dropdownSkinsValues, skinsDropdownOptions;
+  // let dropdownClothesValues;
+  let clothesDropdownOptions;
+  // let dropdownSkinsValues;
+  let skinsDropdownOptions;
   if(type === "outfitindices") {
-    dropdownClothesValues = dropdownValues; dropdownValues = undefined;
+    // dropdownClothesValues = dropdownValues; dropdownValues = undefined;
     clothesDropdownOptions = dropdownOptions; dropdownOptions = undefined;
     // TODO optimization idea: useMemo on resolveDropdownFromPropInfo, or its resolveDropdown function call inside it?
-    dropdownSkinsValues = resolveDropdownFromPropInfo(propInfoDd2, version);
-    if(Array.isArray(dropdownSkinsValues)) {
-      skinsDropdownOptions = dropdownSkinsValues.map(([optValue, optContents]) => (
-        <option value={optValue}>{optContents}</option>
-      ));
-      skinsDropdownOptions.unshift(<option value="" disabled></option>);
-    }
+    // dropdownSkinsValues = resolveDropdownFromPropInfo(propInfoDd2, version);
+    // if(Array.isArray(dropdownSkinsValues)) {
+    //   skinsDropdownOptions = dropdownSkinsValues.map(([optValue, optContents]) => (
+    //     <option value={optValue}>{optContents}</option>
+    //   ));
+    //   skinsDropdownOptions.unshift(<option value="" disabled></option>);
+    // }
+    skinsDropdownOptions = resolveDropdownOptionDataCached(propInfoDd2, version, dropdownType);
   }
 
   function handleAddItem(newValue) {
@@ -637,11 +656,12 @@ function ListEditorSpecial({ children, type, propInfo, saveDataValue, handleValu
         if(dropdownOptions) {
           // console.log(dropdownValues);
           // console.log(substr);
-          // console.log(dropdownValues?.some(([k,]) => String(k) === substr));
+          // console.log(dropdownValues?.some(([k,]) => k === substr));
           inputElem = <SelectEditor
-            saveDataValue={dropdownValues?.some(([k,]) => String(k) === substr) && substr}
+            // saveDataValue={dropdownValues?.some(([k,]) => k === substr) && substr}
+            saveDataValue={dropdownOptionsDataContainsValue(dropdownOptions, substr) && substr}
             handleValueUpdate={val => handleUpdateItem(ind, val)}
-            dropdownOptions={dropdownOptions}
+            dropdownOptions={dropdownOptions} dropdownType={dropdownType}
             disabled={Boolean(disableInputsWhenUnset && !saveDataValue)}
           />;
         } else {
@@ -654,12 +674,13 @@ function ListEditorSpecial({ children, type, propInfo, saveDataValue, handleValu
           } else if(type === "outfitindices") {
             // Do skins last.
             const _doSkins = ind === getMaxOutfitSize(version);
-            let _ddvals = _doSkins ? dropdownSkinsValues : dropdownClothesValues;
+            // let _ddvals = _doSkins ? dropdownSkinsValues : dropdownClothesValues;
             let _ddopts = _doSkins ? skinsDropdownOptions : clothesDropdownOptions;
             let _selectEditor = <SelectEditor
-              saveDataValue={_ddvals?.some(([k,]) => String(k) === substr) && substr}
+              // saveDataValue={_ddvals?.some(([k,]) => k === substr) && substr}
+              saveDataValue={dropdownOptionsDataContainsValue(_ddopts, substr) && substr}
               handleValueUpdate={val => handleUpdateItem(ind, val)}
-              dropdownOptions={_ddopts}
+              dropdownOptions={_ddopts} dropdownType={dropdownType}
               disabled={Boolean(disableInputsWhenUnset && !saveDataValue)}
             />;
             if(_doSkins) {
@@ -735,17 +756,20 @@ function FurnitureTransformEditor({ children, type, propInfo, saveDataValue, han
     saveValListToStr(Array.from({length: 4}, (v) => defaultNewPosRotValue), transformPosOrRotDelim)
   ], furnitureTransformDelim);
 
+  const dropdownType = useSelectDropdownType();  // creates a dependency on SelectDropdownTypeContext
+
   let furnitureDropdownOptions;
   // TODO: useMemo on resolveDropdownFromPropInfo, or its resolveDropdown function call inside it?
   // let dropdownValues;
-  let dropdownValues = resolveDropdownFromPropInfo(propInfo, version);
-  // TODO optimization idea: useMemo around the code that generates the dropdownOptions list!
-  if(Array.isArray(dropdownValues)) {
-    furnitureDropdownOptions = dropdownValues.map(([optValue, optContents]) => (
-      <option value={optValue}>{optContents}</option>
-    ));
-    furnitureDropdownOptions.unshift(<option value="" disabled></option>);
-  }
+  // let dropdownValues = resolveDropdownFromPropInfo(propInfo, version);
+  // // TODO optimization idea: useMemo around the code that generates the dropdownOptions list!
+  // if(Array.isArray(dropdownValues)) {
+  //   furnitureDropdownOptions = dropdownValues.map(([optValue, optContents]) => (
+  //     <option value={optValue}>{optContents}</option>
+  //   ));
+  //   furnitureDropdownOptions.unshift(<option value="" disabled></option>);
+  // }
+  furnitureDropdownOptions = resolveDropdownOptionDataCached(propInfo, version, dropdownType);
 
   // function handleAddItem(newValue) {
   //   handleValueUpdate(saveDataValue===null || typeof(saveDataValue)==="undefined"
@@ -802,9 +826,10 @@ function FurnitureTransformEditor({ children, type, propInfo, saveDataValue, han
       <div className="list-editor-grid-row furniture-selector">
         <span>Furniture:</span>
         <SelectEditor
-          saveDataValue={dropdownValues?.some(([k,]) => String(k) === saveValAsList[0]) && saveValAsList[0]}
+          // saveDataValue={dropdownValues?.some(([k,]) => k === saveValAsList[0]) && saveValAsList[0]}
+          saveDataValue={dropdownOptionsDataContainsValue(furnitureDropdownOptions, saveValAsList[0]) && saveValAsList[0]}
           handleValueUpdate={val => handleUpdateItem(0, val)}
-          dropdownOptions={furnitureDropdownOptions}
+          dropdownOptions={furnitureDropdownOptions} dropdownType={dropdownType}
         />
         <PropRawTextInput
           saveDataValue={saveValAsList[0]}
